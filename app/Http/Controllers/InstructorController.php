@@ -14,7 +14,16 @@ class InstructorController extends Controller
      */
     public function index()
     {
-        //
+        $instructors = Instructor::all();
+
+        $instructors->each(function ($instructor) {
+            $instructor->academicInfos;
+        });
+
+        if(!$instructors) {
+            return response()->json("Error fetching instructors", 400);
+        }
+        return response()->json($instructors, 200);
     }
 
     /**
@@ -46,7 +55,12 @@ class InstructorController extends Controller
      */
     public function show(Instructor $instructor)
     {
-        //
+        $instructor->academicInfos;
+        if(!$instructor) {
+            return response()->json("No instructor was found", 400);
+        }
+
+        return response()->json($instructor, 200);
     }
 
     /**
