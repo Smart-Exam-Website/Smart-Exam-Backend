@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,3 +21,4 @@ Route::get('/', function () {
 
 Route::get('/students',[StudentController::class,'index']);
 Route::get('/students/{id}',[StudentController::class,'show']);
+Route::get('/auth/changePassword',[UserController::class, 'changePassword']);

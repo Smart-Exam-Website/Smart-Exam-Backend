@@ -4,82 +4,60 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
+    public function login(Request $request){
+        $fields = $request->validate([
+            'email' => 'required|string|email',
+            'password' => 'required|string'
+        ]);
+
+        //check email
+        $user = User::where('email', $fields['email'])->first();
+        //check password
+        if(!$user|| !Hash::check($fields['password'],$user->password)){
+            return response([
+                'message' => 'Email Or Password is incorrect'
+            ], 401);
+        }
+
+        $token = $user->createToken('myapptoken')->plainTextToken;
+
+        $response = [
+            'user' => $user,
+            'token' => $token
+        ];
+
+        return response($response,201);
+
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+    public function logout(Request $request){
+        auth()->user()->tokens()->delete();
+        return [
+            'message' => 'Logged Out'
+        ];
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Http\Response
-     */
-    public function show(User $user)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(User $user)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, User $user)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(User $user)
-    {
-        //
+    public function changePassword(Request $request){
+        $user = Auth::user();
+        $fields = $request->validate([
+            'currentPassword' => 'required',
+            'newPassword' => 'required'
+        ]);
+        if($fields['currentPassword'] == $user->password){
+            $user->password=Hash::make($fields['newPassword']);
+            return response([
+                'message' => 'Password Updated Successfully'
+            ], 201);
+        }
+        else{
+            return response([
+                'message' => 'User Password is incorrect'
+            ], 401);
+        }
     }
 }
