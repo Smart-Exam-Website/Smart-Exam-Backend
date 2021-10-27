@@ -18,7 +18,15 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 
-Route::post('/login', 'App\Http\Controllers\Auth\LoginController@login');
+Route::view('/auth/forgotPassword', 'resetPassword')->name('forgetPassword');
+
+
+Route::post('/auth/forgotPassword', 'App\Http\Controllers\UserController@forgotPassword'
+    )->middleware('guest')->name('password.email');
+
+Route::put('/auth/forgotPassword', 'App\Http\Controllers\UserController@resetPassword'
+    )->middleware('guest')->name('password.update');
+
 
 //********************** INSTRUCTOR ROUTES *********************/
 
@@ -28,4 +36,3 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::put('/instructors/me', 'App\Http\Controllers\InstructorController@editProfile');
     Route::apiResource('instructors', 'App\Http\Controllers\InstructorController');
 });
-Route::apiResource('instructors', 'App\Http\Controllers\InstructorController')->middleware('App\Http\Middleware\Cors');

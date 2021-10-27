@@ -87,7 +87,10 @@ class InstructorController extends Controller
         }
 
         $academicInfoDetails = $request->only(['department', 'school']);
-        $academicInfo = AcademicInfo::create($academicInfoDetails);
+        $academicInfo = AcademicInfo::find($academicInfoDetails);
+        if(!$academicInfo) {
+            $academicInfo = AcademicInfo::create($academicInfoDetails);
+        }
         $academicInfo->instructors()->attach($instructor->id);
         return response()->json(['message' => 'Created instructor successfully'], 201);
     }
@@ -197,6 +200,9 @@ class InstructorController extends Controller
 
         $academicInfoDetails = $request->only(['department', 'school']);
         $academicInfo = AcademicInfo::find($academicInfoDetails);
+        if(!$academicInfo) {
+            $academicInfo = AcademicInfo::create($academicInfoDetails);
+        }
         $instructor->academicInfos()->sync($academicInfo);
         return response()->json(['message' => 'Updated instructor successfully'], 200);
     }

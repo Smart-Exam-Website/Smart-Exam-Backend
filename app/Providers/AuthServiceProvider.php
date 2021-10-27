@@ -2,8 +2,12 @@
 
 namespace App\Providers;
 
+use Carbon\Carbon;
+use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\URL;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -25,6 +29,20 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        //
-    }
+
+    VerifyEmail::createUrlUsing(function ($notifiable) {
+        $frontendUrl = 'http://localhost:8080/auth/verify';
+
+        $verifyUrl = URL::temporarySignedRoute(
+            'password.reset',
+            Carbon::now()->addMinutes(Config::get('auth.verification.expire', 60)),
+            [
+                'id' => $notifiable->getKey(),
+                'hash' => sha1($notifiable->getEmailForVerification()),
+            ]
+        );
+
+        return $frontendUrl . '?verify_url=' . urlencode($verifyUrl);
+    });
+}
 }
