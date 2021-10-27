@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class Instructor extends Model
 {
     use HasFactory;
+    protected $guarded = [];
 
     /**
      * Get the user associated with the Instructor

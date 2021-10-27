@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class AcademicInfo extends Model
 {
     use HasFactory;
+    protected $guarded = [];
     protected $table = 'academic_info';
     public function instructors(): BelongsToMany
     {

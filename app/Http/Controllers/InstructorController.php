@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AcademicInfo;
 use App\Models\Instructor;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -18,7 +19,7 @@ class InstructorController extends Controller
     public function index()
     {
         $instructors = Instructor::all();
-        
+
 
         $instructors->each(function ($instructor) {
             $instructor->user;
@@ -59,19 +60,21 @@ class InstructorController extends Controller
             'phone' => 'required|size:11',
             'type' => 'required',
             'degree' => 'required',
+            'department' => 'required',
+            'school' => 'required',
         ];
 
         $validator = Validator::make($request->all(), $rules);
 
-        if($validator->fails()) {
-            return response()->json(['message' => 'Failed to validate'], 400);
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->first(), 400);
         }
-        $userDetails = $request->only(['firstName', 'lastName', 'email', 'gender', 'image','phone', 'type']);
-        $password = $request->only('password');
+        $userDetails = $request->only(['firstName', 'lastName', 'email', 'gender', 'image', 'phone', 'type']);
+        $password = $request->password;
         $hashedPass = Hash::make($password);
         $userDetails['password'] = $hashedPass;
         $user = User::create($userDetails);
-        if(!$user) {
+        if (!$user) {
             return response()->json(['message' => 'Failed to create instructor'], 400);
         }
         $id = $user->id;
@@ -79,9 +82,13 @@ class InstructorController extends Controller
         $instructorDetails['user_id'] = $id;
         $instructorDetails['verified'] = 'false';
         $instructor = Instructor::create($instructorDetails);
-        if(!$instructor) {
+        if (!$instructor) {
             return response()->json(['message' => 'Failed to create instructor'], 400);
         }
+
+        $academicInfoDetails = $request->only(['department', 'school']);
+        $academicInfo = AcademicInfo::create($academicInfoDetails);
+        $academicInfo->instructors()->attach($instructor->id);
         return response()->json(['message' => 'Created instructor successfully'], 201);
     }
 
@@ -97,9 +104,15 @@ class InstructorController extends Controller
             return response()->json(['message' => "No instructor was found"], 400);
         }
         $instructor->academicInfos;
-        $instructor->user;
+        $userDetails = $instructor->user()->first();
+        
 
-        return response()->json($instructor, 200);
+        $collectI = collect($instructor);
+        $collectU = collect($userDetails);
+
+        $collectI = $collectI->merge($collectU);
+
+        return response()->json(['instructor' => $collectI], 200);
     }
     /**
      * Display the specified resource's profile.
@@ -113,9 +126,14 @@ class InstructorController extends Controller
         if (!$user) {
             return response()->json(['message' => "No user was found"], 400);
         }
-        $user->instructor;
+        $instructor = $user->instructor()->first();
+        $instructor->academicInfos;
+        $collectI = collect($instructor);
+        $collectU = collect($user);
 
-        return response()->json($user, 200);
+        $collectI = $collectI->merge($collectU);
+
+        return response()->json(['instructor' => $collectI], 200);
     }
 
     /**
@@ -139,6 +157,48 @@ class InstructorController extends Controller
     public function update(Request $request, Instructor $instructor)
     {
         //
+    }
+    public function editProfile(Request $request)
+    {
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json(['message' => "No user was found"], 400);
+        }
+        $this->authorize(Instructor::class);
+        $rules = [
+            'firstName' => 'required',
+            'lastName' => 'required',
+            'email' => 'required|email|unique:users',
+            'gender' => 'required',
+            'image' => 'required|url',
+            'phone' => 'required|size:11',
+            'type' => 'required',
+            'degree' => 'required',
+            'department' => 'required',
+            'school' => 'required',
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->first(), 400);
+        }
+        $userDetails = $request->only(['firstName', 'lastName', 'email', 'gender', 'image', 'phone', 'type']);
+        $user->update($userDetails);
+        if (!$user) {
+            return response()->json(['message' => 'Failed to update instructor'], 400);
+        }
+        $instructorDetails = $request->only('degree');
+        $instructor = $user->instructor()->first();
+        if (!$instructor) {
+            return response()->json(['message' => 'Failed to find instructor'], 400);
+        }
+        $instructor->update($instructorDetails);
+
+        $academicInfoDetails = $request->only(['department', 'school']);
+        $academicInfo = AcademicInfo::find($academicInfoDetails);
+        $instructor->academicInfos()->sync($academicInfo);
+        return response()->json(['message' => 'Updated instructor successfully'], 200);
     }
 
     /**
