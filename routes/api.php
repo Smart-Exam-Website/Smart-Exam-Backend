@@ -22,10 +22,10 @@ Route::post('/login', 'App\Http\Controllers\Auth\LoginController@login');
 
 //********************** INSTRUCTOR ROUTES *********************/
 
-// Route::group(['middleware' => ['auth:sanctum']], function () {
-//     Route::apiResource('instructors', 'App\Http\Controllers\InstructorController');
-//     Route::post('/instructors/register', 'App\Http\Controllers\InstructorController@store');
-//     Route::get('/instructors/me', 'App\Http\Controllers\InstructorController@showProfile');
-//     Route::put('/instructors/me', 'App\Http\Controllers\InstructorController@editProfile');
-// });
+Route::group(['middleware' => ['auth:sanctum']], function () {
+    Route::get('/instructors/me', 'App\Http\Controllers\InstructorController@showProfile');
+    Route::put('/instructors/me', 'App\Http\Controllers\InstructorController@editProfile');
+    Route::apiResource('instructors', 'App\Http\Controllers\InstructorController');
+    Route::post('/instructors/register', 'App\Http\Controllers\InstructorController@store');
+});
 Route::apiResource('instructors', 'App\Http\Controllers\InstructorController')->middleware('App\Http\Middleware\Cors');

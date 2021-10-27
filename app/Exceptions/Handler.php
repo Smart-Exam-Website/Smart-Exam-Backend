@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -32,10 +33,23 @@ class Handler extends ExceptionHandler
      *
      * @return void
      */
-    public function register()
+    // public function register()
+    // {
+    //     $this->reportable(function (NotFoundHttpException $e) {
+
+    //         return response()->json('Not found', 404);
+    //     });
+    // }
+    
+    public function render($request,Throwable $e)
     {
-        $this->reportable(function (Throwable $e) {
-            //
-        });
+        // dd($exception);
+        if ($e instanceof AuthenticationException)
+            return response()->json(['message' => 'Unauthenticated'], 401);
+        else if ($e instanceof ModelNotFoundException)
+            return response()->json(['message' =>'Error'], 404);
+        else if($e instanceof NotFoundHttpException) 
+            return response()->json(['message' =>'Route not found'], 404);
+        return response()->json(['message' => $e->getMessage()], 400);
     }
 }

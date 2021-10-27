@@ -17,6 +17,7 @@ class CreateInstructorsTable extends Migration
             $table->id();
             $table->string('degree');
             $table->string('verified');
+            $table->unsignedBigInteger('user_id');
             $table->timestamps();
         });
     }
