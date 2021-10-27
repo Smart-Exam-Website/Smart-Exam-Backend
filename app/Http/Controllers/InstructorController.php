@@ -129,6 +129,7 @@ class InstructorController extends Controller
         if (!$user) {
             return response()->json(['message' => "No user was found"], 400);
         }
+        // dd($user);
         $instructor = $user->instructor()->first();
         $instructor->academicInfos;
         $collectI = collect($instructor);
@@ -167,15 +168,14 @@ class InstructorController extends Controller
         if (!$user) {
             return response()->json(['message' => "No user was found"], 400);
         }
-        $this->authorize(Instructor::class);
+        $this->authorize('update', $user->instructor);
         $rules = [
             'firstName' => 'required',
             'lastName' => 'required',
-            'email' => 'required|email|unique:users',
+            'email' => 'email|unique:users',
             'gender' => 'required',
             'image' => 'required|url',
             'phone' => 'required|size:11',
-            'type' => 'required',
             'degree' => 'required',
             'department' => 'required',
             'school' => 'required',

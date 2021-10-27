@@ -9,82 +9,63 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
+
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
+    public function login(Request $request){
+        $fields = $request->validate([
+            'email' => 'required|string|email',
+            'password' => 'required|string'
+        ]);
+
+        //check email
+        $user = User::where('email', $fields['email'])->first();
+        //check password
+        if(!$user|| !Hash::check($fields['password'],$user->password)){
+            return response([
+                'message' => 'Email Or Password is incorrect'
+            ], 401);
+        }
+
+        $token = $user->createToken('myapptoken')->plainTextToken;
+
+        $response = [
+            'user' => $user,
+            'token' => $token
+        ];
+
+        return response($response,200);
+
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+    public function logout(Request $request){
+        auth()->user()->tokens()->delete();
+        return [
+            'message' => 'Logged Out'
+        ];
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Http\Response
-     */
-    public function show(User $user)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(User $user)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, User $user)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(User $user)
-    {
-        //
+    public function changePassword(Request $request){
+        $user = auth()->user();
+        $fields = $request->validate([
+            'currentPassword' => 'required',
+            'newPassword' => 'required'
+        ]);
+        
+        if(password_verify($fields['currentPassword'], $user->password)){
+            $user->password=Hash::make($fields['newPassword']);
+            $user->save();
+            return response([
+                'message' => 'Password Updated Successfully'
+            ], 201);
+        }
+        else{
+            return response([
+                'message' => 'User Password is incorrect'
+            ], 401);
+        }
     }
 
     public function forgotPassword(Request $request)
@@ -102,7 +83,7 @@ class UserController extends Controller
             'created_at' => Carbon::now()
           ]);
 
-        Mail::send('email.forgotPassword', ['token' => $token], function($message) use($request){
+        Mail::send('email.forgotPassword', ['url' => 'http://localhost:8080/','token' => $token], function($message) use($request){
             $message->to($request->email);
             $message->subject('Reset Password');
         });
@@ -112,27 +93,28 @@ class UserController extends Controller
 
 
     public function resetPassword (Request $request) { 
-        $request->validate([
-            'token' => 'required',
+        $credentials = $request->validate([
             'email' => 'required|email',
-            'password' => 'required|min:8|confirmed',
+            'token' => 'required|string',
+            'password' => 'required|string'
         ]);
-    
-        $status = Password::reset(
-            $request->only('email', 'password', 'token'),
-            function ($user, $password) {
-                $user->forceFill([
-                    'password' => Hash::make($password)
-                ])->setRememberToken(Str::random(60));
-    
-                $user->save();
-    
-                event(new PasswordReset($user));
-            }
-        );
-    
-        return $status === Password::PASSWORD_RESET
-                    ? redirect()->route('login')->with('status', __($status))
-                    : back()->withErrors(['email' => [__($status)]]);
+        $user = User::where(['email' => $credentials['email']])->get()->first();
+        if(!$user) {
+            return response()->json(["msg" => "No user with that email"], 400);
+        }
+        $password = $credentials['password'];
+
+
+        $tokenMatch = DB::table('password_resets')->where(['token' => $credentials['token']]);
+
+
+        if (!$tokenMatch) {
+            return response()->json(["msg" => "Invalid token provided"], 400);
+        }
+        $user->password = Hash::make($password);
+            $user->save();
+
+        return response()->json(["msg" => "Password has been successfully changed"], 200);
+
     }
 }

@@ -41,7 +41,7 @@ class InstructorPolicy
      */
     public function create(User $user)
     {
-        return $user->role === 'instructor';
+        return $user->type === 'instructor';
     }
 
     /**
@@ -53,7 +53,7 @@ class InstructorPolicy
      */
     public function update(User $user, Instructor $instructor)
     {
-        return $user->role === 'instructor' && $user->id === $instructor->user_id;
+        return $user->type === 'instructor';
     }
 
     /**
@@ -65,7 +65,7 @@ class InstructorPolicy
      */
     public function delete(User $user, Instructor $instructor)
     {
-        return $user->role === 'instructor' && $user->id === $instructor->user_id;
+        return $user->type === 'instructor' && $user->id === $instructor->user_id;
     }
 
     /**

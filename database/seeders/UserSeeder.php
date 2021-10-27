@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Instructor;
 use Illuminate\Database\Seeder;
 use App\Models\User;
+use App\Models\Student;
 
 class UserSeeder extends Seeder
 {
@@ -21,6 +22,11 @@ class UserSeeder extends Seeder
                     'user_id' => $user->id,
                 ]);
             }
+            if($user->type == 'student'){
+                Student::factory()->create([
+                    'user_id' => $user->id,
+                ]);
+        }
         });
 
     }

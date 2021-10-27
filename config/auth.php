@@ -91,8 +91,8 @@ return [
             'provider' => 'users',
             'email' => 'emails.resetPassword',
             'table' => 'password_resets',
-            'expire' => 60,
-            'throttle' => 60,
+            'expire' => 5000,
+            'throttle' => 5000,
         ],
     ],
 
