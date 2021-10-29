@@ -15,7 +15,9 @@ use PhpParser\Node\Expr\BinaryOp\NotEqual;
 
 class UserController extends Controller
 {
-    public function login(Request $request){
+    public function login(Request $request)
+    {
+
         $fields = $request->validate([
             'email' => 'required|string|email',
             'password' => 'required|string'
@@ -23,8 +25,9 @@ class UserController extends Controller
 
         //check email
         $user = User::where('email', $fields['email'])->first();
+
         //check password
-        if(!$user|| !Hash::check($fields['password'],$user->password)){
+        if (!$user || !Hash::check($fields['password'], $user->password)) {
             return response([
                 'message' => 'Email Or Password is incorrect'
             ], 401);
@@ -37,32 +40,32 @@ class UserController extends Controller
             'token' => $token
         ];
 
-        return response($response,200);
-
+        return response($response, 200);
     }
 
-    public function logout(Request $request){
+    public function logout(Request $request)
+    {
         auth()->user()->tokens()->delete();
         return [
-            'message' => 'Logged Out'
+            'message' => 'You Have Successfully Logged Out'
         ];
     }
 
-    public function changePassword(Request $request){
+    public function changePassword(Request $request)
+    {
         $user = auth()->user();
         $fields = $request->validate([
             'currentPassword' => 'required',
             'newPassword' => 'required'
         ]);
-        
-        if(password_verify($fields['currentPassword'], $user->password)){
-            $user->password=Hash::make($fields['newPassword']);
+
+        if (password_verify($fields['currentPassword'], $user->password)) {
+            $user->password = Hash::make($fields['newPassword']);
             $user->save();
             return response([
                 'message' => 'Password Updated Successfully'
             ], 201);
-        }
-        else{
+        } else {
             return response([
                 'message' => 'User Password is incorrect'
             ], 401);
@@ -74,17 +77,17 @@ class UserController extends Controller
         $request->validate(['email' => 'required|email']);
         $email = $request->email;
         $user = User::where('email', $email);
-        if(!$user) {
+        if (!$user) {
             return response()->json(['message' => 'There is no user with that email.'], 400);
         }
         $token = Str::random(64);
         DB::table('password_resets')->insert([
-            'email' => $request->email, 
-            'token' => $token, 
+            'email' => $request->email,
+            'token' => $token,
             'created_at' => Carbon::now()
-          ]);
+        ]);
 
-        Mail::send('email.forgotPassword', ['url' => 'http://localhost:8080/','token' => $token], function($message) use($request){
+        Mail::send('email.forgotPassword', ['url' => 'http://localhost:8080/', 'token' => $token], function ($message) use ($request) {
             $message->to($request->email);
             $message->subject('Reset Password');
         });
@@ -93,14 +96,15 @@ class UserController extends Controller
     }
 
 
-    public function resetPassword (Request $request) { 
+    public function resetPassword(Request $request)
+    {
         $credentials = $request->validate([
             'email' => 'required|email',
             'token' => 'required|string',
             'password' => 'required|string'
         ]);
         $user = User::where(['email' => $credentials['email']])->get()->first();
-        if(!$user) {
+        if (!$user) {
             return response()->json(["msg" => "No user with that email"], 400);
         }
         $password = $credentials['password'];
@@ -113,12 +117,12 @@ class UserController extends Controller
             return response()->json(["msg" => "Invalid token provided"], 400);
         }
         $user->password = Hash::make($password);
-            $user->save();
+        $user->save();
 
         return response()->json(["msg" => "Password has been successfully changed"], 200);
-
     }
-    public function verifyEmail (Request $request) { 
+    public function verifyEmail(Request $request)
+    {
         $credentials = $request->validate([
             'email' => 'required|email',
             'code' => 'required|string',
@@ -129,9 +133,9 @@ class UserController extends Controller
         $code = $credentials['code'];
         $email = $credentials['email'];
 
-        $dbEntry = DB::table('verification_codes')->where('code' , $code)->get()->first();
+        $dbEntry = DB::table('verification_codes')->where('code', $code)->get()->first();
 
-        if(!$dbEntry or ($dbEntry and $dbEntry->email != $email)) {
+        if (!$dbEntry or ($dbEntry and $dbEntry->email != $email)) {
             return response()->json(['message' => 'Wrong code!'], 400);
         } else {
             $user = User::where('email',  $email)->get()->first();
@@ -140,6 +144,5 @@ class UserController extends Controller
             $instructor->save();
             return response()->json(['message' => 'Account verified!'], 200);
         }
-
     }
 }

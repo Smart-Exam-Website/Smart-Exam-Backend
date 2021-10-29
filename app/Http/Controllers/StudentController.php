@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Student;
 use App\Models\User;
-use App\Models\AcademicInfo;
+use App\Models\Department;
+use App\Models\School;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -110,7 +111,7 @@ class StudentController extends Controller
             'token' => $token
         ];
 
-        return response($response, 200);
+        return response($response, 201);
     }
 
     /**
@@ -122,14 +123,18 @@ class StudentController extends Controller
     public function show($id)
     {
         $student = Student::where(['id' => $id])->first();
-        $user_id = $student->user_id;
 
-        //return Student::find($id)->user;
+        if (!$student) {
+            return [
+                'message' => 'No Student Found'
+            ];
+        }
 
-        return Student::join('users', 'users.id', '=', 'students.user_id')
-            ->where(['user_id' => $user_id])
-            ->join('academic_infos', 'academic_infos.id', '=', 'students.academic_info_id')
-            ->get();
+        $student->user;
+        $student->department;
+        $student->department->school;
+
+        return response($student, 200);
     }
 
     /**

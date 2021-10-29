@@ -23,13 +23,19 @@ use App\Http\Controllers\UserController;
 Route::view('/auth/forgotPassword', 'resetPassword')->name('forgetPassword');
 
 
-Route::post('/auth/forgotPassword', 'App\Http\Controllers\UserController@forgotPassword'
-    )->middleware('guest')->name('password.email');
-Route::post('/verifyEmail', 'App\Http\Controllers\UserController@verifyEmail'
-    )->middleware('guest');
+Route::post(
+    '/auth/forgotPassword',
+    'App\Http\Controllers\UserController@forgotPassword'
+)->middleware('guest')->name('password.email');
+Route::post(
+    '/verifyEmail',
+    'App\Http\Controllers\UserController@verifyEmail'
+)->middleware('guest');
 
-Route::put('/auth/forgotPassword', 'App\Http\Controllers\UserController@resetPassword'
-    )->middleware('guest')->name('password.update');
+Route::put(
+    '/auth/forgotPassword',
+    'App\Http\Controllers\UserController@resetPassword'
+)->middleware('guest')->name('password.update');
 
 
 //********************** INSTRUCTOR ROUTES *********************/
@@ -43,15 +49,14 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 //public Routes
 
 //Route::resource('students', StudentController::class);
-Route::post('/students/register',[StudentController::class,'store']);
-Route::get('/students',[StudentController::class,'index']);
-Route::post('/auth/login',[UserController::class,'login']);
+Route::post('/students/register', [StudentController::class, 'store']);
+Route::get('/students', [StudentController::class, 'index']);
+Route::post('/auth/login', [UserController::class, 'login']);
 
 //protected Routes
 
-Route::group(['middleware'=>['auth:sanctum']], function () {
-    Route::get('/students/{id}',[StudentController::class,'show']);
-    Route::post('/auth/logout',[UserController::class, 'logout']);
-    Route::put('/auth/changePassword',[UserController::class, 'changePassword']);
+Route::group(['middleware' => ['auth:sanctum']], function () {
+    Route::get('/students/{id}', [StudentController::class, 'show']);
+    Route::post('/auth/logout', [UserController::class, 'logout']);
+    Route::put('/auth/changePassword', [UserController::class, 'changePassword']);
 });
-
