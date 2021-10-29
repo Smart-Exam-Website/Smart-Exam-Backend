@@ -62,8 +62,7 @@ class StudentController extends Controller
             'phone' => 'required|unique:users|digits:11',
             'department' => 'required|string|max:255',
             'school' => 'required|string|max:255',
-            'studentCode' => 'required|string|unique:students',
-            'gradeYear' => 'required|string',
+            'studentCode' => 'required|string|unique:students'
         ]);
 
         $user = User::create([
@@ -78,30 +77,48 @@ class StudentController extends Controller
             'phone' => $fields['phone']
         ]);
 
-        //if academic info exist add it's id to the student
-        $academics = AcademicInfo::all();
-        $academic_info_id = 0;
-        foreach ($academics as $academic) {
-            if ($academic->department === $fields['department']) {
-                $academic_info_id = $academic->id;
+
+        //if school already exist in database add it's id to the department
+        $schools = School::all();
+        $school_id = 0;
+        foreach ($schools as $school) {
+            if ($school->name === $fields['school']) {
+                $school_id = $school->id;
             }
         }
 
-        //if academic info doesnot exist create academic info
-        if ($academic_info_id == 0) {
-            $academicInfo = AcademicInfo::create([
-                'department' => $fields['department'],
-                'school' => $fields['school'],
+        //if school doesnot exist create school
+        if ($school_id == 0) {
+            $school = School::create([
+                'name' => $fields['school']
             ]);
-            $academic_info_id = $academicInfo->id;
+            $school_id = $school->id;
+        }
+
+
+        //if department already exist in database add it's id to the student
+        $departments = Department::all();
+        $department_id = 0;
+        foreach ($departments as $department) {
+            if ($department->name === $fields['department']) {
+                $department_id = $department->id;
+            }
+        }
+
+        //if department doesnot exist create department
+        if ($department_id == 0) {
+            $department = Department::create([
+                'name' => $fields['department'],
+                'school_id' => $school_id,
+            ]);
+            $department_id = $department->id;
         }
 
         //create student
         $student = Student::create([
             'user_id' => $user->id,
             'studentCode' => $fields['studentCode'],
-            'gradeYear' => $fields['gradeYear'],
-            'academic_info_id' => $academic_info_id
+            'department_id' => $department_id
         ]);
 
         $token = $user->createToken('myapptoken')->plainTextToken;
