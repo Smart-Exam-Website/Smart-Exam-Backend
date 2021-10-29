@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateAcademicInfoTable extends Migration
+class CreateDepartmentInstructorsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,12 @@ class CreateAcademicInfoTable extends Migration
      */
     public function up()
     {
-        Schema::create('academic_info', function (Blueprint $table) {
+        Schema::create('department_instructors', function (Blueprint $table) {
             $table->id();
-            $table->string('department');
-            $table->string('school');
-            $table->timestamps();
-        });
-        Schema::create('academic_info_instructor', function (Blueprint $table) {
-            $table->unsignedBigInteger('academic_info_id');
+            $table->unsignedBigInteger('department_id');
+            $table->foreign('department_id')->references('id')->on('departments')->onDelete('cascade');
             $table->unsignedBigInteger('instructor_id');
+            $table->foreign('instructor_id')->references('id')->on('instructors')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -33,7 +30,6 @@ class CreateAcademicInfoTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('academic_info');
-        Schema::dropIfExists('academicinfo_instructor');
+        Schema::dropIfExists('department_instructors');
     }
 }

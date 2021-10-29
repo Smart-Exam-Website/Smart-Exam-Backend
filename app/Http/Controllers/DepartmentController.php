@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\AcademicInfo;
 use Illuminate\Http\Request;
 
-class AcademicInfoController extends Controller
+class DepartmentController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -41,10 +40,10 @@ class AcademicInfoController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\AcademicInfo  $academicInfo
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(AcademicInfo $academicInfo)
+    public function show($id)
     {
         //
     }
@@ -52,10 +51,10 @@ class AcademicInfoController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\AcademicInfo  $academicInfo
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(AcademicInfo $academicInfo)
+    public function edit($id)
     {
         //
     }
@@ -64,10 +63,10 @@ class AcademicInfoController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\AcademicInfo  $academicInfo
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, AcademicInfo $academicInfo)
+    public function update(Request $request, $id)
     {
         //
     }
@@ -75,10 +74,10 @@ class AcademicInfoController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\AcademicInfo  $academicInfo
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(AcademicInfo $academicInfo)
+    public function destroy($id)
     {
         //
     }

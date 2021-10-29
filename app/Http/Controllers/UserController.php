@@ -124,12 +124,20 @@ class UserController extends Controller
             'code' => 'required|string',
         ]);
 
-        $code = $credentials['code'];
-        $dbEntry = DB::table('verification_codes')->find(['code' => $code]);
 
-        if(!$dbEntry or ($dbEntry and $dbEntry['email'].NotEqual($credentials['email']))) {
-            return response()->json(['message' => 'Codes do not match!'], 400);
+
+        $code = $credentials['code'];
+        $email = $credentials['email'];
+
+        $dbEntry = DB::table('verification_codes')->where('code' , $code)->get()->first();
+
+        if(!$dbEntry or ($dbEntry and $dbEntry->email != $email)) {
+            return response()->json(['message' => 'Wrong code!'], 400);
         } else {
+            $user = User::where('email',  $email)->get()->first();
+            $instructor = $user->instructor;
+            $instructor->verified = "true";
+            $instructor->save();
             return response()->json(['message' => 'Account verified!'], 200);
         }
 

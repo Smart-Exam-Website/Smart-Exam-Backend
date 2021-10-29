@@ -18,9 +18,8 @@ class CreateStudentsTable extends Migration
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->string('studentCode');
-            $table->string('gradeYear');
-            $table->unsignedBigInteger('academic_info_id');
-            $table->foreign('academic_info_id')->references('id')->on('academic_info');
+            $table->unsignedBigInteger('department_id');
+            $table->foreign('department_id')->references('id')->on('departments');
             $table->timestamps();
         });
     }

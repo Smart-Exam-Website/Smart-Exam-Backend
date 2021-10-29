@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Models\AcademicInfo;
 use Illuminate\Database\Seeder;
+use App\Models\DepartmentInstructor;
 
-class AcademicInfoSeeder extends Seeder
+class DepartmentInstructorSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -14,6 +14,6 @@ class AcademicInfoSeeder extends Seeder
      */
     public function run()
     {
-        AcademicInfo::factory(10)->create();
+        DepartmentInstructor::factory(10)->create();
     }
 }

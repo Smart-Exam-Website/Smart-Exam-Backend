@@ -5,8 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\AcademicInfo;
 use App\Models\Instructor;
 use App\Models\User;
+use Carbon\Carbon;
+use Illuminate\Support\Str;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 class InstructorController extends Controller
@@ -55,13 +60,13 @@ class InstructorController extends Controller
             'lastName' => 'required',
             'email' => 'required|email|unique:users',
             'password' => 'required',
+            'description' => 'required',
             'gender' => 'required',
             'image' => 'required|url',
             'phone' => 'required|size:11',
             'type' => 'required',
             'degree' => 'required',
-            'department' => 'required',
-            'school' => 'required',
+            'departments.*.id' => ['required', 'numeric', 'exists:departments,id'],
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -73,37 +78,55 @@ class InstructorController extends Controller
         $password = $request->password;
         $hashedPass = Hash::make($password);
         $userDetails['password'] = $hashedPass;
-        $user = User::create($userDetails);
+        try {
+            $user = User::create($userDetails);
+
+        } catch (Throwable $e) {
+            return response()->json(['message' => $e], 400);
+        }
         if (!$user) {
             return response()->json(['message' => 'Failed to create instructor'], 400);
         }
         $id = $user->id;
-        $instructorDetails = $request->only('degree');
+        $instructorDetails = $request->only('degree', 'description');
         $instructorDetails['user_id'] = $id;
         $instructorDetails['verified'] = 'false';
-        $instructor = Instructor::create($instructorDetails);
+        try {
+            $instructor = Instructor::create($instructorDetails);
+        } catch(Throwable $e) {
+            $user->delete();
+            return response()->json(['message' => $e], 400);
+        }
         if (!$instructor) {
+            $user->delete();
             return response()->json(['message' => 'Failed to create instructor'], 400);
         }
 
-        $academicInfoDetails = $request->only(['department', 'school']);
-        $academicInfo = AcademicInfo::find($academicInfoDetails);
-        if(!$academicInfo) {
-            $academicInfo = AcademicInfo::create($academicInfoDetails);
+        $departments = $request->departments;
+
+
+        foreach ($departments as $department) {
+            DB::table('department_instructors')->insert([
+                'department_id' => $department['id'],
+                'instructor_id' => $instructor->id,
+                'created_at' => now()->subSeconds(),
+                'updated_at' => now(),
+            ]);
         }
-        $academicInfo->instructors()->attach($instructor->id);
+
+
 
         $verificationCode = Str::random(6);
-        Mail::send('email.verifyemail', ['url' => 'http://localhost:8080/','verificationCode' => $verificationCode], function($message) use($request){
-                  $message->to($request->email);
-                  $message->subject('Verify your email!');
-              });
+        Mail::send('email.verifyemail', ['url' => 'http://localhost:8080/', 'verificationCode' => $verificationCode], function ($message) use ($request) {
+            $message->to($request->email);
+            $message->subject('Verify your email!');
+        });
 
-              DB::table('verification_codes')->insert([
-                'email' => $request->email, 
-                'code' => $verificationCode, 
-                'created_at' => Carbon::now()
-              ]);
+        DB::table('verification_codes')->insert([
+            'email' => $request->email,
+            'code' => $verificationCode,
+            'created_at' => Carbon::now()
+        ]);
 
 
         return response()->json(['message' => 'Created instructor successfully'], 201);
@@ -122,7 +145,7 @@ class InstructorController extends Controller
         }
         $instructor->academicInfos;
         $userDetails = $instructor->user()->first();
-        
+
 
         $collectI = collect($instructor);
         $collectU = collect($userDetails);
@@ -214,7 +237,7 @@ class InstructorController extends Controller
 
         $academicInfoDetails = $request->only(['department', 'school']);
         $academicInfo = AcademicInfo::find($academicInfoDetails);
-        if(!$academicInfo) {
+        if (!$academicInfo) {
             $academicInfo = AcademicInfo::create($academicInfoDetails);
         }
         $instructor->academicInfos()->sync($academicInfo);

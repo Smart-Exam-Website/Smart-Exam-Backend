@@ -23,8 +23,8 @@ class Instructor extends Model
     {
         return $this->belongsTo(User::class);
     }
-    public function academicInfos(): BelongsToMany
+    public function departments(): BelongsToMany
     {
-        return $this->belongsToMany(AcademicInfo::class)->withTimestamps()->select(['department', 'school']);
+        return $this->belongsToMany(Department::class)->withTimestamps();
     }
 }

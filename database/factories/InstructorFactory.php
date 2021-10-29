@@ -2,7 +2,6 @@
 
 namespace Database\Factories;
 
-use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class InstructorFactory extends Factory
@@ -16,6 +15,7 @@ class InstructorFactory extends Factory
     {
         return [
             'degree' => $this->faker->word(),
+            'description' => $this->faker->text(700),
             'verified' => $this->faker->randomElement(['true', 'false']),
         ];
     }
