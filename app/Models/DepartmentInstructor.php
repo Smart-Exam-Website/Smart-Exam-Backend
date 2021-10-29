@@ -8,5 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class DepartmentInstructor extends Model
 {
     use HasFactory;
+    protected $table = 'departments_instructors';
+    protected $guarded = [];
     
 }

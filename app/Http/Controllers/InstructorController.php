@@ -28,7 +28,11 @@ class InstructorController extends Controller
 
         $instructors->each(function ($instructor) {
             $instructor->user;
-            $instructor->academicInfos;
+            $departments = $instructor->departments;
+
+            foreach ($departments as $department) {
+                $department->school;
+            }
         });
 
         if (!$instructors) {
@@ -66,7 +70,7 @@ class InstructorController extends Controller
             'phone' => 'required|size:11',
             'type' => 'required',
             'degree' => 'required',
-            'departments.*.id' => ['required', 'numeric', 'exists:departments,id'],
+            'departments.*.department_id' => ['required', 'numeric', 'exists:departments,id'],
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -78,12 +82,8 @@ class InstructorController extends Controller
         $password = $request->password;
         $hashedPass = Hash::make($password);
         $userDetails['password'] = $hashedPass;
-        try {
-            $user = User::create($userDetails);
+        $user = User::create($userDetails);
 
-        } catch (Throwable $e) {
-            return response()->json(['message' => $e], 400);
-        }
         if (!$user) {
             return response()->json(['message' => 'Failed to create instructor'], 400);
         }
@@ -93,7 +93,7 @@ class InstructorController extends Controller
         $instructorDetails['verified'] = 'false';
         try {
             $instructor = Instructor::create($instructorDetails);
-        } catch(Throwable $e) {
+        } catch (Throwable $e) {
             $user->delete();
             return response()->json(['message' => $e], 400);
         }
@@ -105,14 +105,7 @@ class InstructorController extends Controller
         $departments = $request->departments;
 
 
-        foreach ($departments as $department) {
-            DB::table('department_instructors')->insert([
-                'department_id' => $department['id'],
-                'instructor_id' => $instructor->id,
-                'created_at' => now()->subSeconds(),
-                'updated_at' => now(),
-            ]);
-        }
+        $instructor->departments()->attach($departments);
 
 
 
@@ -145,7 +138,7 @@ class InstructorController extends Controller
         }
         $departments = $instructor->departments;
 
-        foreach($departments as $department) {
+        foreach ($departments as $department) {
             $department->school;
         }
 
@@ -173,7 +166,13 @@ class InstructorController extends Controller
         }
         // dd($user);
         $instructor = $user->instructor()->first();
-        $instructor->academicInfos;
+        $departments = $instructor->departments;
+
+        foreach ($departments as $department) {
+            $department->school;
+        }
+
+
         $collectI = collect($instructor);
         $collectU = collect($user);
 
@@ -214,13 +213,13 @@ class InstructorController extends Controller
         $rules = [
             'firstName' => 'required',
             'lastName' => 'required',
-            'email' => 'email|unique:users',
+            'description' => 'required',
+            'email' => 'email',
             'gender' => 'required',
             'image' => 'required|url',
             'phone' => 'required|size:11',
             'degree' => 'required',
-            'department' => 'required',
-            'school' => 'required',
+            'departments.*.department_id' => ['required', 'numeric', 'exists:departments,id'],
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -229,23 +228,27 @@ class InstructorController extends Controller
             return response()->json($validator->errors()->first(), 400);
         }
         $userDetails = $request->only(['firstName', 'lastName', 'email', 'gender', 'image', 'phone', 'type']);
+        if ($user->email !=  $userDetails['email']) {
+            $similarEmail = User::where('email', $userDetails['email'])->get();
+            if ($similarEmail) {
+                response()->json(['message' => 'Email already taken'], 400);
+            }
+        }
+
         $user->update($userDetails);
         if (!$user) {
             return response()->json(['message' => 'Failed to update instructor'], 400);
         }
-        $instructorDetails = $request->only('degree');
+        $instructorDetails = $request->only('degree', 'description');
         $instructor = $user->instructor()->first();
         if (!$instructor) {
             return response()->json(['message' => 'Failed to find instructor'], 400);
         }
         $instructor->update($instructorDetails);
 
-        $academicInfoDetails = $request->only(['department', 'school']);
-        $academicInfo = AcademicInfo::find($academicInfoDetails);
-        if (!$academicInfo) {
-            $academicInfo = AcademicInfo::create($academicInfoDetails);
-        }
-        $instructor->academicInfos()->sync($academicInfo);
+        $departments = $request->departments;
+
+        $instructor->departments()->sync($departments);
         return response()->json(['message' => 'Updated instructor successfully'], 200);
     }
 

@@ -18,7 +18,7 @@ class Department extends Model
     }
     public function instructors(): BelongsToMany
     {
-        return $this->belongsToMany(Instructor::class)->withTimestamps();
+        return $this->belongsToMany(Instructor::class, $table = "departments_instructors", "department_id")->withTimestamps();
     }
     public function students(): HasMany
     {
