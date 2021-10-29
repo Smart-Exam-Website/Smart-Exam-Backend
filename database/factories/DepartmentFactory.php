@@ -2,10 +2,10 @@
 
 namespace Database\Factories;
 
-use App\Models\AcademicInfo;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Models\School;
 
-class AcademicInfoFactory extends Factory
+class DepartmentFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -15,8 +15,8 @@ class AcademicInfoFactory extends Factory
     public function definition()
     {
         return [
-            'department' => $this->faker->word(),
-            'school' => $this->faker->word(),
+            'name' => $this->faker->unique()->word(),
+            'school_id' => School::all()->random()->id
         ];
     }
 }
