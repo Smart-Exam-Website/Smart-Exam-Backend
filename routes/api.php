@@ -16,17 +16,19 @@ use App\Http\Controllers\UserController;
 |
 */
 
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
+//----------------------------USER Routes----------------------------
+
+//public Routes
+
+Route::post('/auth/login', [UserController::class, 'login']);
 
 Route::view('/auth/forgotPassword', 'resetPassword')->name('forgetPassword');
-
 
 Route::post(
     '/auth/forgotPassword',
     'App\Http\Controllers\UserController@forgotPassword'
 )->middleware('guest')->name('password.email');
+
 Route::post(
     '/verifyEmail',
     'App\Http\Controllers\UserController@verifyEmail'
@@ -37,26 +39,39 @@ Route::put(
     'App\Http\Controllers\UserController@resetPassword'
 )->middleware('guest')->name('password.update');
 
+//protected Routes
+
+Route::group(['middleware' => ['auth:sanctum']], function () {
+    Route::post('/auth/logout', [UserController::class, 'logout']);
+    Route::put('/auth/changePassword', [UserController::class, 'changePassword']);
+});
+
 
 //********************** INSTRUCTOR ROUTES *********************/
 
+//public Routes
+
 Route::post('/instructors/register', 'App\Http\Controllers\InstructorController@store');
+
+//protected Routes
+
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/instructors/me', 'App\Http\Controllers\InstructorController@showProfile');
     Route::put('/instructors/me', 'App\Http\Controllers\InstructorController@editProfile');
     Route::apiResource('instructors', 'App\Http\Controllers\InstructorController');
 });
+
+
+//-------------------------STUDENT ROUTES----------------------------
+
+
 //public Routes
 
-//Route::resource('students', StudentController::class);
 Route::post('/students/register', [StudentController::class, 'store']);
-Route::get('/students', [StudentController::class, 'index']);
-Route::post('/auth/login', [UserController::class, 'login']);
 
 //protected Routes
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
+    Route::get('/students', [StudentController::class, 'index']);
     Route::get('/students/{id}', [StudentController::class, 'show']);
-    Route::post('/auth/logout', [UserController::class, 'logout']);
-    Route::put('/auth/changePassword', [UserController::class, 'changePassword']);
 });
