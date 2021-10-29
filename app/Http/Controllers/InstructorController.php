@@ -143,7 +143,12 @@ class InstructorController extends Controller
         if (!$instructor) {
             return response()->json(['message' => "No instructor was found"], 400);
         }
-        $instructor->academicInfos;
+        $departments = $instructor->departments;
+
+        foreach($departments as $department) {
+            $department->school;
+        }
+
         $userDetails = $instructor->user()->first();
 
 
