@@ -16,6 +16,7 @@ class CreateVerificationCodesTable extends Migration
         Schema::create('verification_codes', function (Blueprint $table) {
             $table->id();
             $table->string('code');
+            $table->string('email');
             $table->timestamps();
         });
     }

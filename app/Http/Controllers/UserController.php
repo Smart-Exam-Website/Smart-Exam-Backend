@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use PhpParser\Node\Expr\BinaryOp\NotEqual;
 
 class UserController extends Controller
 {
@@ -115,6 +116,22 @@ class UserController extends Controller
             $user->save();
 
         return response()->json(["msg" => "Password has been successfully changed"], 200);
+
+    }
+    public function verifyEmail (Request $request) { 
+        $credentials = $request->validate([
+            'email' => 'required|email',
+            'code' => 'required|string',
+        ]);
+
+        $code = $credentials['code'];
+        $dbEntry = DB::table('verification_codes')->find(['code' => $code]);
+
+        if(!$dbEntry or ($dbEntry and $dbEntry['email'].NotEqual($credentials['email']))) {
+            return response()->json(['message' => 'Codes do not match!'], 400);
+        } else {
+            return response()->json(['message' => 'Account verified!'], 200);
+        }
 
     }
 }

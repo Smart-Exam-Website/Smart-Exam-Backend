@@ -25,6 +25,8 @@ Route::view('/auth/forgotPassword', 'resetPassword')->name('forgetPassword');
 
 Route::post('/auth/forgotPassword', 'App\Http\Controllers\UserController@forgotPassword'
     )->middleware('guest')->name('password.email');
+Route::post('/auth/verifyEmail', 'App\Http\Controllers\UserController@verifyEmail'
+    )->middleware('guest');
 
 Route::put('/auth/forgotPassword', 'App\Http\Controllers\UserController@resetPassword'
     )->middleware('guest')->name('password.update');

@@ -92,6 +92,20 @@ class InstructorController extends Controller
             $academicInfo = AcademicInfo::create($academicInfoDetails);
         }
         $academicInfo->instructors()->attach($instructor->id);
+
+        $verificationCode = Str::random(6);
+        Mail::send('email.verifyemail', ['url' => 'http://localhost:8080/','verificationCode' => $verificationCode], function($message) use($request){
+                  $message->to($request->email);
+                  $message->subject('Verify your email!');
+              });
+
+              DB::table('verification_codes')->insert([
+                'email' => $request->email, 
+                'code' => $verificationCode, 
+                'created_at' => Carbon::now()
+              ]);
+
+
         return response()->json(['message' => 'Created instructor successfully'], 201);
     }
 

@@ -20,7 +20,7 @@ class CreateStudentsTable extends Migration
             $table->string('studentCode');
             $table->string('gradeYear');
             $table->unsignedBigInteger('academic_info_id');
-            $table->foreign('academic_info_id')->references('id')->on('academic_infos');
+            $table->foreign('academic_info_id')->references('id')->on('academic_info');
             $table->timestamps();
         });
     }

@@ -18,7 +18,6 @@ class DatabaseSeeder extends Seeder
         Model::unguard();
         $this->call(AcademicInfoSeeder::class);
         $this->call(UserSeeder::class);
-        $this->call(AcademicInfoSeeder::class);
         $this->call(AcademicInfoInstructorSeeder::class);
     }
 }
