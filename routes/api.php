@@ -73,6 +73,7 @@ Route::post('/students/register', [StudentController::class, 'store']);
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/students/me', [StudentController::class, 'showProfile']);
+    Route::put('/students/me', [StudentController::class, 'editProfile']);
     Route::get('/students', [StudentController::class, 'index']);
     Route::get('/students/{id}', [StudentController::class, 'show']);
 });
