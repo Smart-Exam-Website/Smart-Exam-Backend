@@ -160,6 +160,25 @@ class StudentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+
+    public function showProfile()
+    {
+        $user = auth()->user();
+
+        if (!$user) {
+            return response([
+                'message' => 'No User Was Found'
+            ], 400);
+        }
+
+        $student = Student::where(['user_id' => $user->id])->first();
+        $student->user;
+        $student->department;
+        $student->department->school;
+
+        return response(['student' => $student], 200);
+    }
+
     public function edit($id)
     {
         //
