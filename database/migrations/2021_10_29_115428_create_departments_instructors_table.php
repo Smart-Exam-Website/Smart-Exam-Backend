@@ -30,6 +30,6 @@ class CreateDepartmentsInstructorsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('department_instructors');
+        Schema::dropIfExists('departments_instructors');
     }
 }
