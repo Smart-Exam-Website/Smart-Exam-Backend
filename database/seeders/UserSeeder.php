@@ -4,8 +4,11 @@ namespace Database\Seeders;
 
 use App\Models\Instructor;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Models\Student;
+use Carbon\Carbon;
 
 class UserSeeder extends Seeder
 {
@@ -16,18 +19,63 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
+
+        $users = User::all()->count();
+        if (!$users) {
+            DB::table('users')->insert([
+                [
+                    'firstName' => 'Nouran',
+                    'lastName' => 'Ahmed',
+                    'email' => 'adminRole1@gmail.com',
+                    'email_verified_at' => now(),
+                    'gender' => 'female',
+                    'image' => 'https://southernplasticsurgery.com.au/wp-content/uploads/2013/10/user-placeholder.png',
+                    'phone' => '01002345678',
+                    'type' => 'admin',
+                    'password' => Hash::make('secret'), // password
+                    'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
+                    'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
+                ],
+                [
+                    'firstName' => 'Haidy',
+                    'lastName' => 'Ahmed',
+                    'email' => 'adminRole2@gmail.com',
+                    'email_verified_at' => now(),
+                    'gender' => 'female',
+                    'image' => 'https://southernplasticsurgery.com.au/wp-content/uploads/2013/10/user-placeholder.png',
+                    'phone' => '01002382678',
+                    'type' => 'admin',
+                    'password' => Hash::make('secret'), // password
+                    'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
+                    'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
+                ],
+                [
+                    'firstName' => 'Nouran',
+                    'lastName' => 'Ahmed',
+                    'email' => 'adminRole3@gmail.com',
+                    'email_verified_at' => now(),
+                    'gender' => 'female',
+                    'image' => 'https://southernplasticsurgery.com.au/wp-content/uploads/2013/10/user-placeholder.png',
+                    'phone' => '01045682678',
+                    'type' => 'admin',
+                    'password' => Hash::make('secret'), // password
+                    'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
+                    'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
+                ]
+            ]);
+        }
+
         User::factory(10)->create()->each(function ($user) {
-            if($user->type == 'instructor') {
+            if ($user->type == 'instructor') {
                 Instructor::factory()->create([
                     'user_id' => $user->id,
                 ]);
             }
-            if($user->type == 'student'){
+            if ($user->type == 'student') {
                 Student::factory()->create([
                     'user_id' => $user->id,
                 ]);
-        }
+            }
         });
-
     }
 }
