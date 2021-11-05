@@ -129,6 +129,19 @@ class StudentController extends Controller
             'token' => $token
         ];
 
+        $verificationCode = Str::random(6);
+        Mail::send('email.verifyemail', ['url' => 'http://13.58.190.211', 'verificationCode' => $verificationCode], function ($message) use ($request) {
+            $message->to($request->email);
+            $message->subject('Verify your email!');
+        });
+
+        DB::table('verification_codes')->insert([
+            'email' => $request->email,
+            'code' => $verificationCode,
+            'created_at' => Carbon::now()
+        ]);
+
+
         return response($response, 201);
     }
 
