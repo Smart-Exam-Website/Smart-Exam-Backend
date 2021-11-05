@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Students\UpdateProfileRequest;
 use App\Models\Student;
 use App\Models\User;
 use App\Models\Department;
@@ -160,6 +161,25 @@ class StudentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+
+    public function showProfile()
+    {
+        $user = auth()->user();
+
+        if (!$user) {
+            return response([
+                'message' => 'No User Was Found'
+            ], 400);
+        }
+
+        $student = Student::where(['user_id' => $user->id])->first();
+        $student->user;
+        $student->department;
+        $student->department->school;
+
+        return response(['student' => $student], 200);
+    }
+
     public function edit($id)
     {
         //
@@ -172,6 +192,79 @@ class StudentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+
+    public function editProfile(UpdateProfileRequest $request)
+    {
+
+        $user = auth()->user();
+        $student = Student::where(['user_id' => $user->id])->first();
+        $departments = Department::all();
+        $schools = School::all();
+
+        if (!$user) {
+            return response([
+                'message' => 'No User Was Found'
+            ], 400);
+        }
+
+        $school_id = 0;
+
+
+        foreach ($schools as $school) {
+            if ($school->name === $request['school']) {
+                $school_id = $school->id;
+            }
+        }
+
+        //if school doesnot exist create school
+        if ($school_id == 0) {
+            $school = School::create([
+                'name' => $request['school'] ? $request['school'] : $student->department->school->name
+            ]);
+            $school_id = $school->id;
+        }
+
+
+        $department_id = 0;
+
+        //if department already exist in database add it's id to the student
+
+        foreach ($departments as $dep) {
+            if ($dep->name == $request->department && $dep->school->name == $request->school) {
+                $department_id = $dep->id;
+            }
+        }
+
+        //if department doesnot exist create department
+        if ($department_id == 0) {
+            $department = Department::create([
+                'name' => $request['department'] ? $request['department'] : $student->department->name,
+                'school_id' => $school_id ? $school_id : $student->department->school_id,
+            ]);
+            $department_id = $department->id;
+        }
+
+
+
+        $user->update([
+            'firstName' => $request->firstName ? $request->firstName : $user->firstName,
+            'lastName' => $request->lastName ? $request->lastName : $user->lastName,
+            'email' => $request->email ? $request->email : $user->email,
+            'password' => $request->password ? Hash::make($request->password) : $user->password,
+            'gender' => $request->gender ? $request->gender : $user->gender,
+            'phone' => $request->phone ? $request->phone : $user->phone
+        ]);
+
+        $student->update([
+            'department_id' => $department_id ? $department_id : $student->department_id,
+            'studentCode' => $request->studentCode ? $request->studentCode : $student->studentCode
+        ]);
+
+        return response([
+            'message' => 'Student Profile Updated Successfully'
+        ], 200);
+    }
+
     public function update(Request $request, $id)
     {
         //

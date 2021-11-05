@@ -43,7 +43,7 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
-    
+
     /**
      * Get the Instructor associated with the User
      *
@@ -55,14 +55,14 @@ class User extends Authenticatable
     }
 
 
-
     public function student()
     {
         return $this->hasOne(Student::class);
     }
+
+
     public function admin()
     {
         return $this->hasOne(Admin::class);
     }
-
 }
