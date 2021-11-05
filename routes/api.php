@@ -20,7 +20,7 @@ use App\Http\Controllers\UserController;
 
 //public Routes
 
-Route::post('/auth/login', [UserController::class, 'login']);
+Route::post('/auth/login', [UserController::class, 'login'])->name('login');
 
 Route::view('/auth/forgotPassword', 'resetPassword')->name('forgetPassword');
 

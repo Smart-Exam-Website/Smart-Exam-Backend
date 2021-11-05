@@ -69,6 +69,38 @@ class UserController extends Controller
         }
     }
 
+        /**
+     * @OA\Post(
+     *      path="/auth/forgotPassword",
+     *      operationId="forgotPassword",
+     *      tags={"Auth"},
+     *      summary="Request to reset password",
+     *      @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(ref="#/components/schemas/ForgotPasswordRequest")
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\JsonContent(
+     * @OA\Property(property="message", type="string", example="Reset link sent!"),
+     * ),
+     *       ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request"
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     * )
+     */
+
     public function forgotPassword(Request $request)
     {
         $request->validate(['email' => 'required|email']);
@@ -84,13 +116,46 @@ class UserController extends Controller
             'created_at' => Carbon::now()
         ]);
 
-        Mail::send('email.forgotPassword', ['url' => 'http://localhost:8080/', 'token' => $token], function ($message) use ($request) {
+        Mail::send('email.forgotPassword', ['url' => 'http://13.58.190.211/forgotPassword/', 'token' => $token], function ($message) use ($request) {
             $message->to($request->email);
             $message->subject('Reset Password');
         });
 
         return response()->json(['status' => 'Reset link sent!'], 200);
     }
+
+            /**
+     * @OA\Put(
+     *      path="/auth/forgotPassword",
+     *      operationId="resetPassword",
+     *      tags={"Auth"},
+     *      summary="Resetting password",
+     *      @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(ref="#/components/schemas/ResetPasswordRequest")
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\JsonContent(
+     * @OA\Property(property="message", type="string", example="Password has been successfully changed!"),
+     * ),
+     *       ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request"
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     * )
+     */
+
 
 
     public function resetPassword(Request $request)
@@ -118,6 +183,38 @@ class UserController extends Controller
 
         return response()->json(["msg" => "Password has been successfully changed"], 200);
     }
+
+            /**
+     * @OA\Post(
+     *      path="/auth/verifyEmail",
+     *      operationId="verifyEmail",
+     *      tags={"Auth"},
+     *      summary="Request to verify email",
+     *      @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(ref="#/components/schemas/VerifyEmailRequest")
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\JsonContent(
+     * @OA\Property(property="message", type="string", example="Account verified!"),
+     * ),
+     *       ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request"
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     * )
+     */
     public function verifyEmail(Request $request)
     {
         $credentials = $request->validate([

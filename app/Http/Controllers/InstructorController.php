@@ -17,9 +17,29 @@ use Illuminate\Support\Facades\Validator;
 class InstructorController extends Controller
 {
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
+     * @OA\Get(
+     *      path="/instructors",
+     *      operationId="getInstructorsList",
+     *      tags={"Instructors"},
+     *      summary="Get list of Instructors",
+     *      description="Returns list of Instructors",
+     *      security={ {"bearer": {} }},
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\JsonContent(
+     * @OA\Property(property="instructors", type="array", @OA\Items(ref="#/components/schemas/Instructor"))
+     * ),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     *     )
      */
     public function index()
     {
@@ -38,7 +58,7 @@ class InstructorController extends Controller
         if (!$instructors) {
             return response()->json(['message' => "Error fetching instructors"], 400);
         }
-        return response()->json($instructors, 200);
+        return response()->json(["instructors" => $instructors], 200);
     }
 
     /**
@@ -52,10 +72,36 @@ class InstructorController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @OA\Post(
+     *      path="/instructors/register",
+     *      operationId="storeInstructor",
+     *      tags={"Instructors"},
+     *      summary="Sign up as instructor",
+     *      description="Returns Instructor data",
+     *      @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(ref="#/components/schemas/StoreInstructorRequest")
+     *      ),
+     *      @OA\Response(
+     *          response=201,
+     *          description="Successful operation",
+     *          @OA\JsonContent(
+     * @OA\Property(property="message", type="string", example="Created instructor successfully"),
+     * @OA\Property(property="instructor", type="object", ref="#/components/schemas/Instructor"),),
+     *       ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request"
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     * )
      */
     public function store(Request $request)
     {
@@ -122,14 +168,33 @@ class InstructorController extends Controller
         ]);
 
 
-        return response()->json(['message' => 'Created instructor successfully'], 201);
+        return response()->json(['message' => 'Created instructor successfully', 'instructor' => $instructor], 201);
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Instructor  $instructor
-     * @return \Illuminate\Http\Response
+     * @OA\Get(
+     *      path="/instructors/{instructor}",
+     *      operationId="getInstructor",
+     *      tags={"Instructor"},
+     *      summary="Get instructor",
+     *      description="Returns instructor",
+     * security={ {"bearer": {} }},
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\JsonContent(
+     * @OA\Property(property="instructor", type="object", ref="#/components/schemas/Instructor")
+     * ),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     *     )
      */
     public function show(Instructor $instructor)
     {
@@ -142,21 +207,35 @@ class InstructorController extends Controller
             $department->school;
         }
 
-        $userDetails = $instructor->user()->first();
+        $instructor->user;
 
-
-        $collectI = collect($instructor);
-        $collectU = collect($userDetails);
-
-        $collectI = $collectI->merge($collectU);
-
-        return response()->json(['instructor' => $collectI], 200);
+        return response()->json(['instructor' => $instructor], 200);
     }
     /**
-     * Display the specified resource's profile.
-     *
-     * @param  \App\Models\Instructor  $instructor
-     * @return \Illuminate\Http\Response
+     * @OA\Get(
+     *      path="/instructors/me",
+     *      operationId="getInstructorProfile",
+     *      tags={"Instructor"},
+     *      summary="Get instructor profile",
+     *      description="Returns instructor profile",
+     * security={ {"bearer": {} }},
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\JsonContent(
+     * @OA\Property(property="instructor", type="object", ref="#/components/schemas/Instructor")
+     * ),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\Property(property="message", type="string", example="Unauthenticated"),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     *     )
      */
     public function showProfile()
     {
@@ -171,14 +250,9 @@ class InstructorController extends Controller
         foreach ($departments as $department) {
             $department->school;
         }
+        $instructor->user;
 
-
-        $collectI = collect($instructor);
-        $collectU = collect($user);
-
-        $collectI = $collectI->merge($collectU);
-
-        return response()->json(['instructor' => $collectI], 200);
+        return response()->json(['instructor' => $instructor], 200);
     }
 
     /**
@@ -203,6 +277,42 @@ class InstructorController extends Controller
     {
         //
     }
+
+    /**
+     * @OA\Put(
+     *      path="/instructors/me",
+     *      operationId="editInstructor",
+     *      tags={"Instructors"},
+     *      summary="Edit instructor",
+     *      description="Returns Instructor data",
+     * security={ {"bearer": {} }},
+     *      @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(ref="#/components/schemas/StoreInstructorRequest")
+     *      ),
+     *      @OA\Response(
+     *          response=201,
+     *          description="Successful operation",
+     *          @OA\JsonContent(
+     * @OA\Property(property="message", type="string", example="Updated instructor successfully"),
+     * @OA\Property(property="instructor", type="object", ref="#/components/schemas/Instructor"),),
+     *       ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request",
+     * @OA\Property(property="message", type="string", example="Failed to update instructor"),
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\Property(property="message", type="string", example="Unauthenticated"),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     * )
+     */
     public function editProfile(Request $request)
     {
         $user = auth()->user();
@@ -249,7 +359,7 @@ class InstructorController extends Controller
         $departments = $request->departments;
 
         $instructor->departments()->sync($departments);
-        return response()->json(['message' => 'Updated instructor successfully'], 200);
+        return response()->json(['message' => 'Updated instructor successfully', 'instructor' => $instructor], 200);
     }
 
     /**
