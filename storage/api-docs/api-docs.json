@@ -14,7 +14,7 @@
     },
     "servers": [
         {
-            "url": "http://localhost:8000/api/",
+            "url": "http://localhost:8080",
             "description": "Smart Exam API Server"
         }
     ],
@@ -239,6 +239,359 @@
                 ]
             }
         },
+        "/students": {
+            "get": {
+                "tags": [
+                    "Students"
+                ],
+                "summary": "Get list of Students",
+                "description": "Returns list of Students",
+                "operationId": "getStudentsList",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "students": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Student"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/students/register": {
+            "post": {
+                "tags": [
+                    "Students"
+                ],
+                "summary": "Sign up as Student",
+                "description": "Returns Student data",
+                "operationId": "storeStudent",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StoreStudentRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Created student successfully"
+                                        },
+                                        "student": {
+                                            "$ref": "#/components/schemas/Student"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            }
+        },
+        "/students/{id}": {
+            "get": {
+                "tags": [
+                    "Student"
+                ],
+                "summary": "Get student",
+                "description": "Returns student",
+                "operationId": "getStudent",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "student": {
+                                            "$ref": "#/components/schemas/Student"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/students/me": {
+            "get": {
+                "tags": [
+                    "Student"
+                ],
+                "summary": "Get Student profile",
+                "description": "Returns student profile",
+                "operationId": "getStudentProfile",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "student": {
+                                            "$ref": "#/components/schemas/Student"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Students"
+                ],
+                "summary": "Edit student",
+                "description": "Returns Student data",
+                "operationId": "editStudent",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StoreStudentRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Updated student successfully"
+                                        },
+                                        "student": {
+                                            "$ref": "#/components/schemas/Student"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/auth/login": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Sign in as Student or as Instructor",
+                "description": "login to your account",
+                "operationId": "login",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StoreLoginRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Successfull operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "LoggedIn successfully"
+                                        },
+                                        "auth": {
+                                            "$ref": "#/components/schemas/User"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Email Or Password is incorrect"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            }
+        },
+        "/auth/logout": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Log out From your Account",
+                "description": "logout from your account",
+                "operationId": "logout",
+                "responses": {
+                    "201": {
+                        "description": "Successfully Logged Out",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "You Have Successfully Logged Out"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            }
+        },
+        "/auth/changePassword": {
+            "put": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "changing password",
+                "operationId": "changePassword",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ChangePasswordRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Password Updated Successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            }
+        },
         "/auth/forgotPassword": {
             "put": {
                 "tags": [
@@ -378,6 +731,29 @@
     },
     "components": {
         "schemas": {
+            "ChangePasswordRequest": {
+                "title": "changePasswordRequest",
+                "description": "change password request body data",
+                "required": [
+                    "currentPassword",
+                    "newPassword"
+                ],
+                "properties": {
+                    "currentPassword": {
+                        "title": "currentPassword",
+                        "description": "User Current Password",
+                        "type": "string",
+                        "example": "12345678"
+                    },
+                    "newPassword": {
+                        "title": "newPassword",
+                        "description": "User New Password",
+                        "type": "string",
+                        "example": "Aaa45678"
+                    }
+                },
+                "type": "object"
+            },
             "ForgotPasswordRequest": {
                 "title": "ForgotPasswordRequest",
                 "description": "Forgot password request body data",
@@ -407,7 +783,7 @@
                     },
                     "name": {
                         "title": "name",
-                        "description": "name of instructor",
+                        "description": "name of department",
                         "type": "string",
                         "example": "Science department"
                     },
@@ -434,16 +810,13 @@
                     },
                     "school_id": {
                         "title": "School ID",
-                        "description": "School id of instructor",
+                        "description": "School id of instructor or student",
                         "type": "integer",
                         "format": "int64",
                         "example": 1
                     },
                     "school": {
                         "$ref": "#/components/schemas/School"
-                    },
-                    "instructors": {
-                        "$ref": "#/components/schemas/Instructor"
                     }
                 },
                 "type": "object",
@@ -558,6 +931,70 @@
                     "name": "School"
                 }
             },
+            "Student": {
+                "title": "Student",
+                "description": "Student model",
+                "properties": {
+                    "id": {
+                        "title": "ID",
+                        "description": "ID",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "studentCode": {
+                        "title": "studentCode",
+                        "description": "studentCode of student",
+                        "type": "string",
+                        "example": "1702"
+                    },
+                    "created_at": {
+                        "title": "Created at",
+                        "description": "Created at",
+                        "type": "string",
+                        "format": "datetime",
+                        "example": "2021-05-22 17:50:45"
+                    },
+                    "updated_at": {
+                        "title": "Updated at",
+                        "description": "Updated at",
+                        "type": "string",
+                        "format": "datetime",
+                        "example": "2021-05-22 17:50:45"
+                    },
+                    "deleted_at": {
+                        "title": "Deleted at",
+                        "description": "Deleted at",
+                        "type": "string",
+                        "format": "datetime",
+                        "example": "2021-05-22 17:50:45"
+                    },
+                    "user_id": {
+                        "title": "user ID",
+                        "description": "User id of student",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "user": {
+                        "$ref": "#/components/schemas/User"
+                    },
+                    "department_id": {
+                        "title": "department ID",
+                        "description": "Department id of student",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "department": {
+                        "$ref": "#/components/schemas/Department"
+                    }
+                },
+                "type": "object",
+                "xml": {
+                    "name": "Student"
+                }
+            },
             "User": {
                 "title": "User",
                 "description": "User model",
@@ -650,9 +1087,6 @@
                         "type": "string",
                         "format": "datetime",
                         "example": "2020-01-27 17:50:45"
-                    },
-                    "instructor": {
-                        "$ref": "#/components/schemas/Instructor"
                     }
                 },
                 "type": "object",
@@ -783,6 +1217,116 @@
                 },
                 "type": "object"
             },
+            "StoreLoginRequest": {
+                "title": "StoreLoginRequest",
+                "description": "Store Login request body data",
+                "required": [
+                    "email",
+                    "password"
+                ],
+                "properties": {
+                    "email": {
+                        "title": "email",
+                        "description": "email of the user",
+                        "type": "string",
+                        "example": "omar@example.com"
+                    },
+                    "password": {
+                        "title": "password",
+                        "description": "password of the user",
+                        "type": "string",
+                        "example": "12345678"
+                    }
+                },
+                "type": "object"
+            },
+            "StoreStudentRequest": {
+                "title": "StoreStudentRequest",
+                "description": "Store Student request body data",
+                "required": [
+                    "firstName",
+                    "lastName",
+                    "email",
+                    "password",
+                    "description",
+                    "gender",
+                    "image",
+                    "phone",
+                    "type",
+                    "studentCode",
+                    "department"
+                ],
+                "properties": {
+                    "firstName": {
+                        "title": "first Name",
+                        "description": "first name of the new student",
+                        "type": "string",
+                        "example": "Mazen"
+                    },
+                    "lastName": {
+                        "title": "last Name",
+                        "description": "last name of the new student",
+                        "type": "string",
+                        "example": "Omar"
+                    },
+                    "email": {
+                        "title": "email",
+                        "description": "email of the new student",
+                        "type": "string",
+                        "example": "mazenomar@example.com"
+                    },
+                    "password": {
+                        "title": "password",
+                        "description": "password of the new student",
+                        "type": "string",
+                        "example": "12345678"
+                    },
+                    "gender": {
+                        "title": "gender",
+                        "description": "gender of the new student",
+                        "type": "string",
+                        "example": "male"
+                    },
+                    "image": {
+                        "title": "image",
+                        "description": "image of the new student",
+                        "type": "string",
+                        "example": "https://google.com/pepepepaaa"
+                    },
+                    "phone": {
+                        "title": "phone",
+                        "description": "phone of the new student",
+                        "type": "string",
+                        "example": "01221231771"
+                    },
+                    "type": {
+                        "title": "type",
+                        "description": "type of the new student",
+                        "type": "string",
+                        "example": "student"
+                    },
+                    "studentCode": {
+                        "title": "studentCode",
+                        "description": "studentCode of the new student",
+                        "type": "string",
+                        "example": "1722"
+                    },
+                    "department": {
+                        "title": "department",
+                        "description": "department of the new student",
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "id": {
+                                    "type": "integer"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                },
+                "type": "object"
+            },
             "VerifyEmailRequest": {
                 "title": "VerifyEmailRequest",
                 "description": "Email verification request body data",
@@ -816,6 +1360,12 @@
             }
         }
     },
+    "tags": [
+        {
+            "name": "Projects",
+            "description": "API Endpoints of Projects"
+        }
+    ],
     "security": [
         []
     ]

@@ -29,6 +29,9 @@ class Controller extends BaseController
      *      description="Smart Exam API Server"
      * )
 
-     *
+     *@OA\Tag(
+     *     name="Projects",
+     *     description="API Endpoints of Projects"
+     * )
      */
 }

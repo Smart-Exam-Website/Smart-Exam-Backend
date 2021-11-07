@@ -9,9 +9,41 @@ use App\Models\Department;
 use App\Models\School;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use Carbon\Carbon;
+use Illuminate\Support\Str;
 
 class StudentController extends Controller
 {
+
+    /**
+     * @OA\Get(
+     *      path="/students",
+     *      operationId="getStudentsList",
+     *      tags={"Students"},
+     *      summary="Get list of Students",
+     *      description="Returns list of Students",
+     *      security={ {"bearer": {} }},
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\JsonContent(
+     * @OA\Property(property="students", type="array", @OA\Items(ref="#/components/schemas/Student"))
+     * ),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     *     )
+     */
+
+
     /**
      * Display a listing of the resource.
      *
@@ -44,6 +76,43 @@ class StudentController extends Controller
     {
         //
     }
+
+
+
+    /**
+     * @OA\Post(
+     *      path="/students/register",
+     *      operationId="storeStudent",
+     *      tags={"Students"},
+     *      summary="Sign up as Student",
+     *      description="Returns Student data",
+     *      @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(ref="#/components/schemas/StoreStudentRequest")
+     *      ),
+     *      @OA\Response(
+     *          response=201,
+     *          description="Successful operation",
+     *          @OA\JsonContent(
+     * @OA\Property(property="message", type="string", example="Created student successfully"),
+     * @OA\Property(property="student", type="object", ref="#/components/schemas/Student"),),
+     *       ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request"
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     * )
+     */
+
+
 
     /**
      * Store a newly created resource in storage.
@@ -145,6 +214,36 @@ class StudentController extends Controller
         return response($response, 201);
     }
 
+
+    /**
+     * @OA\Get(
+     *      path="/students/{id}",
+     *      operationId="getStudent",
+     *      tags={"Student"},
+     *      summary="Get student",
+     *      description="Returns student",
+     * security={ {"bearer": {} }},
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\JsonContent(
+     * @OA\Property(property="student", type="object", ref="#/components/schemas/Student")
+     * ),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     *     )
+     */
+
+
+
+
     /**
      * Display the specified resource.
      *
@@ -167,6 +266,37 @@ class StudentController extends Controller
 
         return response($student, 200);
     }
+
+
+
+    /**
+     * @OA\Get(
+     *      path="/students/me",
+     *      operationId="getStudentProfile",
+     *      tags={"Student"},
+     *      summary="Get Student profile",
+     *      description="Returns student profile",
+     * security={ {"bearer": {} }},
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\JsonContent(
+     * @OA\Property(property="student", type="object", ref="#/components/schemas/Student")
+     * ),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\Property(property="message", type="string", example="Unauthenticated"),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     *     )
+     */
+
+
 
     /**
      * Show the form for editing the specified resource.
@@ -197,6 +327,47 @@ class StudentController extends Controller
     {
         //
     }
+
+
+
+    /**
+     * @OA\Put(
+     *      path="/students/me",
+     *      operationId="editStudent",
+     *      tags={"Students"},
+     *      summary="Edit student",
+     *      description="Returns Student data",
+     * security={ {"bearer": {} }},
+     *      @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(ref="#/components/schemas/StoreStudentRequest")
+     *      ),
+     *      @OA\Response(
+     *          response=201,
+     *          description="Successful operation",
+     *          @OA\JsonContent(
+     * @OA\Property(property="message", type="string", example="Updated student successfully"),
+     * @OA\Property(property="student", type="object", ref="#/components/schemas/Student"),),
+     *       ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request",
+     * @OA\Property(property="message", type="string", example="Failed to update student"),
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\Property(property="message", type="string", example="Unauthenticated"),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     * )
+     */
+
+
+
 
     /**
      * Update the specified resource in storage.

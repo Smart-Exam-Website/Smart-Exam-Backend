@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Virtual\Models;
+
 /**
  * @OA\Schema(
  *     title="User",
@@ -166,15 +168,4 @@ class User
      * @var \DateTime
      */
     private $deleted_at;
-
-   
-    /**
-     * @OA\Property(
-     *     title="User",
-     *     description="User's Instructor"
-     * )
-     *
-     * @var \App\Virtual\Models\Instructor
-     */
-    private $instructor;
 }

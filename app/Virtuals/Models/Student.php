@@ -4,14 +4,14 @@ namespace App\Virtual\Models;
 
 /**
  * @OA\Schema(
- *     title="Department",
- *     description="Department model",
+ *     title="Student",
+ *     description="Student model",
  *     @OA\Xml(
- *         name="Department"
+ *         name="Student"
  *     )
  * )
  */
-class Department
+class Student
 {
 
     /**
@@ -28,22 +28,20 @@ class Department
 
     /**
      * @OA\Property(
-     *      title="name",
-     *      description="name of department",
-     *      example="Science department"
+     *      title="studentCode",
+     *      description="studentCode of student",
+     *      example="1702"
      * )
      *
      * @var string
      */
-    public $name;
-
-
+    public $studentCode;
 
     /**
      * @OA\Property(
      *     title="Created at",
      *     description="Created at",
-     *     example="2020-01-27 17:50:45",
+     *     example="2021-05-22 17:50:45",
      *     format="datetime",
      *     type="string"
      * )
@@ -56,7 +54,7 @@ class Department
      * @OA\Property(
      *     title="Updated at",
      *     description="Updated at",
-     *     example="2020-01-27 17:50:45",
+     *     example="2021-05-22 17:50:45",
      *     format="datetime",
      *     type="string"
      * )
@@ -69,7 +67,7 @@ class Department
      * @OA\Property(
      *     title="Deleted at",
      *     description="Deleted at",
-     *     example="2020-01-27 17:50:45",
+     *     example="2021-05-22 17:50:45",
      *     format="datetime",
      *     type="string"
      * )
@@ -80,24 +78,46 @@ class Department
 
     /**
      * @OA\Property(
-     *      title="School ID",
-     *      description="School id of instructor or student",
+     *      title="user ID",
+     *      description="User id of student",
      *      format="int64",
      *      example=1
      * )
      *
      * @var integer
      */
-    public $school_id;
+    public $user_id;
 
 
     /**
      * @OA\Property(
-     *     title="School",
-     *     description="Department's School"
+     *     title="User",
+     *     description="Student's user"
      * )
      *
-     * @var \App\Virtual\Models\School
+     * @var \App\Virtual\Models\User
      */
-    private $school;
+    private $user;
+    /**
+     * @OA\Property(
+     *      title="department ID",
+     *      description="Department id of student",
+     *      format="int64",
+     *      example=1
+     * )
+     *
+     * @var integer
+     */
+    public $department_id;
+
+
+    /**
+     * @OA\Property(
+     *     title="Department",
+     *     description="Student's department"
+     * )
+     *
+     * @var \App\Virtual\Models\Department
+     */
+    private $department;
 }
