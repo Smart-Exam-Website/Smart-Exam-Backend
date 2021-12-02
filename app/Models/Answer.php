@@ -8,4 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Answer extends Model
 {
     use HasFactory;
+
+    public function questions(): BelongsToMany
+    {
+        return $this->HasMany(Question::class)->withTimestamps();
+    }
 }
