@@ -15,11 +15,6 @@ class AnswerSeeder extends Seeder
      */
     public function run()
     {
-        //Answer::factory(10)->create();
-        // Answer::factory(40)->create()->each(function ($a) {
-        //     McqAnswer::factory()->create([
-        //         'answer_id' => $a->id,
-        //     ]);
-        // });
+        Answer::factory(40)->create();
     }
 }
