@@ -2,18 +2,41 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Department;
 use Illuminate\Http\Request;
 
 class DepartmentController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
+   /**
+     * @OA\Get(
+     *      path="/departments",
+     *      operationId="getDepartmentsList",
+     *      tags={"Departments"},
+     *      summary="Get list of Departments",
+     *      description="Returns list of Departments",
+     *      security={ {"bearer": {} }},
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\JsonContent(
+     * @OA\Property(property="departments", type="array", @OA\Items(ref="#/components/schemas/Department"))
+     * ),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     *     )
      */
     public function index()
     {
-        //
+        $departments = Department::all();
+
+        return $departments;
     }
 
     /**

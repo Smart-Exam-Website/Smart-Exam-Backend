@@ -86,7 +86,7 @@ class StoreInstructorRequest
      * @OA\Property(
      *      title="phone",
      *      description="phone of the new instructor",
-     *      example="022211111111"
+     *      example="02221111111"
      * )
      *
      * @var string

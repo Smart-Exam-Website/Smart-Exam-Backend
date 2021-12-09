@@ -14,11 +14,52 @@
     },
     "servers": [
         {
-            "url": "http://localhost:8080",
+            "url": "http://3.143.249.185/api",
             "description": "Smart Exam API Server"
         }
     ],
     "paths": {
+        "/departments": {
+            "get": {
+                "tags": [
+                    "Departments"
+                ],
+                "summary": "Get list of Departments",
+                "description": "Returns list of Departments",
+                "operationId": "getDepartmentsList",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "departments": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Department"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
         "/instructors": {
             "get": {
                 "tags": [
@@ -224,6 +265,47 @@
                     },
                     "400": {
                         "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/schools": {
+            "get": {
+                "tags": [
+                    "Schools"
+                ],
+                "summary": "Get list of Schools",
+                "description": "Returns list of Schools",
+                "operationId": "getSchoolsList",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "schools": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/School"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     },
                     "401": {
                         "description": "Unauthenticated"
@@ -682,7 +764,7 @@
                 }
             }
         },
-        "/auth/verifyEmail": {
+        "/verifyEmail": {
             "post": {
                 "tags": [
                     "Auth"
@@ -1187,7 +1269,7 @@
                         "title": "phone",
                         "description": "phone of the new instructor",
                         "type": "string",
-                        "example": "022211111111"
+                        "example": "02221111111"
                     },
                     "type": {
                         "title": "type",
@@ -1360,12 +1442,6 @@
             }
         }
     },
-    "tags": [
-        {
-            "name": "Projects",
-            "description": "API Endpoints of Projects"
-        }
-    ],
     "security": [
         []
     ]

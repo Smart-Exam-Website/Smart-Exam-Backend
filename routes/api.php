@@ -39,6 +39,10 @@ Route::put(
     'App\Http\Controllers\UserController@resetPassword'
 )->middleware('guest')->name('password.update');
 
+Route::get('/departments', 'App\Http\Controllers\DepartmentController@index');
+Route::get('/schools', 'App\Http\Controllers\SchoolController@index');
+
+
 //protected Routes
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
@@ -59,6 +63,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/instructors/me', 'App\Http\Controllers\InstructorController@showProfile');
     Route::put('/instructors/me', 'App\Http\Controllers\InstructorController@editProfile');
     Route::apiResource('instructors', 'App\Http\Controllers\InstructorController');
+    Route::apiResource('exams', 'App\Http\Controllers\ExamController');
 });
 
 

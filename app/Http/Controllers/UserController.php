@@ -290,7 +290,7 @@ class UserController extends Controller
 
     /**
      * @OA\Post(
-     *      path="/auth/verifyEmail",
+     *      path="/verifyEmail",
      *      operationId="verifyEmail",
      *      tags={"Auth"},
      *      summary="Request to verify email",

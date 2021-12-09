@@ -2,18 +2,40 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\School;
 use Illuminate\Http\Request;
 
 class SchoolController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
+   /**
+     * @OA\Get(
+     *      path="/schools",
+     *      operationId="getSchoolsList",
+     *      tags={"Schools"},
+     *      summary="Get list of Schools",
+     *      description="Returns list of Schools",
+     *      security={ {"bearer": {} }},
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\JsonContent(
+     * @OA\Property(property="schools", type="array", @OA\Items(ref="#/components/schemas/School"))
+     * ),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     *     )
      */
     public function index()
     {
-        //
+        $schools = School::all();
+        return $schools;
     }
 
     /**
