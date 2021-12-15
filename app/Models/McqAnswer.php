@@ -17,6 +17,6 @@ class McqAnswer extends Model
 
     public function Mcq()
     {
-        return $this->belongsTo(Mcq::class, 'mcq_id');
+        return $this->belongsTo(Mcq::class, 'question_id');
     }
 }

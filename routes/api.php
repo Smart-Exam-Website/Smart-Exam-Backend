@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\McqController;
 
 /*
 |--------------------------------------------------------------------------
@@ -81,4 +82,11 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::put('/students/me', [StudentController::class, 'editProfile']);
     Route::get('/students', [StudentController::class, 'index']);
     Route::get('/students/{id}', [StudentController::class, 'show']);
+});
+
+
+//---------------------------QUESTION ROUTES----------------------------
+
+Route::group(['middleware' => ['auth:sanctum']], function () {
+    Route::post('/question/create', [McqController::class, 'store']);
 });

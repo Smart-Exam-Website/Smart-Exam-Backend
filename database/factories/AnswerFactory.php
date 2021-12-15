@@ -15,6 +15,7 @@ class AnswerFactory extends Factory
     {
         return [
             'value' => $this->faker->text(500),
+            'type' => $this->faker->randomElement(['mcq'])
         ];
     }
 }

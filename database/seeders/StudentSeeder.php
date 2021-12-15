@@ -4,6 +4,8 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\Student;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class StudentSeeder extends Seeder
 {
@@ -14,6 +16,20 @@ class StudentSeeder extends Seeder
      */
     public function run()
     {
-        Student::factory(10)->create();
+        $students = Student::all()->count();
+        if (!$students) {
+            DB::table('students')->insert([
+                [
+                    'studentCode' => '1122',
+                    'department_id' => 1,
+                    'user_id' => 5,
+                    'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
+                    'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
+                ]
+            ]);
+        }
+
+
+        // Student::factory(10)->create();
     }
 }
