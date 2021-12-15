@@ -10,8 +10,8 @@ class Tag extends Model
     use HasFactory;
     protected $guarded = [];
 
-    public function question()
+    public function questions(): BelongsToMany
     {
-        return $this->belongsTo(Question::class, 'question_id');
+        return $this->belongsToMany(Question::class, $table = "question_tag", "tag_id")->withTimestamps();
     }
 }

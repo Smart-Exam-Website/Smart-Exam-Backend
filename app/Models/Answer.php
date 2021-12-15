@@ -14,4 +14,9 @@ class Answer extends Model
     {
         return $this->HasMany(Question::class)->withTimestamps();
     }
+
+    public function McqAnswer()
+    {
+        return $this->hasOne(McqAnswer::class);
+    }
 }

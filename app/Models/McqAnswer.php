@@ -9,4 +9,14 @@ class McqAnswer extends Model
 {
     use HasFactory;
     protected $guarded = [];
+
+    public function answer()
+    {
+        return $this->belongsTo(Answer::class, 'answer_id');
+    }
+
+    public function Mcq()
+    {
+        return $this->belongsTo(Mcq::class, 'mcq_id');
+    }
 }

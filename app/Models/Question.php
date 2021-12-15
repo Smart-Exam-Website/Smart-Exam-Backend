@@ -14,8 +14,12 @@ class Question extends Model
     {
         return $this->hasOne(Answer::class);
     }
-    public function tags(): HasMany
+    public function tags(): BelongsToMany
     {
-        return $this->hasMany(Tag::class);
+        return $this->belongsToMany(Tag::class, $table = "question_tag", "question_id")->withTimestamps();
+    }
+    public function Mcq()
+    {
+        return $this->hasOne(Mcq::class);
     }
 }
