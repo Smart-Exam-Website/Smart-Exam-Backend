@@ -89,4 +89,5 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/question/create', [McqController::class, 'store']);
+    Route::delete('/question/delete/{id}', [McqController::class, 'destroy']);
 });

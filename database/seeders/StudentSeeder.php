@@ -22,7 +22,7 @@ class StudentSeeder extends Seeder
                 [
                     'studentCode' => '1122',
                     'department_id' => 1,
-                    'user_id' => 5,
+                    'id' => 5,
                     'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
                     'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
                 ]

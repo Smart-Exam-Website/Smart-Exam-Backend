@@ -10,9 +10,9 @@ class Question extends Model
     use HasFactory;
     protected $guarded = [];
 
-    public function answer()
+    public function option()
     {
-        return $this->hasOne(Answer::class);
+        return $this->hasOne(Option::class);
     }
     public function tags(): BelongsToMany
     {

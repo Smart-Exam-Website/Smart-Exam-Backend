@@ -3,10 +3,10 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\Answer;
-use App\Models\McqAnswer;
+use App\Models\Option;
 
-class AnswerSeeder extends Seeder
+
+class OptionSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -15,6 +15,6 @@ class AnswerSeeder extends Seeder
      */
     public function run()
     {
-        Answer::factory(40)->create();
+        Option::factory(40)->create();
     }
 }

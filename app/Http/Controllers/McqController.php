@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Answer;
+use App\Models\Option;
 use App\Models\McqAnswer;
 use Illuminate\Http\Request;
 use App\Models\Question;
@@ -37,47 +37,53 @@ class McqController extends Controller
      */
     public function store(Request $request)
     {
-        $fields = $request->validate([
-            'questionText' => 'required|string|max:255',
-            'mark' => 'required|string',
-            'answers'    => 'required|array|min:2',
-            'answers.*'  => 'required|string|distinct|min:2',
-            'correctAnswer' => 'required|string',
-        ]);
+
+        $user = auth()->user();
+
+        if ($user->type == 'instructor') {
+
+            $fields = $request->validate([
+                'questionText' => 'required|string|max:255',
+                'type' => 'required|string',
+                'mark' => 'required|string',
+                'answers'    => 'required|array|min:2',
+                'answers.*'  => 'required|string|distinct|min:2',
+                'correctAnswer' => 'required|string',
+            ]);
 
 
-        $question = Question::create([
-            'questionText' => $fields['questionText'],
-            'mark' => $fields['mark'],
-            'type' => 'mcq'
-        ]);
-
-        $answers = $fields['answers'];
-
-        foreach ($answers as $a) {
-            $answerss = Answer::create([
-                'value' => $a,
+            $question = Question::create([
+                'questionText' => $fields['questionText'],
+                'mark' => $fields['mark'],
                 'type' => 'mcq'
             ]);
 
-            if ($fields['correctAnswer'] == $answerss->value) {
-                $mcqanswers = McqAnswer::create([
-                    'question_id' => $question->id,
-                    'answer_id' => $answerss->id,
-                    'isCorrect' => true
+            $answers = $fields['answers'];
+
+            foreach ($answers as $a) {
+                $answerss = Option::create([
+                    'value' => $a,
+                    'type' => 'mcq'
                 ]);
-            } else {
-                $mcqanswers = McqAnswer::create([
-                    'question_id' => $question->id,
-                    'answer_id' => $answerss->id,
-                    'isCorrect' => false
-                ]);
+
+                if ($fields['correctAnswer'] == $answerss->value) {
+                    $mcqanswers = McqAnswer::create([
+                        'question_id' => $question->id,
+                        'id' => $answerss->id,
+                        'isCorrect' => true
+                    ]);
+                } else {
+                    $mcqanswers = McqAnswer::create([
+                        'question_id' => $question->id,
+                        'id' => $answerss->id,
+                        'isCorrect' => false
+                    ]);
+                }
             }
+            return response($question, 201);
+        } else {
+            return response()->json(['message' => 'There is no logged in Instructor'], 400);
         }
-
-
-
-        return response($question, 201);
     }
 
     /**
@@ -122,6 +128,14 @@ class McqController extends Controller
      */
     public function destroy($id)
     {
-        //
+
+        $user = auth()->user();
+
+        if ($user->type == 'instructor') {
+            $question = Question::where(['id' => $id])->first();
+            $question->delete();
+        } else {
+            return response()->json(['message' => 'There is no logged in Instructor'], 400);
+        }
     }
 }

@@ -10,9 +10,9 @@ class McqAnswer extends Model
     use HasFactory;
     protected $guarded = [];
 
-    public function answer()
+    public function option()
     {
-        return $this->belongsTo(Answer::class, 'answer_id');
+        return $this->belongsTo(Option::class, 'option_id');
     }
 
     public function Mcq()

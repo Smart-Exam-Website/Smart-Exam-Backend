@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\McqAnswer;
 use Illuminate\Database\Seeder;
 use App\Models\Question;
+use App\Models\Option;
 
 class QuestionSeeder extends Seeder
 {
@@ -18,10 +19,19 @@ class QuestionSeeder extends Seeder
         //Question::factory(10)->create();
         Question::factory(10)->create()->each(function ($q) {
             for ($i = 0; $i < 4; $i++) {
-                McqAnswer::factory()->create([
-                    'question_id' => $q->id,
-                    'answer_id' => $i + 1
-                ]);
+                if ($i == 0) {
+                    McqAnswer::factory()->create([
+                        'question_id' => $q->id,
+                        'isCorrect' => true,
+                        'id' => Option::all()->random()->id
+                    ]);
+                } else {
+                    McqAnswer::factory()->create([
+                        'question_id' => $q->id,
+                        'isCorrect' => false,
+                        'id' => Option::all()->random()->id
+                    ]);
+                }
             }
         });
     }
