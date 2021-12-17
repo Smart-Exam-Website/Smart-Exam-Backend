@@ -20,8 +20,8 @@ class CreateAnswersTable extends Migration
             $table->foreign('exam_id')->references('id')->on('exams')->onDelete('cascade');
             $table->unsignedBigInteger('question_id');
             $table->foreign('question_id')->references('id')->on('questions')->onDelete('cascade');
-            $table->unsignedBigInteger('class_id');
-            $table->foreign('class_id')->references('id')->on('classs')->onDelete('cascade');
+            // $table->unsignedBigInteger('class_id');
+            // $table->foreign('class_id')->references('id')->on('classs')->onDelete('cascade');
             $table->unsignedBigInteger('option_id');
             $table->foreign('option_id')->references('id')->on('options')->onDelete('cascade');
             $table->float('StExamMark');
