@@ -25,6 +25,6 @@ class Department extends Model
     }
     public function students(): HasMany
     {
-        return $this->HasMany(Student::class)->withTimestamps();
+        return $this->HasMany(Student::class);
     }
 }

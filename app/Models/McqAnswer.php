@@ -12,11 +12,11 @@ class McqAnswer extends Model
 
     public function option()
     {
-        return $this->belongsTo(Option::class, 'option_id');
+        return $this->belongsTo(Option::class, 'id');
     }
 
     public function Mcq()
     {
-        return $this->belongsTo(Mcq::class, 'question_id');
+        return $this->belongsTo(Mcq::class);
     }
 }
