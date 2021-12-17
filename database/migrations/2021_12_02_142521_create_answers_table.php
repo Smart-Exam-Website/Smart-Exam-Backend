@@ -25,7 +25,7 @@ class CreateAnswersTable extends Migration
             $table->unsignedBigInteger('option_id');
             $table->foreign('option_id')->references('id')->on('options')->onDelete('cascade');
             $table->float('StExamMark');
-            $table->primary(['student_id', 'exam_id', 'question_id', 'class_id', 'option_id']);
+            $table->primary(['student_id', 'exam_id', 'question_id', 'class_id', 'option_id'], 'id');
             $table->timestamps();
         });
     }
@@ -37,6 +37,6 @@ class CreateAnswersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('takes');
+        Schema::dropIfExists('answers');
     }
 }
