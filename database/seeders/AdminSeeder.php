@@ -20,19 +20,19 @@ class AdminSeeder extends Seeder
         if (!$roles) {
             DB::table('admins')->insert([
                 [
-                    'user_id' => 1,
+                    'id' => 1,
                     'role_id' => 1,
                     'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
                     'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
                 ],
                 [
-                    'user_id' => 2,
+                    'id' => 2,
                     'role_id' => 2,
                     'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
                     'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
                 ],
                 [
-                    'user_id' => 3,
+                    'id' => 3,
                     'role_id' => 3,
                     'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
                     'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),

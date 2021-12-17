@@ -51,7 +51,7 @@ class User extends Authenticatable
      */
     public function instructor(): HasOne
     {
-        return $this->hasOne(Instructor::class);
+        return $this->hasOne(Instructor::class,'id');
     }
 
 
@@ -64,5 +64,10 @@ class User extends Authenticatable
     public function admin()
     {
         return $this->hasOne(Admin::class);
+    }
+
+    public function roles() 
+    {
+        return $this->hasMany(Role::class);
     }
 }

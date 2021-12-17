@@ -101,7 +101,7 @@ class UserSeeder extends Seeder
                             'degree' => 'Phd',
                             'verified' => 'true',
                             'description' => 'This is the root instructor',
-                            'user_id' => 4,
+                            'id' => 4,
                             'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
                             'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
                         ]
@@ -109,7 +109,7 @@ class UserSeeder extends Seeder
                 }
 
                 Instructor::factory()->create([
-                    'user_id' => $user->id,
+                    'id' => $user->id,
                 ]);
             }
             if ($user->type == 'student') {

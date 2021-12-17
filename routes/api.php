@@ -64,7 +64,12 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/instructors/me', 'App\Http\Controllers\InstructorController@showProfile');
     Route::put('/instructors/me', 'App\Http\Controllers\InstructorController@editProfile');
     Route::apiResource('instructors', 'App\Http\Controllers\InstructorController');
-    Route::apiResource('exams', 'App\Http\Controllers\ExamController');
+
+    //exams apis
+    Route::post('/exams/step1', 'App\Http\Controllers\ExamController@storeStepOne');
+    Route::post('/exams/step2', 'App\Http\Controllers\ExamController@storeStepTwo');
+    Route::post('/exams/step3', 'App\Http\Controllers\ExamController@storeStepThree');
+    Route::post('/exams/step4', 'App\Http\Controllers\ExamController@storeStepFour');
 });
 
 

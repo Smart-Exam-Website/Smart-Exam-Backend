@@ -4,19 +4,19 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class McqAnswer extends Model
+class MCQAnswer extends Model
 {
     use HasFactory;
     protected $guarded = [];
+    protected $table = 'mcq_answers';
 
-    public function answer()
-    {
-        return $this->belongsTo(Answer::class, 'answer_id');
+    public function answer(): BelongsTo {
+        return $this->belongsTo(Answer::class);
     }
 
-    public function Mcq()
-    {
-        return $this->belongsTo(Mcq::class, 'question_id');
+    public function MCQQuestion(): BelongsTo {
+        return $this->belongsTo(Question::class);
     }
 }

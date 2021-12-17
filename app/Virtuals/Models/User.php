@@ -86,16 +86,16 @@ class User
      * @var string
      */
     public $image;
-    /**
-     * @OA\Property(
-     *      title="type",
-     *      description="type of User",
-     *      example="Admin"
-     * )
-     *
-     * @var string
-     */
-    public $type;
+    // /**
+    //  * @OA\Property(
+    //  *      title="type",
+    //  *      description="type of User",
+    //  *      example="Admin"
+    //  * )
+    //  *
+    //  * @var string
+    //  */
+    // public $type;
     /**
      * @OA\Property(
      *      title="phone",

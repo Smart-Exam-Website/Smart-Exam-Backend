@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Role extends Model
 {
@@ -11,6 +12,11 @@ class Role extends Model
 
     public function permissions(): HasMany
     {
-        return $this->HasMany(Permission::class)->withTimestamps();
+        return $this->hasMany(Permission::class)->withTimestamps();
+    }
+
+    public function users(): BelongsToMany
+    {
+        return this->belongstoMany(User::class);
     }
 }

@@ -135,7 +135,7 @@ class InstructorController extends Controller
         }
         $id = $user->id;
         $instructorDetails = $request->only('degree', 'description');
-        $instructorDetails['user_id'] = $id;
+        $instructorDetails['id'] = $id;
         $instructorDetails['verified'] = 'false';
         try {
             $instructor = Instructor::create($instructorDetails);
