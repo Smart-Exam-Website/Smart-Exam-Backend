@@ -12,11 +12,13 @@ class MCQAnswer extends Model
     protected $guarded = [];
     protected $table = 'mcq_answers';
 
-    public function answer(): BelongsTo {
-        return $this->belongsTo(Answer::class);
+    public function option()
+    {
+        return $this->belongsTo(Option::class, 'id');
     }
 
-    public function MCQQuestion(): BelongsTo {
-        return $this->belongsTo(Question::class);
+    public function Mcq()
+    {
+        return $this->belongsTo(Mcq::class);
     }
 }

@@ -14,11 +14,10 @@ class CreateMcqAnswersTable extends Migration
     public function up()
     {
         Schema::create('mcq_answers', function (Blueprint $table) {
-            $table->id();
+            $table->unsignedBigInteger('id');
+            $table->foreign('id')->references('id')->on('options')->onDelete('cascade');;
             $table->unsignedBigInteger('question_id');
-            $table->foreign('question_id')->references('id')->on('questions');
-            $table->unsignedBigInteger('answer_id');
-            $table->foreign('answer_id')->references('id')->on('answers');
+            $table->foreign('question_id')->references('id')->on('questions')->onDelete('cascade');;
             $table->boolean('isCorrect');
             $table->timestamps();
         });

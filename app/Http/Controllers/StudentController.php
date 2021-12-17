@@ -186,7 +186,7 @@ class StudentController extends Controller
 
         //create student
         $student = Student::create([
-            'user_id' => $user->id,
+            'id' => $user->id,
             'studentCode' => $fields['studentCode'],
             'department_id' => $department_id
         ]);
@@ -315,7 +315,7 @@ class StudentController extends Controller
             ], 400);
         }
 
-        $student = Student::where(['user_id' => $user->id])->first();
+        $student = Student::where(['id' => $user->id])->first();
         $student->user;
         $student->department;
         $student->department->school;
@@ -381,7 +381,7 @@ class StudentController extends Controller
     {
 
         $user = auth()->user();
-        $student = Student::where(['user_id' => $user->id])->first();
+        $student = Student::where(['id' => $user->id])->first();
         $departments = Department::all();
         $schools = School::all();
 

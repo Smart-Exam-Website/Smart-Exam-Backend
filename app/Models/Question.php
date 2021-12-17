@@ -13,7 +13,10 @@ class Question extends Model
     use HasFactory;
     protected $guarded = [];
 
-    
+    public function option()
+    {
+        return $this->hasMany(Option::class);
+    }
     public function tags(): BelongsToMany
     {
         return $this->belongsToMany(Tag::class, $table = "question_tag", "question_id")->withTimestamps();
