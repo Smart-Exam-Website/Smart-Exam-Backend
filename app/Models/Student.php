@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
 use App\Models\Department;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Student extends Model
 {

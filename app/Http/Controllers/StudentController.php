@@ -193,6 +193,8 @@ class StudentController extends Controller
             'department_id' => $dep_id
         ]);
 
+        $student->id = $user->id;
+
         $student->user;
         $student->department;
         $student->department->school;

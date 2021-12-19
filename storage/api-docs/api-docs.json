@@ -1026,13 +1026,6 @@
                         "format": "datetime",
                         "example": "2020-01-27 17:50:45"
                     },
-                    "deleted_at": {
-                        "title": "Deleted at",
-                        "description": "Deleted at",
-                        "type": "string",
-                        "format": "datetime",
-                        "example": "2020-01-27 17:50:45"
-                    },
                     "school_id": {
                         "title": "School ID",
                         "description": "School id of instructor or student",
@@ -1191,13 +1184,6 @@
                         "type": "string",
                         "format": "datetime",
                         "example": "2020-01-27 17:50:45"
-                    },
-                    "deleted_at": {
-                        "title": "Deleted at",
-                        "description": "Deleted at",
-                        "type": "string",
-                        "format": "datetime",
-                        "example": "2020-01-27 17:50:45"
                     }
                 },
                 "type": "object",
@@ -1232,13 +1218,6 @@
                     "updated_at": {
                         "title": "Updated at",
                         "description": "Updated at",
-                        "type": "string",
-                        "format": "datetime",
-                        "example": "2021-05-22 17:50:45"
-                    },
-                    "deleted_at": {
-                        "title": "Deleted at",
-                        "description": "Deleted at",
                         "type": "string",
                         "format": "datetime",
                         "example": "2021-05-22 17:50:45"
@@ -1308,7 +1287,7 @@
                         "title": "gender",
                         "description": "gender of User",
                         "type": "string",
-                        "example": "Male"
+                        "example": "female"
                     },
                     "image": {
                         "title": "image",
@@ -1328,12 +1307,6 @@
                         "type": "string",
                         "example": "012233344455"
                     },
-                    "verified": {
-                        "title": "verified",
-                        "description": "verified User",
-                        "type": "boolean",
-                        "example": "true"
-                    },
                     "created_at": {
                         "title": "Created at",
                         "description": "Created at",
@@ -1351,13 +1324,6 @@
                     "email_verified_at": {
                         "title": "Email verified at",
                         "description": "Email verified at",
-                        "type": "string",
-                        "format": "datetime",
-                        "example": "2020-01-27 17:50:45"
-                    },
-                    "deleted_at": {
-                        "title": "Deleted at",
-                        "description": "Deleted at",
                         "type": "string",
                         "format": "datetime",
                         "example": "2020-01-27 17:50:45"
@@ -1587,43 +1553,43 @@
                         "title": "first Name",
                         "description": "first name of the new student",
                         "type": "string",
-                        "example": "Mazen"
+                        "example": "Laila"
                     },
                     "lastName": {
                         "title": "last Name",
                         "description": "last name of the new student",
                         "type": "string",
-                        "example": "Omar"
+                        "example": "Mohsen"
                     },
                     "email": {
                         "title": "email",
                         "description": "email of the new student",
                         "type": "string",
-                        "example": "mazenomar@example.com"
+                        "example": "h@ex.com"
                     },
                     "password": {
                         "title": "password",
                         "description": "password of the new student",
                         "type": "string",
-                        "example": "12345678"
+                        "example": "123456"
                     },
                     "gender": {
                         "title": "gender",
                         "description": "gender of the new student",
                         "type": "string",
-                        "example": "male"
+                        "example": "female"
                     },
                     "image": {
                         "title": "image",
                         "description": "image of the new student",
                         "type": "string",
-                        "example": "https://google.com/pepepepaaa"
+                        "example": "http://pixels.com/4040"
                     },
                     "phone": {
                         "title": "phone",
                         "description": "phone of the new student",
                         "type": "string",
-                        "example": "01221231771"
+                        "example": "012233344455"
                     },
                     "type": {
                         "title": "type",
@@ -1635,7 +1601,7 @@
                         "title": "studentCode",
                         "description": "studentCode of the new student",
                         "type": "string",
-                        "example": "1722"
+                        "example": "1702"
                     },
                     "department": {
                         "title": "department",
@@ -1644,7 +1610,8 @@
                         "items": {
                             "properties": {
                                 "id": {
-                                    "type": "integer"
+                                    "type": "integer",
+                                    "example": "1"
                                 }
                             },
                             "type": "object"

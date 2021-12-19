@@ -15,7 +15,7 @@ class StoreStudentRequest
      * @OA\Property(
      *      title="first Name",
      *      description="first name of the new student",
-     *      example="Mazen"
+     *      example="Laila"
      * )
      *
      * @var string
@@ -25,7 +25,7 @@ class StoreStudentRequest
      * @OA\Property(
      *      title="last Name",
      *      description="last name of the new student",
-     *      example="Omar"
+     *      example="Mohsen"
      * )
      *
      * @var string
@@ -36,7 +36,7 @@ class StoreStudentRequest
      * @OA\Property(
      *      title="email",
      *      description="email of the new student",
-     *      example="mazenomar@example.com"
+     *      example="h@ex.com"
      * )
      *
      * @var string
@@ -46,7 +46,7 @@ class StoreStudentRequest
      * @OA\Property(
      *      title="password",
      *      description="password of the new student",
-     *      example="12345678"
+     *      example="123456"
      * )
      *
      * @var string
@@ -56,7 +56,7 @@ class StoreStudentRequest
      * @OA\Property(
      *      title="gender",
      *      description="gender of the new student",
-     *      example="male"
+     *      example="female"
      * )
      *
      * @var string
@@ -66,7 +66,7 @@ class StoreStudentRequest
      * @OA\Property(
      *      title="image",
      *      description="image of the new student",
-     *      example="https://google.com/pepepepaaa"
+     *      example="http://pixels.com/4040"
      * )
      *
      * @var string
@@ -76,7 +76,7 @@ class StoreStudentRequest
      * @OA\Property(
      *      title="phone",
      *      description="phone of the new student",
-     *      example="01221231771"
+     *      example="012233344455"
      * )
      *
      * @var string
@@ -96,7 +96,7 @@ class StoreStudentRequest
      * @OA\Property(
      *      title="studentCode",
      *      description="studentCode of the new student",
-     *      example="1722"
+     *      example="1702"
      * )
      *
      * @var string
@@ -106,7 +106,7 @@ class StoreStudentRequest
      * @OA\Property(
      *      title="department",
      *      description="department of the new student",
-     *     type="array", @OA\Items(@OA\Property(property="id", type="integer"),),),
+     *     type="array", @OA\Items(@OA\Property(property="id", type="integer",example="1"),),),
      *
      * @var \App\Virtual\Models\Department
      */
