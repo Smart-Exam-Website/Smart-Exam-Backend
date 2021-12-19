@@ -14,7 +14,7 @@
     },
     "servers": [
         {
-            "url": "http://3.143.249.185/api",
+            "url": "http://localhost:8000",
             "description": "Smart Exam API Server"
         }
     ],
@@ -278,6 +278,149 @@
                         "bearer": []
                     }
                 ]
+            }
+        },
+        "/question/create": {
+            "post": {
+                "tags": [
+                    "Questions"
+                ],
+                "summary": "create question",
+                "description": "Returns Question data",
+                "operationId": "storeQuestion",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StoreQuestionRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "question": {
+                                            "$ref": "#/components/schemas/Question"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            }
+        },
+        "/question/edit/{id}": {
+            "put": {
+                "tags": [
+                    "Questions"
+                ],
+                "summary": "Edit question",
+                "description": "Returns Question data",
+                "operationId": "editQuestion",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Question id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StoreQuestionRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "question": {
+                                            "$ref": "#/components/schemas/Question"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/question/delete/{id}": {
+            "delete": {
+                "tags": [
+                    "Questions"
+                ],
+                "summary": "Delete existing question",
+                "description": "Deletes a record and returns no content",
+                "operationId": "deleteQuestion",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Question id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful operation"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Resource Not Found"
+                    }
+                }
             }
         },
         "/schools": {
@@ -969,6 +1112,55 @@
                     "name": "Instructor"
                 }
             },
+            "Question": {
+                "title": "Question",
+                "description": "Question model",
+                "properties": {
+                    "id": {
+                        "title": "ID",
+                        "description": "ID",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "questionText": {
+                        "title": "questionText",
+                        "description": "questionText",
+                        "type": "string",
+                        "example": "How many days are in the week?"
+                    },
+                    "type": {
+                        "title": "type",
+                        "description": "type",
+                        "type": "string",
+                        "example": "mcq"
+                    },
+                    "mark": {
+                        "title": "mark",
+                        "description": "mark",
+                        "type": "string",
+                        "example": "2"
+                    },
+                    "created_at": {
+                        "title": "Created at",
+                        "description": "Created at",
+                        "type": "string",
+                        "format": "datetime",
+                        "example": "2021-05-22 17:50:45"
+                    },
+                    "updated_at": {
+                        "title": "Updated at",
+                        "description": "Updated at",
+                        "type": "string",
+                        "format": "datetime",
+                        "example": "2021-05-22 17:50:45"
+                    }
+                },
+                "type": "object",
+                "xml": {
+                    "name": "Question"
+                }
+            },
             "School": {
                 "title": "School",
                 "description": "School model",
@@ -1318,6 +1510,58 @@
                         "description": "password of the user",
                         "type": "string",
                         "example": "12345678"
+                    }
+                },
+                "type": "object"
+            },
+            "StoreQuestionRequest": {
+                "title": "StoreQuestionRequest",
+                "description": "Store Question request body data",
+                "required": [
+                    "questionText",
+                    "type",
+                    "mark",
+                    "answers",
+                    "correctAnswer"
+                ],
+                "properties": {
+                    "questionText": {
+                        "title": "Question Text",
+                        "description": "question text",
+                        "type": "string",
+                        "example": "How many days are in the week?"
+                    },
+                    "type": {
+                        "title": "type",
+                        "description": "the type of the question",
+                        "type": "string",
+                        "example": "mcq"
+                    },
+                    "mark": {
+                        "title": "mark",
+                        "description": "the mark of the question",
+                        "type": "string",
+                        "example": "2"
+                    },
+                    "answers": {
+                        "title": "answers",
+                        "description": "answers",
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "example": [
+                                "seven",
+                                "four",
+                                "two",
+                                "ten"
+                            ]
+                        }
+                    },
+                    "correctAnswer": {
+                        "title": "correctAnswer",
+                        "description": "correct Answer",
+                        "type": "string",
+                        "example": "seven"
                     }
                 },
                 "type": "object"
