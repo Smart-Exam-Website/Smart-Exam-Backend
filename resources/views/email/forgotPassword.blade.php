@@ -25,7 +25,7 @@
                     </tr>
                     <tr>
                         <td style="text-align:center;">
-                          <a href=""http://localhost:8080/" title="logo" target="_blank">
+                          <a href="http://smart-exam.ml/" title="logo" target="_blank">
                             <img width="60" src="https://i.ibb.co/7WprrX7/logo.png" title="logo" alt="logo">
                           </a>
                         </td>

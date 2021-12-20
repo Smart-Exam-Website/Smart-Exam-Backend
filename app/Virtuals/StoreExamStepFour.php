@@ -25,7 +25,7 @@ class StoreExamStepFour
      * @OA\Property(
      *      title="questions",
      *      description="questions of the new instructor",
-     *     type="array", @OA\Items(@OA\Property(property="id", type="integer"), @OA\Property(property="mark", type="float"), @OA\Property(property="time", type="time")),),
+     *     type="array", @OA\Items(@OA\Property(property="id", type="integer"), @OA\Property(property="mark", type="float", example= "50"), @OA\Property(property="time", type="time", example = "01:30:00")),),
      *
      * @var \App\Virtual\Models\Question[]
      */

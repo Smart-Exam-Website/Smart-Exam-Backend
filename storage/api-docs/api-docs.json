@@ -14,7 +14,7 @@
     },
     "servers": [
         {
-            "url": "http://localhost:8000",
+            "url": "http://3.143.249.185/api",
             "description": "Smart Exam API Server"
         }
     ],
@@ -58,6 +58,197 @@
                         "bearer": []
                     }
                 ]
+            }
+        },
+        "/exams/step1": {
+            "post": {
+                "tags": [
+                    "Exams"
+                ],
+                "summary": "Store Exam Data",
+                "description": "Returns created exam id",
+                "operationId": "storeExamStepOne",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StoreExamStepOne"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Created exam successfully"
+                                        },
+                                        "examId": {
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            }
+        },
+        "/exams/step2": {
+            "post": {
+                "tags": [
+                    "Exams"
+                ],
+                "summary": "Store Exam Data",
+                "description": "Add Exam Options",
+                "operationId": "storeExamStepTwo",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StoreExamStepTwo"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "successfully added exam options!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            }
+        },
+        "/exams/step3": {
+            "post": {
+                "tags": [
+                    "Exams"
+                ],
+                "summary": "Store Exam Data",
+                "description": "Add Questions",
+                "operationId": "storeExamStepThree",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StoreExamStepThree"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "successfully added questions to exam!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            }
+        },
+        "/exams/step4": {
+            "post": {
+                "tags": [
+                    "Exams"
+                ],
+                "summary": "Store Exam Data",
+                "description": "Add question marks and time",
+                "operationId": "storeExamStepFour",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StoreExamStepFour"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "successfully created exam!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
             }
         },
         "/instructors": {
@@ -1503,10 +1694,12 @@
                                     "type": "integer"
                                 },
                                 "mark": {
-                                    "type": "float"
+                                    "type": "float",
+                                    "example": "50"
                                 },
                                 "time": {
-                                    "type": "time"
+                                    "type": "time",
+                                    "example": "01:30:00"
                                 }
                             },
                             "type": "object"
@@ -1574,10 +1767,10 @@
                         "example": "2021-10-29 14:28:54"
                     },
                     "examSubject": {
-                        "title": "phone",
-                        "description": "phone of the new instructor",
+                        "title": "Exam Subject",
+                        "description": "Exam Subject",
                         "type": "string",
-                        "example": "02221111111"
+                        "example": "Maths"
                     }
                 },
                 "type": "object"

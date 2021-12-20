@@ -87,9 +87,9 @@ class StoreExamStepOne
     public $endAt;
     /**
      * @OA\Property(
-     *      title="phone",
-     *      description="phone of the new instructor",
-     *      example="02221111111"
+     *      title="Exam Subject",
+     *      description="Exam Subject",
+     *      example="Maths"
      * )
      *
      * @var string

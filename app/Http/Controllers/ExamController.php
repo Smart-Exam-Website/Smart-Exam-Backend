@@ -29,11 +29,37 @@ class ExamController extends Controller
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+        /**
+     * @OA\Post(
+     *      path="/exams/step1",
+     *      operationId="storeExamStepOne",
+     *      tags={"Exams"},
+     *      summary="Store Exam Data",
+     *      description="Returns created exam id",
+     *      @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(ref="#/components/schemas/StoreExamStepOne")
+     *      ),
+     *      @OA\Response(
+     *          response=201,
+     *          description="Successful operation",
+     *          @OA\JsonContent(
+     * @OA\Property(property="message", type="string", example="Created exam successfully"),
+     * @OA\Property(property="examId", type="integer"),),
+     *       ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request"
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     * )
      */
     public function storeStepOne(Request $request)
     {
@@ -64,6 +90,39 @@ class ExamController extends Controller
 
         return response()->json(['message' => 'successfully created exam!', 'examId' => $exam->id]);
     }
+
+          /**
+     * @OA\Post(
+     *      path="/exams/step2",
+     *      operationId="storeExamStepTwo",
+     *      tags={"Exams"},
+     *      summary="Store Exam Data",
+     *      description="Add Exam Options",
+     *      @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(ref="#/components/schemas/StoreExamStepTwo")
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\JsonContent(
+     * @OA\Property(property="message", type="string", example="successfully added exam options!"),
+     * ),
+     *       ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request"
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     * )
+     */
     public function storeStepTwo(Request $request)
     {
         // create exam
@@ -97,6 +156,42 @@ class ExamController extends Controller
 
         return response()->json(['message' => 'successfully added exam options!']);
     }
+
+    
+          /**
+     * @OA\Post(
+     *      path="/exams/step3",
+     *      operationId="storeExamStepThree",
+     *      tags={"Exams"},
+     *      summary="Store Exam Data",
+     *      description="Add Questions",
+     *      @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(ref="#/components/schemas/StoreExamStepThree")
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\JsonContent(
+     * @OA\Property(property="message", type="string", example="successfully added questions to exam!"),
+     * ),
+     *       ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request"
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     * )
+     */
+
+    
     public function storeStepThree(Request $request)
     {
         // create exam
@@ -120,6 +215,40 @@ class ExamController extends Controller
 
         return response()->json(['message' => 'successfully added questions to exam!']);
     }
+
+    
+          /**
+     * @OA\Post(
+     *      path="/exams/step4",
+     *      operationId="storeExamStepFour",
+     *      tags={"Exams"},
+     *      summary="Store Exam Data",
+     *      description="Add question marks and time",
+     *      @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(ref="#/components/schemas/StoreExamStepFour")
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\JsonContent(
+     * @OA\Property(property="message", type="string", example="successfully created exam!"),
+     * ),
+     *       ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request"
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     * )
+     */
     public function storeStepFour(Request $request)
     {
         // create exam
