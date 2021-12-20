@@ -29,13 +29,14 @@ class ExamController extends Controller
         //
     }
 
-        /**
+    /**
      * @OA\Post(
      *      path="/exams/step1",
      *      operationId="storeExamStepOne",
      *      tags={"Exams"},
      *      summary="Store Exam Data",
      *      description="Returns created exam id",
+     *      security={ {"bearer": {} }},
      *      @OA\RequestBody(
      *          required=true,
      *          @OA\JsonContent(ref="#/components/schemas/StoreExamStepOne")
@@ -91,13 +92,14 @@ class ExamController extends Controller
         return response()->json(['message' => 'successfully created exam!', 'examId' => $exam->id]);
     }
 
-          /**
+    /**
      * @OA\Post(
      *      path="/exams/step2",
      *      operationId="storeExamStepTwo",
      *      tags={"Exams"},
      *      summary="Store Exam Data",
      *      description="Add Exam Options",
+     * security={ {"bearer": {} }},
      *      @OA\RequestBody(
      *          required=true,
      *          @OA\JsonContent(ref="#/components/schemas/StoreExamStepTwo")
@@ -157,14 +159,15 @@ class ExamController extends Controller
         return response()->json(['message' => 'successfully added exam options!']);
     }
 
-    
-          /**
+
+    /**
      * @OA\Post(
      *      path="/exams/step3",
      *      operationId="storeExamStepThree",
      *      tags={"Exams"},
      *      summary="Store Exam Data",
      *      description="Add Questions",
+     * security={ {"bearer": {} }},
      *      @OA\RequestBody(
      *          required=true,
      *          @OA\JsonContent(ref="#/components/schemas/StoreExamStepThree")
@@ -191,7 +194,7 @@ class ExamController extends Controller
      * )
      */
 
-    
+
     public function storeStepThree(Request $request)
     {
         // create exam
@@ -216,14 +219,15 @@ class ExamController extends Controller
         return response()->json(['message' => 'successfully added questions to exam!']);
     }
 
-    
-          /**
+
+    /**
      * @OA\Post(
      *      path="/exams/step4",
      *      operationId="storeExamStepFour",
      *      tags={"Exams"},
      *      summary="Store Exam Data",
      *      description="Add question marks and time",
+     * security={ {"bearer": {} }},
      *      @OA\RequestBody(
      *          required=true,
      *          @OA\JsonContent(ref="#/components/schemas/StoreExamStepFour")
