@@ -852,6 +852,54 @@
                 },
                 "type": "object"
             },
+            "Configuration": {
+                "title": "Configuration",
+                "description": "Exam Configuration model",
+                "properties": {
+                    "exam_id": {
+                        "title": "examId",
+                        "description": "ID",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "faceRecognition": {
+                        "title": "Face Recognition",
+                        "type": "boolean",
+                        "example": "true"
+                    },
+                    "faceDetection": {
+                        "title": "Face Detection",
+                        "type": "boolean",
+                        "example": "true"
+                    },
+                    "questionsRandomOrder": {
+                        "title": "Questions Random Order",
+                        "type": "boolean",
+                        "example": "true"
+                    },
+                    "plagiarismCheck": {
+                        "title": "plagiarism check",
+                        "type": "boolean",
+                        "example": "true"
+                    },
+                    "disableSwitchBrowser": {
+                        "title": "disable switching browser",
+                        "type": "boolean",
+                        "example": "true"
+                    },
+                    "gradingMethod": {
+                        "title": "grading method",
+                        "description": "grading method",
+                        "type": "string",
+                        "example": "manual"
+                    }
+                },
+                "type": "object",
+                "xml": {
+                    "name": "Configurations"
+                }
+            },
             "Department": {
                 "title": "Department",
                 "description": "Department model",
@@ -904,6 +952,73 @@
                 "type": "object",
                 "xml": {
                     "name": "Department"
+                }
+            },
+            "Exam": {
+                "title": "Exam",
+                "description": "Exam model",
+                "properties": {
+                    "id": {
+                        "title": "ID",
+                        "description": "ID",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "name": {
+                        "title": "Name",
+                        "description": "name of Exam",
+                        "type": "string",
+                        "example": "Exam 1"
+                    },
+                    "description": {
+                        "title": "Description",
+                        "description": "Description of Exam",
+                        "type": "string",
+                        "example": "This exam is 60 minutes long!"
+                    },
+                    "startAt": {
+                        "title": "startAt",
+                        "description": "Start time of exam(DateTime)",
+                        "type": "string",
+                        "format": "datetime",
+                        "example": "2021-10-29 14:28:54"
+                    },
+                    "endAt": {
+                        "title": "endAt",
+                        "description": "End time of exam",
+                        "type": "string",
+                        "format": "datetime",
+                        "example": "2021-10-29 14:28:54"
+                    },
+                    "duration": {
+                        "title": "Duration",
+                        "description": "duration of exam",
+                        "format": "date",
+                        "example": "01:30:00"
+                    },
+                    "numberOfTrials": {
+                        "title": "numberOfTrials",
+                        "description": "Number of trials of exam",
+                        "type": "integer",
+                        "example": "3"
+                    },
+                    "totalMark": {
+                        "title": "totalMark",
+                        "description": "Total mark of exam",
+                        "type": "integer",
+                        "example": "60"
+                    },
+                    "examSubject": {
+                        "title": "examSubject",
+                        "description": "Subject of Exam",
+                        "type": "string",
+                        "example": "Maths"
+                    }
+                },
+                "type": "object",
+                "xml": {
+                    "name": "Exam"
                 }
             },
             "Instructor": {
@@ -1202,6 +1317,192 @@
                         "description": "new password",
                         "type": "string",
                         "example": "yuiuiui"
+                    }
+                },
+                "type": "object"
+            },
+            "StoreExamStepFour": {
+                "title": "StoreExamStepFour",
+                "description": "Creating an exam, step Two: add questions' marks and time",
+                "required": [
+                    "examId",
+                    "questions"
+                ],
+                "properties": {
+                    "examId": {
+                        "title": "Exam Id",
+                        "description": "id of Exam",
+                        "type": "integer",
+                        "example": "3"
+                    },
+                    "questions": {
+                        "title": "questions",
+                        "description": "questions of the new instructor",
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "id": {
+                                    "type": "integer"
+                                },
+                                "mark": {
+                                    "type": "float"
+                                },
+                                "time": {
+                                    "type": "time"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "StoreExamStepOne": {
+                "title": "StoreExamStepOne",
+                "description": "Creating an exam, step one: storing its data",
+                "required": [
+                    "name",
+                    "numberOfTrials",
+                    "description",
+                    "totalMark",
+                    "duration",
+                    "startAt",
+                    "endAt",
+                    "examSubject"
+                ],
+                "properties": {
+                    "name": {
+                        "title": "Name",
+                        "description": "name of Exam",
+                        "type": "string",
+                        "example": "Exam 1"
+                    },
+                    "numberOfTrials": {
+                        "title": "numberOfTrials",
+                        "description": "Number of trials of exam",
+                        "type": "integer",
+                        "example": "3"
+                    },
+                    "description": {
+                        "title": "Description",
+                        "description": "Description of Exam",
+                        "type": "string",
+                        "example": "This exam is 60 minutes long!"
+                    },
+                    "totalMark": {
+                        "title": "totalMark",
+                        "description": "Total mark of exam",
+                        "type": "integer",
+                        "example": "60"
+                    },
+                    "duration": {
+                        "title": "Duration",
+                        "description": "duration of exam",
+                        "format": "date",
+                        "example": "01:30:00"
+                    },
+                    "startAt": {
+                        "title": "startAt",
+                        "description": "Start time of exam(DateTime)",
+                        "type": "string",
+                        "format": "datetime",
+                        "example": "2021-10-29 14:28:54"
+                    },
+                    "endAt": {
+                        "title": "endAt",
+                        "description": "End time of exam",
+                        "type": "string",
+                        "format": "datetime",
+                        "example": "2021-10-29 14:28:54"
+                    },
+                    "examSubject": {
+                        "title": "phone",
+                        "description": "phone of the new instructor",
+                        "type": "string",
+                        "example": "02221111111"
+                    }
+                },
+                "type": "object"
+            },
+            "StoreExamStepThree": {
+                "title": "StoreExamStepThree",
+                "description": "Creating an exam, step Two: add questions",
+                "required": [
+                    "examId",
+                    "questions"
+                ],
+                "properties": {
+                    "examId": {
+                        "title": "Exam Id",
+                        "description": "id of Exam",
+                        "type": "integer",
+                        "example": "3"
+                    },
+                    "questions": {
+                        "title": "questions",
+                        "description": "questions of the new instructor",
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "id": {
+                                    "type": "integer"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "StoreExamStepTwo": {
+                "title": "StoreExamStepTwo",
+                "description": "Creating an exam, step Two: add configuration options",
+                "required": [
+                    "examId",
+                    "faceRecognition",
+                    "faceDetection",
+                    "questionsRandomOrder",
+                    "plagiarismCheck",
+                    "disableSwitchBrowser",
+                    "gradingMethod"
+                ],
+                "properties": {
+                    "examId": {
+                        "title": "Exam Id",
+                        "description": "id of Exam",
+                        "type": "integer",
+                        "example": "3"
+                    },
+                    "faceRecognition": {
+                        "title": "Face Recognition",
+                        "type": "boolean",
+                        "example": "true"
+                    },
+                    "faceDetection": {
+                        "title": "Face Detection",
+                        "type": "boolean",
+                        "example": "true"
+                    },
+                    "questionsRandomOrder": {
+                        "title": "Questions Random Order",
+                        "type": "boolean",
+                        "example": "true"
+                    },
+                    "plagiarismCheck": {
+                        "title": "plagiarism check",
+                        "type": "boolean",
+                        "example": "true"
+                    },
+                    "disableSwitchBrowser": {
+                        "title": "disable switching browser",
+                        "type": "boolean",
+                        "example": "true"
+                    },
+                    "gradingMethod": {
+                        "title": "grading method",
+                        "description": "grading method",
+                        "type": "string",
+                        "example": "manual"
                     }
                 },
                 "type": "object"

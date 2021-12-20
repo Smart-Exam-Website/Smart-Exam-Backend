@@ -6,9 +6,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class MCQAnswer extends Model
+class McqAnswer extends Model
 {
-    use HasFactory;
+    use HasFactory; 
     protected $guarded = [];
     protected $table = 'mcq_answers';
 
