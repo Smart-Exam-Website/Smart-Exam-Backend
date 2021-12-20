@@ -131,10 +131,14 @@ class StudentController extends Controller
             'gender' => 'required|in:male,female',
             'phone' => 'required|unique:users|digits:11',
             //'department' => 'string|max:255',
-            'department_id' => 'required|numeric|exists:departments,id',
+            'departments.*.department_id' => ['required', 'numeric', 'exists:departments,id'],
+            //'department_id' => 'required|numeric|exists:departments,id',
             //'school' => 'required|string|max:255',
             'studentCode' => 'required|string|unique:students'
         ]);
+
+        $deps = $fields['departments'];
+        $dep_id = $deps[0]['department_id'];
 
         $user = User::create([
             'firstName' => $fields['firstName'],
@@ -148,7 +152,7 @@ class StudentController extends Controller
             'phone' => $fields['phone']
         ]);
 
-        $dep_id = $fields['department_id'];
+
 
         // //if school already exist in database add it's id to the department
         // $schools = School::all();
