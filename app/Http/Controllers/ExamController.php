@@ -50,21 +50,19 @@ class ExamController extends Controller
         ];
 
         $validator = Validator::make($request->all(), $rules);
-        if($validator->fails()) {
+        if ($validator->fails()) {
             return response()->json(['message' => $validator->errors()], 400);
         }
 
         //create the exam
 
-        $examDetails = $request->only(['name','totalMark', 'description', 'startAt', 'endAt', 'duration', 'numberOfTrials', 'examSubject']);
+        $examDetails = $request->only(['name', 'totalMark', 'description', 'startAt', 'endAt', 'duration', 'numberOfTrials', 'examSubject']);
         $exam = Exam::create($examDetails);
-        if(!$exam) {
+        if (!$exam) {
             return response()->json(['message' => 'failed to create exam'], 400);
         }
 
         return response()->json(['message' => 'successfully created exam!', 'examId' => $exam->id]);
-
-
     }
     public function storeStepTwo(Request $request)
     {
@@ -80,7 +78,7 @@ class ExamController extends Controller
         ];
 
         $validator = Validator::make($request->all(), $rules);
-        if($validator->fails()) {
+        if ($validator->fails()) {
             return response()->json(['message' => 'the given data is invalid'], 400);
         }
 
@@ -92,14 +90,12 @@ class ExamController extends Controller
 
         $options['exam_id'] = $request->examId;
         $option = Configuration::create($options);
-        if(!$option) {
+        if (!$option) {
             return response()->json(['message' => 'failed to create exam'], 400);
         }
         //link to questions
 
         return response()->json(['message' => 'successfully added exam options!']);
-
-
     }
     public function storeStepThree(Request $request)
     {
@@ -110,7 +106,7 @@ class ExamController extends Controller
         ];
 
         $validator = Validator::make($request->all(), $rules);
-        if($validator->fails()) {
+        if ($validator->fails()) {
             return response()->json(['message' => 'the given data is invalid'], 400);
         }
 
@@ -119,12 +115,10 @@ class ExamController extends Controller
         $exam = Exam::where('id', $request->examId)->first();
 
         $questions = $request->questions;
-        
+
         $exam->questions()->attach($questions);
 
         return response()->json(['message' => 'successfully added questions to exam!']);
-
-
     }
     public function storeStepFour(Request $request)
     {
@@ -137,21 +131,19 @@ class ExamController extends Controller
         ];
 
         $validator = Validator::make($request->all(), $rules);
-        if($validator->fails()) {
+        if ($validator->fails()) {
             return response()->json(['message' => 'the given data is invalid'], 400);
         }
 
         $exam = Exam::where('id', $request->examId)->first();
 
 
-    
+
         $questions = $request->questions;
-        
+
         $exam->questions()->sync($questions);
 
         return response()->json(['message' => 'successfully created exam!']);
-
-
     }
 
     /**

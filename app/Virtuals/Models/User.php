@@ -70,7 +70,7 @@ class User
      * @OA\Property(
      *      title="gender",
      *      description="gender of User",
-     *      example="Male"
+     *      example="female"
      * )
      *
      * @var string
@@ -107,16 +107,6 @@ class User
      */
     public $phone;
 
-    /**
-     * @OA\Property(
-     *      title="verified",
-     *      description="verified User",
-     *      example="true"
-     * )
-     *
-     * @var bool
-     */
-    public $verified;
 
     /**
      * @OA\Property(
@@ -155,17 +145,4 @@ class User
      * @var \DateTime
      */
     private $email_verified_at;
-
-    /**
-     * @OA\Property(
-     *     title="Deleted at",
-     *     description="Deleted at",
-     *     example="2020-01-27 17:50:45",
-     *     format="datetime",
-     *     type="string"
-     * )
-     *
-     * @var \DateTime
-     */
-    private $deleted_at;
 }

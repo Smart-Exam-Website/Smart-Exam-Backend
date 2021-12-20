@@ -65,18 +65,6 @@ class Department
      */
     private $updated_at;
 
-    /**
-     * @OA\Property(
-     *     title="Deleted at",
-     *     description="Deleted at",
-     *     example="2020-01-27 17:50:45",
-     *     format="datetime",
-     *     type="string"
-     * )
-     *
-     * @var \DateTime
-     */
-    private $deleted_at;
 
     /**
      * @OA\Property(

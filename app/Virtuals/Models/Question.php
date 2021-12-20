@@ -4,14 +4,14 @@ namespace App\Virtual\Models;
 
 /**
  * @OA\Schema(
- *     title="School",
- *     description="School model",
+ *     title="Question",
+ *     description="Question model",
  *     @OA\Xml(
- *         name="School"
+ *         name="Question"
  *     )
  * )
  */
-class School
+class Question
 {
 
     /**
@@ -28,14 +28,38 @@ class School
 
     /**
      * @OA\Property(
-     *      title="name",
-     *      description="name of instructor",
-     *      example="Science department"
+     *      title="questionText",
+     *      description="questionText",
+     *      example="How many days are in the week?"
      * )
      *
      * @var string
      */
-    public $name;
+    public $questionText;
+
+    /**
+     * @OA\Property(
+     *      title="type",
+     *      description="type",
+     *      example="mcq"
+     * )
+     *
+     * @var string
+     */
+    public $type;
+
+    /**
+     * @OA\Property(
+     *      title="mark",
+     *      description="mark",
+     *      example="2",
+     *      type="string"
+     * )
+     *
+     * @var string
+     */
+    public $mark;
+
 
 
 
@@ -43,7 +67,7 @@ class School
      * @OA\Property(
      *     title="Created at",
      *     description="Created at",
-     *     example="2020-01-27 17:50:45",
+     *     example="2021-05-22 17:50:45",
      *     format="datetime",
      *     type="string"
      * )
@@ -56,7 +80,7 @@ class School
      * @OA\Property(
      *     title="Updated at",
      *     description="Updated at",
-     *     example="2020-01-27 17:50:45",
+     *     example="2021-05-22 17:50:45",
      *     format="datetime",
      *     type="string"
      * )

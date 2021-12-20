@@ -65,19 +65,6 @@ class Student
 
     /**
      * @OA\Property(
-     *     title="Deleted at",
-     *     description="Deleted at",
-     *     example="2021-05-22 17:50:45",
-     *     format="datetime",
-     *     type="string"
-     * )
-     *
-     * @var \DateTime
-     */
-    private $deleted_at;
-
-    /**
-     * @OA\Property(
      *      title="user ID",
      *      description="User id of student",
      *      format="int64",

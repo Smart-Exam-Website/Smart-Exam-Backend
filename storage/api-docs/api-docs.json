@@ -14,7 +14,7 @@
     },
     "servers": [
         {
-            "url": "http://3.143.249.185/api",
+            "url": "http://localhost:8000",
             "description": "Smart Exam API Server"
         }
     ],
@@ -278,6 +278,149 @@
                         "bearer": []
                     }
                 ]
+            }
+        },
+        "/question/create": {
+            "post": {
+                "tags": [
+                    "Questions"
+                ],
+                "summary": "create question",
+                "description": "Returns Question data",
+                "operationId": "storeQuestion",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StoreQuestionRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "question": {
+                                            "$ref": "#/components/schemas/Question"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            }
+        },
+        "/question/edit/{id}": {
+            "put": {
+                "tags": [
+                    "Questions"
+                ],
+                "summary": "Edit question",
+                "description": "Returns Question data",
+                "operationId": "editQuestion",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Question id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StoreQuestionRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "question": {
+                                            "$ref": "#/components/schemas/Question"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/question/delete/{id}": {
+            "delete": {
+                "tags": [
+                    "Questions"
+                ],
+                "summary": "Delete existing question",
+                "description": "Deletes a record and returns no content",
+                "operationId": "deleteQuestion",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Question id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful operation"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Resource Not Found"
+                    }
+                }
             }
         },
         "/schools": {
@@ -931,13 +1074,6 @@
                         "format": "datetime",
                         "example": "2020-01-27 17:50:45"
                     },
-                    "deleted_at": {
-                        "title": "Deleted at",
-                        "description": "Deleted at",
-                        "type": "string",
-                        "format": "datetime",
-                        "example": "2020-01-27 17:50:45"
-                    },
                     "school_id": {
                         "title": "School ID",
                         "description": "School id of instructor or student",
@@ -1084,6 +1220,55 @@
                     "name": "Instructor"
                 }
             },
+            "Question": {
+                "title": "Question",
+                "description": "Question model",
+                "properties": {
+                    "id": {
+                        "title": "ID",
+                        "description": "ID",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "questionText": {
+                        "title": "questionText",
+                        "description": "questionText",
+                        "type": "string",
+                        "example": "How many days are in the week?"
+                    },
+                    "type": {
+                        "title": "type",
+                        "description": "type",
+                        "type": "string",
+                        "example": "mcq"
+                    },
+                    "mark": {
+                        "title": "mark",
+                        "description": "mark",
+                        "type": "string",
+                        "example": "2"
+                    },
+                    "created_at": {
+                        "title": "Created at",
+                        "description": "Created at",
+                        "type": "string",
+                        "format": "datetime",
+                        "example": "2021-05-22 17:50:45"
+                    },
+                    "updated_at": {
+                        "title": "Updated at",
+                        "description": "Updated at",
+                        "type": "string",
+                        "format": "datetime",
+                        "example": "2021-05-22 17:50:45"
+                    }
+                },
+                "type": "object",
+                "xml": {
+                    "name": "Question"
+                }
+            },
             "School": {
                 "title": "School",
                 "description": "School model",
@@ -1111,13 +1296,6 @@
                     "updated_at": {
                         "title": "Updated at",
                         "description": "Updated at",
-                        "type": "string",
-                        "format": "datetime",
-                        "example": "2020-01-27 17:50:45"
-                    },
-                    "deleted_at": {
-                        "title": "Deleted at",
-                        "description": "Deleted at",
                         "type": "string",
                         "format": "datetime",
                         "example": "2020-01-27 17:50:45"
@@ -1155,13 +1333,6 @@
                     "updated_at": {
                         "title": "Updated at",
                         "description": "Updated at",
-                        "type": "string",
-                        "format": "datetime",
-                        "example": "2021-05-22 17:50:45"
-                    },
-                    "deleted_at": {
-                        "title": "Deleted at",
-                        "description": "Deleted at",
                         "type": "string",
                         "format": "datetime",
                         "example": "2021-05-22 17:50:45"
@@ -1231,7 +1402,7 @@
                         "title": "gender",
                         "description": "gender of User",
                         "type": "string",
-                        "example": "Male"
+                        "example": "female"
                     },
                     "image": {
                         "title": "image",
@@ -1251,12 +1422,6 @@
                         "type": "string",
                         "example": "012233344455"
                     },
-                    "verified": {
-                        "title": "verified",
-                        "description": "verified User",
-                        "type": "boolean",
-                        "example": "true"
-                    },
                     "created_at": {
                         "title": "Created at",
                         "description": "Created at",
@@ -1274,13 +1439,6 @@
                     "email_verified_at": {
                         "title": "Email verified at",
                         "description": "Email verified at",
-                        "type": "string",
-                        "format": "datetime",
-                        "example": "2020-01-27 17:50:45"
-                    },
-                    "deleted_at": {
-                        "title": "Deleted at",
-                        "description": "Deleted at",
                         "type": "string",
                         "format": "datetime",
                         "example": "2020-01-27 17:50:45"
@@ -1623,6 +1781,58 @@
                 },
                 "type": "object"
             },
+            "StoreQuestionRequest": {
+                "title": "StoreQuestionRequest",
+                "description": "Store Question request body data",
+                "required": [
+                    "questionText",
+                    "type",
+                    "mark",
+                    "answers",
+                    "correctAnswer"
+                ],
+                "properties": {
+                    "questionText": {
+                        "title": "Question Text",
+                        "description": "question text",
+                        "type": "string",
+                        "example": "How many days are in the week?"
+                    },
+                    "type": {
+                        "title": "type",
+                        "description": "the type of the question",
+                        "type": "string",
+                        "example": "mcq"
+                    },
+                    "mark": {
+                        "title": "mark",
+                        "description": "the mark of the question",
+                        "type": "string",
+                        "example": "2"
+                    },
+                    "answers": {
+                        "title": "answers",
+                        "description": "answers",
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "example": [
+                                "seven",
+                                "four",
+                                "two",
+                                "ten"
+                            ]
+                        }
+                    },
+                    "correctAnswer": {
+                        "title": "correctAnswer",
+                        "description": "correct Answer",
+                        "type": "string",
+                        "example": "seven"
+                    }
+                },
+                "type": "object"
+            },
             "StoreStudentRequest": {
                 "title": "StoreStudentRequest",
                 "description": "Store Student request body data",
@@ -1644,43 +1854,43 @@
                         "title": "first Name",
                         "description": "first name of the new student",
                         "type": "string",
-                        "example": "Mazen"
+                        "example": "Laila"
                     },
                     "lastName": {
                         "title": "last Name",
                         "description": "last name of the new student",
                         "type": "string",
-                        "example": "Omar"
+                        "example": "Mohsen"
                     },
                     "email": {
                         "title": "email",
                         "description": "email of the new student",
                         "type": "string",
-                        "example": "mazenomar@example.com"
+                        "example": "h@ex.com"
                     },
                     "password": {
                         "title": "password",
                         "description": "password of the new student",
                         "type": "string",
-                        "example": "12345678"
+                        "example": "123456"
                     },
                     "gender": {
                         "title": "gender",
                         "description": "gender of the new student",
                         "type": "string",
-                        "example": "male"
+                        "example": "female"
                     },
                     "image": {
                         "title": "image",
                         "description": "image of the new student",
                         "type": "string",
-                        "example": "https://google.com/pepepepaaa"
+                        "example": "http://pixels.com/4040"
                     },
                     "phone": {
                         "title": "phone",
                         "description": "phone of the new student",
                         "type": "string",
-                        "example": "01221231771"
+                        "example": "012233344455"
                     },
                     "type": {
                         "title": "type",
@@ -1692,7 +1902,7 @@
                         "title": "studentCode",
                         "description": "studentCode of the new student",
                         "type": "string",
-                        "example": "1722"
+                        "example": "1702"
                     },
                     "department": {
                         "title": "department",
@@ -1701,7 +1911,8 @@
                         "items": {
                             "properties": {
                                 "id": {
-                                    "type": "integer"
+                                    "type": "integer",
+                                    "example": "1"
                                 }
                             },
                             "type": "object"

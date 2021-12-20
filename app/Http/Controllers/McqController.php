@@ -8,7 +8,6 @@ use App\Models\McqAnswer;
 use Illuminate\Http\Request;
 use App\Models\Question;
 use App\Models\Mcq;
-use Mockery\Undefined;
 
 class McqController extends Controller
 {
@@ -31,6 +30,40 @@ class McqController extends Controller
     {
         //
     }
+
+
+    /**
+     * @OA\Post(
+     *      path="/question/create",
+     *      operationId="storeQuestion",
+     *      tags={"Questions"},
+     *      summary="create question",
+     *      description="Returns Question data",
+     *      @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(ref="#/components/schemas/StoreQuestionRequest")
+     *      ),
+     *      @OA\Response(
+     *          response=201,
+     *          description="Successful operation",
+     *          @OA\JsonContent(
+     * @OA\Property(property="question", type="object", ref="#/components/schemas/Question"),),
+     *       ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request"
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     * )
+     */
+
 
     /**
      * Store a newly created resource in storage.
@@ -115,6 +148,53 @@ class McqController extends Controller
     {
     }
 
+
+    /**
+     * @OA\Put(
+     *      path="/question/edit/{id}",
+     *      operationId="editQuestion",
+     *      tags={"Questions"},
+     *      summary="Edit question",
+     *      description="Returns Question data",
+     *      security={ {"bearer": {} }},
+     *      @OA\Parameter(
+     *          name="id",
+     *          description="Question id",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\RequestBody(
+     *          required=false,
+     *          @OA\JsonContent(ref="#/components/schemas/StoreQuestionRequest")
+     *      ),
+     *      @OA\Response(
+     *          response=201,
+     *          description="Successful operation",
+     *          @OA\JsonContent(
+     * @OA\Property(property="question", type="object", ref="#/components/schemas/Question"),),
+     *       ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request",
+     * @OA\Property(property="message", type="string", example="Failed to update question"),
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\Property(property="message", type="string", example="Unauthenticated"),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     * )
+     */
+
+
+
     /**
      * Update the specified resource in storage.
      *
@@ -184,8 +264,47 @@ class McqController extends Controller
 
 
             return response(['question' => $question], 200);
+        } else {
+            return response()->json(['message' => 'There is no logged in Instructor'], 400);
         }
     }
+
+
+    /**
+     * @OA\Delete(
+     *      path="/question/delete/{id}",
+     *      operationId="deleteQuestion",
+     *      tags={"Questions"},
+     *      summary="Delete existing question",
+     *      description="Deletes a record and returns no content",
+     *      @OA\Parameter(
+     *          name="id",
+     *          description="Question id",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=204,
+     *          description="Successful operation"
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="Resource Not Found"
+     *      )
+     * )
+     */
+
 
     /**
      * Remove the specified resource from storage.
