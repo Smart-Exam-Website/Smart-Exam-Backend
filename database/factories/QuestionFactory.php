@@ -15,7 +15,6 @@ class QuestionFactory extends Factory
     {
         return [
             'questionText' => $this->faker->text(700),
-            'mark' => $this->faker->unique()->randomNumber,
             'type' => $this->faker->randomElement(['mcq'])
         ];
     }

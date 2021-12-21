@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\McqAnswer;
+use App\Models\Mcq;
 use Illuminate\Database\Seeder;
 use App\Models\Question;
 use App\Models\Option;
@@ -33,6 +34,9 @@ class QuestionSeeder extends Seeder
                     ]);
                 }
             }
+            Mcq::create([
+                'id' => $q->id
+            ]);
         });
     }
 }
