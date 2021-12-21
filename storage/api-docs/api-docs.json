@@ -14,7 +14,7 @@
     },
     "servers": [
         {
-            "url": "http://3.143.249.185/api",
+            "url": "http://localhost:8000",
             "description": "Smart Exam API Server"
         }
     ],
@@ -309,23 +309,34 @@
                 ]
             }
         },
-        "/exams/{exam}/questions": {
+        "/exams/totalMark/{id}": {
             "get": {
                 "tags": [
                     "Exam"
                 ],
-                "summary": "Get exam questions",
-                "description": "Returns exam questions",
-                "operationId": "getExamQuestions",
+                "summary": "Get students exam marks",
+                "description": "Returns students exam marks",
+                "operationId": "getExamAllStudentMarks",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Exam id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "Successful operation",
+                        "description": "successfully Calculated Exam Total Marks for all students",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
                                         "exam": {
-                                            "$ref": "#/components/schemas/Exam"
+                                            "$ref": "#/components/schemas/ExamStudent"
                                         }
                                     },
                                     "type": "object"
@@ -1442,6 +1453,49 @@
                 "type": "object",
                 "xml": {
                     "name": "Exam"
+                }
+            },
+            "ExamStudent": {
+                "title": "ExamStudent",
+                "description": "ExamStudent model",
+                "properties": {
+                    "id": {
+                        "title": "ID",
+                        "description": "ID",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "student_id": {
+                        "title": "student ID",
+                        "description": "Student id",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "student": {
+                        "$ref": "#/components/schemas/Student"
+                    },
+                    "exam_id": {
+                        "title": "exam ID",
+                        "description": "Exam id",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "exam": {
+                        "$ref": "#/components/schemas/Exam"
+                    },
+                    "totalMark": {
+                        "title": "totalMark",
+                        "description": "Total mark of exam",
+                        "type": "integer",
+                        "example": "60"
+                    }
+                },
+                "type": "object",
+                "xml": {
+                    "name": "ExamStudent"
                 }
             },
             "Instructor": {

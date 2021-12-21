@@ -73,6 +73,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/exams/step2', 'App\Http\Controllers\ExamController@storeStepTwo');
     Route::post('/exams/step3', 'App\Http\Controllers\ExamController@storeStepThree');
     Route::post('/exams/step4', 'App\Http\Controllers\ExamController@storeStepFour');
+    Route::get('/exams/totalMark/{id}', 'App\Http\Controllers\ExamController@getExamAllStudentMarks');
 });
 
 
