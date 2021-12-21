@@ -32,7 +32,16 @@ class CreateExamsTable extends Migration
             $table->foreign('question_id')->references('id')->on('questions')->onDelete('cascade');
             $table->time('time')->default(0);
             $table->float('mark')->default(0);
-
+            $table->primary(['exam_id', 'question_id']);
+            $table->timestamps();
+        });
+        Schema::create('examSession', function (Blueprint $table) {
+            $table->unsignedBigInteger('exam_id');
+            $table->foreign('exam_id')->references('id')->on('exams')->onDelete('cascade');
+            $table->unsignedBigInteger('student_id');
+            $table->foreign('student_id')->references('id')->on('students')->onDelete('cascade');
+            $table->dateTime('startTime');
+            $table->primary(['exam_id', 'student_id']);
             $table->timestamps();
         });
     }
@@ -45,5 +54,6 @@ class CreateExamsTable extends Migration
     public function down()
     {
         Schema::dropIfExists('exams');
+        Schema::dropIfExists('exam_question');
     }
 }

@@ -13,6 +13,7 @@ class CreateAnswersTable extends Migration
      */
     public function up()
     {
+        
         Schema::create('answers', function (Blueprint $table) {
             $table->unsignedBigInteger('student_id');
             $table->foreign('student_id')->references('id')->on('students')->onDelete('cascade');
@@ -24,7 +25,7 @@ class CreateAnswersTable extends Migration
             // $table->foreign('class_id')->references('id')->on('classs')->onDelete('cascade');
             $table->unsignedBigInteger('option_id');
             $table->foreign('option_id')->references('id')->on('options')->onDelete('cascade');
-            $table->float('StExamMark');
+            $table->float('questionMark');
             $table->primary(['student_id', 'exam_id', 'question_id', 'option_id'], 'id');
             $table->timestamps();
         });

@@ -23,7 +23,7 @@ class Question extends Model
     }
     public function Mcq()
     {
-        return $this->hasOne(Mcq::class);
+        return $this->hasOne(Mcq::class, 'id');
     }
 
     public function exams() {

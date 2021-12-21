@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Configuration;
 use App\Models\Exam;
+use App\Models\Question;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class ExamController extends Controller
@@ -279,15 +281,75 @@ class ExamController extends Controller
         return response()->json(['message' => 'successfully created exam!']);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     /**
+     * @OA\Get(
+     *      path="/exams/{exam}",
+     *      operationId="getExamDetails",
+     *      tags={"Exam"},
+     *      summary="Get exam details",
+     *      description="Returns exam details",
+     * security={ {"bearer": {} }},
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\JsonContent(
+     * @OA\Property(property="exam", type="object", ref="#/components/schemas/exam")
+     * ),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     *     )
      */
-    public function show($id)
+    public function show(Exam $exam)
     {
-        //
+        return response()->json(['exam' => $exam]);
+    }
+
+    
+
+    public function getExamQuestions(Exam $exam) {
+
+        $questions = DB::table('exam_question')->where('exam_id', $exam->id)->join('questions', 'question_id', 'questions.id')->select(['questions.id' , 'questions.questionText', 'exam_question.mark', 'questions.type'])->get();
+        
+        foreach($questions as $question) {
+            $type = $question->type;
+            
+            if($type == 'mcq') {
+                $answers = DB::table('mcq_answers')->where('question_id', $question->id)->join('options', 'options.id', 'mcq_answers.id')->select(['options.id', 'mcq_answers.isCorrect', 'options.value'])->get();
+            }
+            $question->answers = $answers;
+            
+        }
+        return response()->json(['questions' => $questions]);
+        
+
+    }
+
+    public function startExam(Request $request,Exam $exam)
+    {
+        $rules = [
+            'studentId' => 'required',
+            'startTime' => 'required|date'
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            return response()->json(['message' => 'the given data is invalid'], 400);
+        }
+
+        DB::table('examSession')->create([
+            'exam_id' => $exam->id,
+            'student_id' => $request->studentId,
+            'startTime' => $request->startTime
+        ]);
+
+        return response()->json(['message' => 'Success!']);
     }
 
     /**
