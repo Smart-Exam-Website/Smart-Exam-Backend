@@ -14,7 +14,14 @@ class ExamFactory extends Factory
     public function definition()
     {
         return [
-            //
+            'name' => $this->faker->name(),
+            'description' => $this->faker->sentence(),
+            'startAt' => $this->faker->dateTime(),
+            'endAt' => $this->faker->dateTime(),
+            'duration' => $this->faker->time($format = 'H:i:s', $max = 'now'),
+            'numberOfTrials' => $this->faker->randomDigit(),
+            'totalMark' => $this->faker->randomNumber(2),
+            'examSubject' => $this->faker->word(),
         ];
     }
 }

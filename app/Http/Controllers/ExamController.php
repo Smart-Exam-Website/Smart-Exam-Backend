@@ -293,7 +293,7 @@ class ExamController extends Controller
      *          response=200,
      *          description="Successful operation",
      *          @OA\JsonContent(
-     * @OA\Property(property="exam", type="object", ref="#/components/schemas/exam")
+     * @OA\Property(property="exam", type="object", ref="#/components/schemas/Exam")
      * ),
      *       ),
      *      @OA\Response(
@@ -311,8 +311,31 @@ class ExamController extends Controller
         return response()->json(['exam' => $exam]);
     }
 
-    
-
+     /**
+     * @OA\Get(
+     *      path="/exams/{exam}/questions",
+     *      operationId="getExamQuestions",
+     *      tags={"Exam"},
+     *      summary="Get exam questions",
+     *      description="Returns exam questions",
+     * security={ {"bearer": {} }},
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\JsonContent(
+     * @OA\Property(property="exam", type="object", ref="#/components/schemas/Exam")
+     * ),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     *     )
+     */
     public function getExamQuestions(Exam $exam) {
 
         $questions = DB::table('exam_question')->where('exam_id', $exam->id)->join('questions', 'question_id', 'questions.id')->select(['questions.id' , 'questions.questionText', 'exam_question.mark', 'questions.type'])->get();

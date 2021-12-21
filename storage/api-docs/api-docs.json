@@ -271,6 +271,82 @@
                 ]
             }
         },
+        "/exams/{exam}": {
+            "get": {
+                "tags": [
+                    "Exam"
+                ],
+                "summary": "Get exam details",
+                "description": "Returns exam details",
+                "operationId": "getExamDetails",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "exam": {
+                                            "$ref": "#/components/schemas/Exam"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/exams/{exam}/questions": {
+            "get": {
+                "tags": [
+                    "Exam"
+                ],
+                "summary": "Get exam questions",
+                "description": "Returns exam questions",
+                "operationId": "getExamQuestions",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "exam": {
+                                            "$ref": "#/components/schemas/Exam"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
         "/instructors": {
             "get": {
                 "tags": [
