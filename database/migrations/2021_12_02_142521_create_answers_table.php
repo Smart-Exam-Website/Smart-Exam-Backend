@@ -23,10 +23,10 @@ class CreateAnswersTable extends Migration
             $table->foreign('question_id')->references('id')->on('questions')->onDelete('cascade');
             // $table->unsignedBigInteger('class_id');
             // $table->foreign('class_id')->references('id')->on('classs')->onDelete('cascade');
-            $table->unsignedBigInteger('option_id');
+            $table->unsignedBigInteger('option_id')->nullable();
             $table->foreign('option_id')->references('id')->on('options')->onDelete('cascade');
-            $table->float('questionMark');
-            $table->primary(['student_id', 'exam_id', 'question_id', 'option_id'], 'id');
+            $table->string('studentAnswer')->nullable();
+            $table->float('questionMark')->default(0);
             $table->timestamps();
         });
     }

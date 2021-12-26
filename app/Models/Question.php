@@ -29,4 +29,7 @@ class Question extends Model
     public function exams() {
         return $this->belongsToMany(Question::class, 'exam_question', 'question_id')->withTimestamps()->withPivot(['time', 'mark']);;
     }
+    public function answers(): BelongsToMany {
+        return $this->belongsToMany(Answer::class);
+    }
 }

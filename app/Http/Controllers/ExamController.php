@@ -271,8 +271,7 @@ class ExamController extends Controller
         }
 
         $exam = Exam::where('id', $request->examId)->first();
-
-
+        
 
         $questions = $request->questions;
 
@@ -356,8 +355,10 @@ class ExamController extends Controller
 
     public function startExam(Request $request,Exam $exam)
     {
+        if(auth()->user()->type != 'student') {
+            return response()->json(['message' => 'cannot take exam as instructor!'], 400);
+        }
         $rules = [
-            'studentId' => 'required',
             'startTime' => 'required|date'
         ];
 
@@ -366,9 +367,9 @@ class ExamController extends Controller
             return response()->json(['message' => 'the given data is invalid'], 400);
         }
 
-        DB::table('examSession')->create([
+        DB::table('examSession')->insert([
             'exam_id' => $exam->id,
-            'student_id' => $request->studentId,
+            'student_id' => auth()->user()->id,
             'startTime' => $request->startTime
         ]);
 

@@ -20,4 +20,8 @@ class Exam extends Model
     public function questions(): BelongsToMany {
         return $this->belongsToMany(Question::class,'exam_question', 'exam_id')->withTimestamps()->withPivot(['time', 'mark']);
     }
+
+    public function answers(): BelongsToMany {
+        return $this->belongsToMany(Answer::class);
+    }
 }
