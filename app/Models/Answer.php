@@ -28,4 +28,5 @@ class Answer extends Model
     // public function classes() {
     //     return $this->belongsToMany(Student::class);
     // }
+    //public $primaryKey  = 'id';
 }
