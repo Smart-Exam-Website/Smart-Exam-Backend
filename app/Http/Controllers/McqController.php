@@ -11,14 +11,34 @@ use App\Models\Mcq;
 
 class McqController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
+        /**
+     * @OA\Get(
+     *      path="/questions",
+     *      operationId="getQuestionsList",
+     *      tags={"Questions"},
+     *      summary="Get list of Questions",
+     *      description="Returns list of Questions",
+     *      security={ {"bearer": {} }},
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\JsonContent(
+     * @OA\Property(property="Questions", type="array", @OA\Items(ref="#/components/schemas/Question"))
+     * ),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     *     )
      */
     public function index()
     {
-        //
+        return Question::all();
     }
 
     /**
@@ -34,7 +54,7 @@ class McqController extends Controller
 
     /**
      * @OA\Post(
-     *      path="/question/create",
+     *      path="/questions/create",
      *      operationId="storeQuestion",
      *      tags={"Questions"},
      *      summary="create question",
@@ -129,13 +149,33 @@ class McqController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @OA\Get(
+     *      path="/questions/{question}",
+     *      operationId="getquestionDetails",
+     *      tags={"Questions", "Exam"},
+     *      summary="Get question details",
+     *      description="Returns question details",
+     * security={ {"bearer": {} }},
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\JsonContent(
+     * @OA\Property(property="question", type="object", ref="#/components/schemas/Question")
+     * ),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     *     )
      */
     public function show($id)
     {
+        return response()->json(['question' => Question::where('id', $id)->get()->first()]);
     }
 
     /**
@@ -151,7 +191,7 @@ class McqController extends Controller
 
     /**
      * @OA\Put(
-     *      path="/question/edit/{id}",
+     *      path="/questions/{id}",
      *      operationId="editQuestion",
      *      tags={"Questions"},
      *      summary="Edit question",
@@ -272,7 +312,7 @@ class McqController extends Controller
 
     /**
      * @OA\Delete(
-     *      path="/question/delete/{id}",
+     *      path="/questions/{id}",
      *      operationId="deleteQuestion",
      *      tags={"Questions"},
      *      summary="Delete existing question",

@@ -335,7 +335,31 @@ class ExamController extends Controller
     }
 
 
-
+     /**
+     * @OA\Get(
+     *      path="/exams/{exam}/questions",
+     *      operationId="getExamQuestions",
+     *      tags={"Exam"},
+     *      summary="Get exam questions",
+     *      description="Returns question details",
+     * security={ {"bearer": {} }},
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\JsonContent(
+     * @OA\Property(property="questions", type="array", @OA\Items(ref="#/components/schemas/Question"))
+     * ),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     *     )
+     */
     public function getExamQuestions(Exam $exam)
     {
 
@@ -373,6 +397,38 @@ class ExamController extends Controller
         ]);
 
         return response()->json(['message' => 'Success!']);
+    }
+
+     /**
+     * @OA\Get(
+     *      path="/exams/{exam}/configs",
+     *      operationId="getExamConfigs",
+     *      tags={"Exam"},
+     *      summary="Get exam configs",
+     *      description="Returns exam configurations",
+     * security={ {"bearer": {} }},
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\JsonContent(
+     * @OA\Property(property="configuration", type="object", ref="#/components/schemas/Configuration")
+     * ),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     *     )
+     */
+
+    public function getExamConfigurations(Exam $exam) {
+        $config = Configuration::where('exam_id' , $exam->id)->get()->first();
+
+        return response()->json(['configuration' => $config]);
     }
 
 
@@ -500,4 +556,6 @@ class ExamController extends Controller
     {
         //
     }
+
+    
 }
