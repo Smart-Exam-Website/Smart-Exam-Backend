@@ -12,13 +12,33 @@ use Illuminate\Support\Facades\Validator;
 class ExamController extends Controller
 {
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
+     * @OA\Get(
+     *      path="/exams",
+     *      operationId="getexamsList",
+     *      tags={"Exams"},
+     *      summary="Get list of exams",
+     *      description="Returns list of exams",
+     *      security={ {"bearer": {} }},
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\JsonContent(
+     * @OA\Property(property="exams", type="array", @OA\Items(ref="#/components/schemas/Exam"))
+     * ),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     *     )
      */
     public function index()
     {
-        //
+        return Exam::all();
     }
 
     /**
