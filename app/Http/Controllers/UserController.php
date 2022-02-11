@@ -337,9 +337,15 @@ class UserController extends Controller
             return response()->json(['message' => 'Wrong code!'], 400);
         } else {
             $user = User::where('email',  $email)->get()->first();
-            $instructor = $user->instructor;
-            $instructor->verified = "true";
-            $instructor->save();
+            $user->email_verified_at = now();
+            $specialUser = $user->instructor;
+            if(!$specialUser) {
+                $specialUser = $user->student;
+            } else {
+                $specialUser->verified = "true";
+            }
+
+            $specialUser->save();
             return response()->json(['message' => 'Account verified!'], 200);
         }
     }
