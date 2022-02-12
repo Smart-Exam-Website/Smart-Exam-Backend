@@ -34,16 +34,6 @@ class StoreQuestionRequest
 
     /**
      * @OA\Property(
-     *      title="mark",
-     *      description="the mark of the question",
-     *      example="2"
-     * )
-     *
-     * @var string
-     */
-    public $mark;
-    /**
-     * @OA\Property(
      *      title="answers",
      *      description="answers",
      *      @OA\Items(
