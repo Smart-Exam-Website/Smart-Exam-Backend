@@ -11,7 +11,7 @@ use App\Models\Mcq;
 
 class McqController extends Controller
 {
-        /**
+    /**
      * @OA\Get(
      *      path="/questions",
      *      operationId="getQuestionsList",
@@ -101,7 +101,7 @@ class McqController extends Controller
             $fields = $request->validate([
                 'questionText' => 'required|string|max:255',
                 'type' => 'required|string',
-                'mark' => 'required|string',
+                'mark' => 'string',
                 'answers'    => 'required|array|min:2',
                 'answers.*'  => 'required|string|distinct|min:2',
                 'correctAnswer' => 'required|string',
@@ -110,7 +110,6 @@ class McqController extends Controller
 
             $question = Question::create([
                 'questionText' => $fields['questionText'],
-                'mark' => $fields['mark'],
                 'type' => 'mcq'
             ]);
 

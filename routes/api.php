@@ -102,7 +102,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/questions', 'App\Http\Controllers\McqController@index');
-    Route::get('/questions/create', 'App\Http\Controllers\McqController@store');
+    Route::post('/questions/create', 'App\Http\Controllers\McqController@store');
     Route::get('/questions/{question}', 'App\Http\Controllers\McqController@show');
     Route::post('/questions', [McqController::class, 'store']);
     Route::put('/questions/{id}', [McqController::class, 'update']);
