@@ -48,18 +48,6 @@ class Question
      */
     public $type;
 
-    /**
-     * @OA\Property(
-     *      title="mark",
-     *      description="mark",
-     *      example="2",
-     *      type="string"
-     * )
-     *
-     * @var string
-     */
-    public $mark;
-
 
 
 

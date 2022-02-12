@@ -59,6 +59,7 @@ class McqController extends Controller
      *      tags={"Questions"},
      *      summary="create question",
      *      description="Returns Question data",
+     *      security={ {"bearer": {} }},
      *      @OA\RequestBody(
      *          required=true,
      *          @OA\JsonContent(ref="#/components/schemas/StoreQuestionRequest")
