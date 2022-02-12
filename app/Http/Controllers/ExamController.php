@@ -42,7 +42,7 @@ class ExamController extends Controller
      */
     public function index()
     {
-        $exams = Exam::all();
+        $exams = Exam::latest('created_at')->get();
 
         foreach($exams as $exam) {
             $configs = $exam->config;
