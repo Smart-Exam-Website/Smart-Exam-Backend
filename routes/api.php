@@ -69,9 +69,10 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/answers', 'App\Http\Controllers\AnswerController@store');
     Route::get('/exams', 'App\Http\Controllers\ExamController@index');
     Route::post('/exams/{exam}/start', 'App\Http\Controllers\ExamController@startExam');
+    Route::delete('/exams/{exam}', 'App\Http\Controllers\ExamController@destroy');
     Route::get('/exams/{exam}/questions', 'App\Http\Controllers\ExamController@getExamQuestions');
+    Route::get('/exams/{exam}/answers', 'App\Http\Controllers\ExamController@getStudentAnswers');
     Route::get('/exams/{exam}/configs', 'App\Http\Controllers\ExamController@getExamConfigurations');
-    Route::get('/questions/{question}', 'App\Http\Controllers\McqController@show');
     Route::get('/exams/{exam}', 'App\Http\Controllers\ExamController@show');
     Route::post('/exams/step1', 'App\Http\Controllers\ExamController@storeStepOne');
     Route::post('/exams/step2', 'App\Http\Controllers\ExamController@storeStepTwo');
@@ -102,7 +103,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/questions', 'App\Http\Controllers\McqController@index');
-    Route::get('/questions/create', 'App\Http\Controllers\McqController@store');
+    Route::post('/questions/create', 'App\Http\Controllers\McqController@store');
     Route::get('/questions/{question}', 'App\Http\Controllers\McqController@show');
     Route::post('/questions', [McqController::class, 'store']);
     Route::put('/questions/{id}', [McqController::class, 'update']);

@@ -234,13 +234,18 @@ class ExamController extends Controller
             return response()->json(['message' => 'the given data is invalid'], 400);
         }
 
+        // divide marks and duration among questions.
+
         //link to questions
 
         $exam = Exam::where('id', $request->examId)->first();
 
         $questions = $request->questions;
+        $mark = $exam->totalMark / count($questions);
+        // $duration = $exam->duration / count($questions);
+    
 
-        $exam->questions()->attach($questions);
+        $exam->questions()->attach($questions, ['mark' => $mark]);
 
         return response()->json(['message' => 'successfully added questions to exam!']);
     }
@@ -396,7 +401,20 @@ class ExamController extends Controller
             'startTime' => $request->startTime
         ]);
 
-        return response()->json(['message' => 'Success!']);
+
+        //return all questions.
+        $questions = DB::table('exam_question')->where('exam_id', $exam->id)->join('questions', 'question_id', 'questions.id')->select(['questions.id', 'questions.questionText', 'exam_question.mark', 'questions.type'])->get();
+
+        foreach ($questions as $question) {
+            $type = $question->type;
+
+            if ($type == 'mcq') {
+                $answers = DB::table('mcq_answers')->where('question_id', $question->id)->join('options', 'options.id', 'mcq_answers.id')->select(['options.id', 'mcq_answers.isCorrect', 'options.value'])->get();
+            }
+            $question->answers = $answers;
+        }
+        return response()->json(['questions' => $questions]);
+
     }
 
      /**
@@ -546,15 +564,45 @@ class ExamController extends Controller
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     /**
+     * @OA\Delete(
+     *      path="/exams/{exam}",
+     *      operationId="deleteExam",
+     *      tags={"Exam"},
+     *      summary="delete exam",
+     *      description="deletes exam",
+     *      security={ {"bearer": {} }},
+     *    
+     *      @OA\Response(
+     *          response=200,
+     *          description="successfully Calculated Exam Total Marks for all students",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="exam", type="object", ref="#/components/schemas/ExamStudent")
+     *          ),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     *     )
      */
-    public function destroy($id)
+    public function destroy(Exam $exam)
     {
-        //
+        $user = auth()->user();
+        if($user-> type != 'instructor') {
+            return response()->json(['message' => 'Not authorized to delete exam']);
+        }
+        $exam->delete();
+        return response()->json('Exam deleted successfully', 200);
+        
+    }
+
+    public function getStudentAnswers(Exam $exam) {
+
     }
 
     
