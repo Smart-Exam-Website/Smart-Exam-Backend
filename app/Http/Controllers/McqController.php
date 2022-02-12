@@ -11,7 +11,7 @@ use App\Models\Mcq;
 
 class McqController extends Controller
 {
-        /**
+    /**
      * @OA\Get(
      *      path="/questions",
      *      operationId="getQuestionsList",
@@ -38,7 +38,7 @@ class McqController extends Controller
      */
     public function index()
     {
-        return Question::all();
+        return Question::latest('created_at')->get();;
     }
 
     /**
@@ -67,7 +67,8 @@ class McqController extends Controller
      *          response=201,
      *          description="Successful operation",
      *          @OA\JsonContent(
-     * @OA\Property(property="question", type="object", ref="#/components/schemas/Question"),),
+     * @OA\Property(property="question", type="object", ref="#/components/schemas/Question")
+     * ),
      *       ),
      *      @OA\Response(
      *          response=400,
@@ -101,7 +102,6 @@ class McqController extends Controller
             $fields = $request->validate([
                 'questionText' => 'required|string|max:255',
                 'type' => 'required|string',
-                'mark' => 'required|string',
                 'answers'    => 'required|array|min:2',
                 'answers.*'  => 'required|string|distinct|min:2',
                 'correctAnswer' => 'required|string',
@@ -110,7 +110,6 @@ class McqController extends Controller
 
             $question = Question::create([
                 'questionText' => $fields['questionText'],
-                'mark' => $fields['mark'],
                 'type' => 'mcq'
             ]);
 

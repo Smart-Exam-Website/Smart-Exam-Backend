@@ -5,7 +5,7 @@
  *      title="StoreQuestionRequest",
  *      description="Store Question request body data",
  *      type="object",
- *      required={"questionText", "type","mark","answers","correctAnswer"}
+ *      required={"questionText","type","answers","correctAnswer"}
  * )
  */
 
@@ -32,16 +32,6 @@ class StoreQuestionRequest
      */
     public $type;
 
-    /**
-     * @OA\Property(
-     *      title="mark",
-     *      description="the mark of the question",
-     *      example="2"
-     * )
-     *
-     * @var string
-     */
-    public $mark;
     /**
      * @OA\Property(
      *      title="answers",
