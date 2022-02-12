@@ -42,7 +42,24 @@ class ExamController extends Controller
      */
     public function index()
     {
-        return Exam::all();
+        $exams = Exam::all();
+
+        foreach($exams as $exam) {
+            $configs = $exam->config;
+            $questions = $exam->questions;
+
+            if(!$configs && !$questions) {
+                $exam['status'] = 'No config or questions';
+            } else if(!$configs) {
+                $exam['status'] = 'No config';
+            } else if (!$questions) {
+                $exam['status'] = 'No questions';
+            }
+            else {
+                $exam['status'] = 'Complete';
+            }
+        }
+        return $exams;
     }
 
     /**
@@ -444,8 +461,14 @@ class ExamController extends Controller
      */
 
     public function getExamConfigurations(Exam $exam) {
+        if(!$exam) {
+            return response()->json(['message' => 'No exam with this id!'], 404);
+        }
         $config = Configuration::where('exam_id' , $exam->id)->get()->first();
 
+        if(!$config) {
+            return response()->json(['message' => 'No configurations found for this exam!'], 400);
+        }
         return response()->json(['configuration' => $config]);
     }
 
