@@ -5,7 +5,7 @@
  *      title="StoreQuestionRequest",
  *      description="Store Question request body data",
  *      type="object",
- *      required={"questionText", "type","mark","answers","correctAnswer"}
+ *      required={"questionText","type","answers","correctAnswer"}
  * )
  */
 

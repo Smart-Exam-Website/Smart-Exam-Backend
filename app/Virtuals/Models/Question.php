@@ -49,8 +49,6 @@ class Question
     public $type;
 
 
-
-
     /**
      * @OA\Property(
      *     title="Created at",

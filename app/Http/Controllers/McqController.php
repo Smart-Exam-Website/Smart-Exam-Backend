@@ -38,7 +38,7 @@ class McqController extends Controller
      */
     public function index()
     {
-        return Question::all();
+        return Question::latest('created_at')->get();;
     }
 
     /**
@@ -59,7 +59,6 @@ class McqController extends Controller
      *      tags={"Questions"},
      *      summary="create question",
      *      description="Returns Question data",
-     *      security={ {"bearer": {} }},
      *      @OA\RequestBody(
      *          required=true,
      *          @OA\JsonContent(ref="#/components/schemas/StoreQuestionRequest")
@@ -68,7 +67,8 @@ class McqController extends Controller
      *          response=201,
      *          description="Successful operation",
      *          @OA\JsonContent(
-     * @OA\Property(property="question", type="object", ref="#/components/schemas/Question"),),
+     * @OA\Property(property="question", type="object", ref="#/components/schemas/Question")
+     * ),
      *       ),
      *      @OA\Response(
      *          response=400,
