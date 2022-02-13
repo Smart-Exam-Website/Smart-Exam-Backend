@@ -31,7 +31,7 @@ class Tag
      *     title="Tag",
      *     description="Tag",
      *     format="int64",
-     *     example=Science
+     *     example="Science"
      * )
      *
      * @var string
