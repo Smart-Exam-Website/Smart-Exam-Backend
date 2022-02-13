@@ -254,7 +254,6 @@ class McqController extends Controller
             $request = $request->validate([
                 'questionText' => 'string|max:255',
                 'type' => 'string',
-                'mark' => 'string',
                 'answers'    => 'array|min:2',
                 'answers.*'  => 'string|distinct|min:2',
                 'correctAnswer' => 'string',
@@ -294,8 +293,7 @@ class McqController extends Controller
 
             $questionn->update([
                 'questionText' => $request['questionText'] ? $request['questionText'] : $questionn->questionText,
-                'type' => isset($request['type']) ? $request['type'] : $questionn->type,
-                'mark' => isset($request['mark']) ? $request['mark'] : $questionn->mark
+                'type' => isset($request['type']) ? $request['type'] : $questionn->type
             ]);
 
             $question->McqAnswers->each(function ($e) {

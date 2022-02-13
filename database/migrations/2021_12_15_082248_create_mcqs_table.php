@@ -15,7 +15,7 @@ class CreateMcqsTable extends Migration
     {
         Schema::create('mcqs', function (Blueprint $table) {
             $table->unsignedBigInteger('id');
-            $table->foreign('id')->references('id')->on('questions');
+            $table->foreign('id')->references('id')->on('questions')->onDelete('cascade');
             $table->timestamps();
         });
     }
