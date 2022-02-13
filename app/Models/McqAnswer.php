@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class McqAnswer extends Model
 {
-    use HasFactory; 
+    use HasFactory;
     protected $guarded = [];
     protected $table = 'mcq_answers';
 

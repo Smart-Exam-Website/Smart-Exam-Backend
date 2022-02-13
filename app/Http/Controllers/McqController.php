@@ -175,7 +175,12 @@ class McqController extends Controller
      */
     public function show($id)
     {
-        return response()->json(['question' => Question::where('id', $id)->get()->first()]);
+        $question = Question::where('id', $id)->get()->first();
+        $question->tags;
+        $question->Mcq->McqAnswers->each(function ($m) {
+            $m->option;
+        });
+        return response()->json(['question' => $question]);
     }
 
     /**

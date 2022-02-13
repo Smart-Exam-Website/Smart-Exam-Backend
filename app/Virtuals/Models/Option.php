@@ -4,14 +4,14 @@ namespace App\Virtual\Models;
 
 /**
  * @OA\Schema(
- *     title="Question",
- *     description="Question model",
+ *     title="Option",
+ *     description="Option model",
  *     @OA\Xml(
- *         name="Question"
+ *         name="Option"
  *     )
  * )
  */
-class Question
+class Option
 {
 
     /**
@@ -28,19 +28,19 @@ class Question
 
     /**
      * @OA\Property(
-     *      title="questionText",
-     *      description="questionText",
-     *      example="How many days are in the week?"
+     *      title="value",
+     *      description="value of choice",
+     *      example="Science department"
      * )
      *
      * @var string
      */
-    public $questionText;
+    public $value;
 
     /**
      * @OA\Property(
      *      title="type",
-     *      description="type",
+     *      description="type of question",
      *      example="mcq"
      * )
      *
@@ -48,12 +48,11 @@ class Question
      */
     public $type;
 
-
     /**
      * @OA\Property(
      *     title="Created at",
      *     description="Created at",
-     *     example="2021-05-22 17:50:45",
+     *     example="2020-01-27 17:50:45",
      *     format="datetime",
      *     type="string"
      * )
@@ -66,7 +65,7 @@ class Question
      * @OA\Property(
      *     title="Updated at",
      *     description="Updated at",
-     *     example="2021-05-22 17:50:45",
+     *     example="2020-01-27 17:50:45",
      *     format="datetime",
      *     type="string"
      * )
@@ -74,27 +73,4 @@ class Question
      * @var \DateTime
      */
     private $updated_at;
-
-    /**
-     * @OA\Property(
-     *      title="user ID",
-     *      description="User id of instructor",
-     *      format="int64",
-     *      example=1
-     * )
-     *
-     * @var integer
-     */
-    public $user_id;
-
-
-    /**
-     * @OA\Property(
-     *     title="User",
-     *     description="Instructor's user"
-     * )
-     *
-     * @var \App\Virtual\Models\User
-     */
-    private $user;
 }

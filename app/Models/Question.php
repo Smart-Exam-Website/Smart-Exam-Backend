@@ -26,10 +26,12 @@ class Question extends Model
         return $this->hasOne(Mcq::class, 'id');
     }
 
-    public function exams() {
+    public function exams()
+    {
         return $this->belongsToMany(Question::class, 'exam_question', 'question_id')->withTimestamps()->withPivot(['time', 'mark']);;
     }
-    public function answers(): BelongsToMany {
+    public function answers(): BelongsToMany
+    {
         return $this->belongsToMany(Answer::class);
     }
 }

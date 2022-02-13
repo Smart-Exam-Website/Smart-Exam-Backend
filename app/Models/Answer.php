@@ -11,17 +11,21 @@ class Answer extends Model
 
     protected $guarded = [];
 
-    public function students() {
+    public function students()
+    {
         return $this->belongsToMany(Student::class);
     }
-    public function exams() {
+    public function exams()
+    {
         return $this->belongsToMany(Exam::class);
     }
-    
-    public function options() {
+
+    public function options()
+    {
         return $this->belongsToMany(Option::class);
     }
-    public function questions() {
+    public function questions()
+    {
         return $this->belongsToMany(Question::class);
     }
 
