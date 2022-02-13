@@ -4,14 +4,14 @@ namespace App\Virtual\Models;
 
 /**
  * @OA\Schema(
- *     title="Mcq Answer",
- *     description="McqAnswer model",
+ *     title="Tag",
+ *     description="Tag model",
  *     @OA\Xml(
- *         name="McqAnswer"
+ *         name="Tag"
  *     )
  * )
  */
-class McqAnswer
+class Tag
 {
 
     /**
@@ -28,38 +28,15 @@ class McqAnswer
 
     /**
      * @OA\Property(
-     *     title="isCorrect",
-     *     description="isCorrect",
+     *     title="Tag",
+     *     description="Tag",
      *     format="int64",
-     *     example=1
+     *     example=Science
      * )
      *
-     * @var integer
+     * @var string
      */
-    private $isCorrect;
-
-    /**
-     * @OA\Property(
-     *      title="Option ID",
-     *      description="Option id",
-     *      format="int64",
-     *      example=8
-     * )
-     *
-     * @var integer
-     */
-    public $option_id;
-
-
-    /**
-     * @OA\Property(
-     *     title="Option",
-     *     description="Option of the Mcq Question"
-     * )
-     *
-     * @var \App\Virtual\Models\Option
-     */
-    private $option;
+    private $name;
 
     /**
      * @OA\Property(
