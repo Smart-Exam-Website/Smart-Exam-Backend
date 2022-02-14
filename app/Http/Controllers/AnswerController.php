@@ -28,11 +28,36 @@ class AnswerController extends Controller
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+        /**
+     * @OA\Post(
+     *      path="/answers",
+     *      operationId="storeAnswer",
+     *      tags={"Exam"},
+     *      summary="store student answer",
+     *      description="Returns success message",
+     *      security={ {"bearer": {} }},
+     *      @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(ref="#/components/schemas/StoreAnswerRequest")
+     *      ),
+     *      @OA\Response(
+     *          response=201,
+     *          description="Successful operation",
+     *        
+     *       ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request"
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     * )
      */
     public function store(Request $request)
     {

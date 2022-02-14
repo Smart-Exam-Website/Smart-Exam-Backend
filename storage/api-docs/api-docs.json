@@ -19,6 +19,45 @@
         }
     ],
     "paths": {
+        "/answers": {
+            "post": {
+                "tags": [
+                    "Exam"
+                ],
+                "summary": "store student answer",
+                "description": "Returns success message",
+                "operationId": "storeAnswer",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StoreAnswerRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Successful operation"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
         "/departments": {
             "get": {
                 "tags": [
@@ -1850,6 +1889,16 @@
                         "type": "string",
                         "format": "datetime",
                         "example": "2020-01-27 17:50:45"
+                    },
+                    "mcqanswer_id": {
+                        "title": "McqAnswer ID",
+                        "description": "McqAnswer id",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 8
+                    },
+                    "mcqanswer": {
+                        "$ref": "#/components/schemas/McqAnswer"
                     }
                 },
                 "type": "object",
@@ -1875,15 +1924,15 @@
                         "format": "int64",
                         "example": 1
                     },
-                    "question_id": {
-                        "title": "Question ID",
-                        "description": "Question id",
+                    "option_id": {
+                        "title": "Option ID",
+                        "description": "Option id",
                         "type": "integer",
                         "format": "int64",
                         "example": 8
                     },
-                    "question": {
-                        "$ref": "#/components/schemas/Question"
+                    "option": {
+                        "$ref": "#/components/schemas/Option"
                     },
                     "created_at": {
                         "title": "Created at",
@@ -1985,15 +2034,25 @@
                         "format": "datetime",
                         "example": "2021-05-22 17:50:45"
                     },
-                    "user_id": {
-                        "title": "user ID",
-                        "description": "User id of instructor",
+                    "mcq_id": {
+                        "title": "Mcq ID",
+                        "description": "Mcq id",
                         "type": "integer",
                         "format": "int64",
-                        "example": 1
+                        "example": 8
                     },
-                    "user": {
-                        "$ref": "#/components/schemas/User"
+                    "mcq": {
+                        "$ref": "#/components/schemas/Mcq"
+                    },
+                    "tag_id": {
+                        "title": "Tag ID",
+                        "description": "Tag id",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 2
+                    },
+                    "tag": {
+                        "$ref": "#/components/schemas/Tag"
                     }
                 },
                 "type": "object",
@@ -2146,6 +2205,44 @@
                     "name": "StudentAnswer"
                 }
             },
+            "Tag": {
+                "title": "Tag",
+                "description": "Tag model",
+                "properties": {
+                    "id": {
+                        "title": "ID",
+                        "description": "ID",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "name": {
+                        "title": "Tag",
+                        "description": "Tag",
+                        "type": "string",
+                        "format": "int64",
+                        "example": "Science"
+                    },
+                    "created_at": {
+                        "title": "Created at",
+                        "description": "Created at",
+                        "type": "string",
+                        "format": "datetime",
+                        "example": "2020-01-27 17:50:45"
+                    },
+                    "updated_at": {
+                        "title": "Updated at",
+                        "description": "Updated at",
+                        "type": "string",
+                        "format": "datetime",
+                        "example": "2020-01-27 17:50:45"
+                    }
+                },
+                "type": "object",
+                "xml": {
+                    "name": "Tag"
+                }
+            },
             "User": {
                 "title": "User",
                 "description": "User model",
@@ -2258,6 +2355,45 @@
                         "description": "new password",
                         "type": "string",
                         "example": "yuiuiui"
+                    }
+                },
+                "type": "object"
+            },
+            "StoreAnswerRequest": {
+                "title": "StoreAnswerRequest",
+                "description": "Store Answer request body data",
+                "required": [
+                    "option_id",
+                    "question_id",
+                    "exam_id"
+                ],
+                "properties": {
+                    "option_id": {
+                        "title": "ID",
+                        "description": "ID",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "question_id": {
+                        "title": "ID",
+                        "description": "ID",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "exam_id": {
+                        "title": "ID",
+                        "description": "ID",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "studentAnswer": {
+                        "title": "studentAnswer",
+                        "description": "student Answer",
+                        "type": "string",
+                        "example": "seven"
                     }
                 },
                 "type": "object"
