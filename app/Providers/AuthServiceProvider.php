@@ -31,23 +31,23 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
 
 
-    VerifyEmail::createUrlUsing(function ($notifiable) {
-        $frontendUrl = 'http://localhost:8080/auth/verify';
+        VerifyEmail::createUrlUsing(function ($notifiable) {
+            $frontendUrl = 'http://localhost:8080/auth/verify';
 
-        $verifyUrl = URL::temporarySignedRoute(
-            'password.reset',
-            Carbon::now()->addMinutes(Config::get('auth.verification.expire', 60)),
-            [
-                'id' => $notifiable->getKey(),
-                'hash' => sha1($notifiable->getEmailForVerification()),
-            ]
-        );
+            $verifyUrl = URL::temporarySignedRoute(
+                'password.reset',
+                Carbon::now()->addMinutes(Config::get('auth.verification.expire', 60)),
+                [
+                    'id' => $notifiable->getKey(),
+                    'hash' => sha1($notifiable->getEmailForVerification()),
+                ]
+            );
 
-        return $frontendUrl . '?verify_url=' . urlencode($verifyUrl);
-    });
+            return $frontendUrl . '?verify_url=' . urlencode($verifyUrl);
+        });
 
-    ResetPassword::createUrlUsing(function ($user, string $token) {
-        return 'https://example.com/reset-password?token='.$token;
-    });
-}
+        ResetPassword::createUrlUsing(function ($user, string $token) {
+            return 'https://example.com/reset-password?token=' . $token;
+        });
+    }
 }

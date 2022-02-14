@@ -77,24 +77,47 @@ class Question
 
     /**
      * @OA\Property(
-     *      title="user ID",
-     *      description="User id of instructor",
+     *      title="Mcq ID",
+     *      description="Mcq id",
      *      format="int64",
-     *      example=1
+     *      example=8
      * )
      *
      * @var integer
      */
-    public $user_id;
+    public $mcq_id;
 
 
     /**
      * @OA\Property(
-     *     title="User",
-     *     description="Instructor's user"
+     *     title="Mcq",
+     *     description="Mcq"
      * )
      *
-     * @var \App\Virtual\Models\User
+     * @var \App\Virtual\Models\Mcq
      */
-    private $user;
+    private $mcq;
+
+    /**
+     * @OA\Property(
+     *      title="Tag ID",
+     *      description="Tag id",
+     *      format="int64",
+     *      example=2
+     * )
+     *
+     * @var integer
+     */
+    public $tag_id;
+
+
+    /**
+     * @OA\Property(
+     *     title="Tag",
+     *     description="Tag"
+     * )
+     *
+     * @var \App\Virtual\Models\Tag
+     */
+    private $tag;
 }

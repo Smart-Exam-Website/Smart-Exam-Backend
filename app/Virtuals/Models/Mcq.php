@@ -51,4 +51,28 @@ class Mcq
      * @var \DateTime
      */
     private $updated_at;
+
+
+    /**
+     * @OA\Property(
+     *      title="McqAnswer ID",
+     *      description="McqAnswer id",
+     *      format="int64",
+     *      example=8
+     * )
+     *
+     * @var integer
+     */
+    public $mcqanswer_id;
+
+
+    /**
+     * @OA\Property(
+     *     title="McqAnswer",
+     *     description="McqAnswer"
+     * )
+     *
+     * @var \App\Virtual\Models\McqAnswer
+     */
+    private $mcqanswer;
 }
