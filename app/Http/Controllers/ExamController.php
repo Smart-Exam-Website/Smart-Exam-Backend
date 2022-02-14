@@ -598,10 +598,8 @@ class ExamController extends Controller
      *    
      *      @OA\Response(
      *          response=200,
-     *          description="successfully Calculated Exam Total Marks for all students",
-     *          @OA\JsonContent(
-     *              @OA\Property(property="exam", type="object", ref="#/components/schemas/ExamStudent")
-     *          ),
+     *          description="successfully deleted exam",
+     *      
      *       ),
      *      @OA\Response(
      *          response=401,
@@ -624,8 +622,49 @@ class ExamController extends Controller
         
     }
 
+    /**
+     * @OA\Get(
+     *      path="/exams/{exam}/answers",
+     *      operationId="getStudentAnswers",
+     *      tags={"Exam"},
+     *      summary="get student answers",
+     *      description="returns all student answers of a certain exam",
+     *      security={ {"bearer": {} }},
+     *    
+     *      @OA\Response(
+     *          response=200,
+     *          description="success!",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="studentAnswer", type="object", ref="#/components/schemas/StudentAnswer")
+     *          ),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     *     )
+     */
+
+
     public function getStudentAnswers(Exam $exam) {
 
+        $student = auth()->user();
+        if($student->type != 'student') {
+            return response()->json(['message' => 'Not a student!'],400);
+        }
+        $studentId = $student->id;
+
+        $answers = Answer::where(['student_id'=> $studentId, 'exam_id' => $exam->id])->get();
+
+        if(!$answers) {
+            return response()->json(['message' => 'No answers found!'],400);
+        }
+
+        return response()->json(['message' => 'Success!' , 'answers' => $answers]);
     }
 
     

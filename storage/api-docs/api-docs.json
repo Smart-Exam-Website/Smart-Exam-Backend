@@ -358,19 +358,7 @@
                 "operationId": "deleteExam",
                 "responses": {
                     "200": {
-                        "description": "successfully Calculated Exam Total Marks for all students",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "exam": {
-                                            "$ref": "#/components/schemas/ExamStudent"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
+                        "description": "successfully deleted exam"
                     },
                     "401": {
                         "description": "Unauthenticated"
@@ -493,6 +481,44 @@
                                     "properties": {
                                         "exam": {
                                             "$ref": "#/components/schemas/ExamStudent"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/exams/{exam}/answers": {
+            "get": {
+                "tags": [
+                    "Exam"
+                ],
+                "summary": "get student answers",
+                "description": "returns all student answers of a certain exam",
+                "operationId": "getStudentAnswers",
+                "responses": {
+                    "200": {
+                        "description": "success!",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "studentAnswer": {
+                                            "$ref": "#/components/schemas/StudentAnswer"
                                         }
                                     },
                                     "type": "object"
@@ -818,7 +844,12 @@
                     "403": {
                         "description": "Forbidden"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
             }
         },
         "/questions/{question}": {
@@ -1795,6 +1826,128 @@
                     "name": "Instructor"
                 }
             },
+            "Mcq": {
+                "title": "Mcq",
+                "description": "Mcq model",
+                "properties": {
+                    "id": {
+                        "title": "ID",
+                        "description": "ID",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "created_at": {
+                        "title": "Created at",
+                        "description": "Created at",
+                        "type": "string",
+                        "format": "datetime",
+                        "example": "2020-01-27 17:50:45"
+                    },
+                    "updated_at": {
+                        "title": "Updated at",
+                        "description": "Updated at",
+                        "type": "string",
+                        "format": "datetime",
+                        "example": "2020-01-27 17:50:45"
+                    }
+                },
+                "type": "object",
+                "xml": {
+                    "name": "Mcq"
+                }
+            },
+            "McqAnswer": {
+                "title": "Mcq Answer",
+                "description": "McqAnswer model",
+                "properties": {
+                    "id": {
+                        "title": "ID",
+                        "description": "ID",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "isCorrect": {
+                        "title": "isCorrect",
+                        "description": "isCorrect",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "question_id": {
+                        "title": "Question ID",
+                        "description": "Question id",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 8
+                    },
+                    "question": {
+                        "$ref": "#/components/schemas/Question"
+                    },
+                    "created_at": {
+                        "title": "Created at",
+                        "description": "Created at",
+                        "type": "string",
+                        "format": "datetime",
+                        "example": "2020-01-27 17:50:45"
+                    },
+                    "updated_at": {
+                        "title": "Updated at",
+                        "description": "Updated at",
+                        "type": "string",
+                        "format": "datetime",
+                        "example": "2020-01-27 17:50:45"
+                    }
+                },
+                "type": "object",
+                "xml": {
+                    "name": "McqAnswer"
+                }
+            },
+            "Option": {
+                "title": "Option",
+                "description": "Option model",
+                "properties": {
+                    "id": {
+                        "title": "ID",
+                        "description": "ID",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "value": {
+                        "title": "value",
+                        "description": "value of choice",
+                        "type": "string",
+                        "example": "Science department"
+                    },
+                    "type": {
+                        "title": "type",
+                        "description": "type of question",
+                        "type": "string",
+                        "example": "mcq"
+                    },
+                    "created_at": {
+                        "title": "Created at",
+                        "description": "Created at",
+                        "type": "string",
+                        "format": "datetime",
+                        "example": "2020-01-27 17:50:45"
+                    },
+                    "updated_at": {
+                        "title": "Updated at",
+                        "description": "Updated at",
+                        "type": "string",
+                        "format": "datetime",
+                        "example": "2020-01-27 17:50:45"
+                    }
+                },
+                "type": "object",
+                "xml": {
+                    "name": "Option"
+                }
+            },
             "Question": {
                 "title": "Question",
                 "description": "Question model",
@@ -1831,6 +1984,16 @@
                         "type": "string",
                         "format": "datetime",
                         "example": "2021-05-22 17:50:45"
+                    },
+                    "user_id": {
+                        "title": "user ID",
+                        "description": "User id of instructor",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "user": {
+                        "$ref": "#/components/schemas/User"
                     }
                 },
                 "type": "object",
@@ -1930,6 +2093,57 @@
                 "type": "object",
                 "xml": {
                     "name": "Student"
+                }
+            },
+            "StudentAnswer": {
+                "title": "StudentAnswer",
+                "description": "Student answer model",
+                "properties": {
+                    "exam_id": {
+                        "title": "exam id",
+                        "description": "ID",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "student_id": {
+                        "title": "student id",
+                        "description": "ID",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "option_id": {
+                        "title": "option id",
+                        "description": "ID",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "question_id": {
+                        "title": "question id",
+                        "description": "ID",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "question_mark": {
+                        "title": "question mark",
+                        "description": "ID",
+                        "type": "number",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "studentAnswer": {
+                        "title": "student answer",
+                        "description": "student answer",
+                        "type": "string",
+                        "example": "Science department"
+                    }
+                },
+                "type": "object",
+                "xml": {
+                    "name": "StudentAnswer"
                 }
             },
             "User": {
