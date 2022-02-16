@@ -40,6 +40,8 @@ class CreateExamsTable extends Migration
             $table->unsignedBigInteger('student_id');
             $table->foreign('student_id')->references('id')->on('students')->onDelete('cascade');
             $table->dateTime('startTime');
+            $table->integer('numberOfFaces')->default(0);
+            $table->boolean('isVerified')->default(false);
             $table->timestamps();
         });
     }

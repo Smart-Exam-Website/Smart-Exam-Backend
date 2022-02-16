@@ -79,6 +79,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/exams/step3', 'App\Http\Controllers\ExamController@storeStepThree');
     Route::post('/exams/step4', 'App\Http\Controllers\ExamController@storeStepFour');
     Route::get('/exams/totalMark/{id}', 'App\Http\Controllers\ExamController@getExamAllStudentMarks');
+
+
+
 });
 
 
@@ -108,4 +111,12 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/questions', [McqController::class, 'store']);
     Route::put('/questions/{id}', [McqController::class, 'update']);
     Route::delete('/questions/{id}', [McqController::class, 'destroy']);
+});
+
+
+//---------------------------ML ROUTES----------------------------
+
+Route::group(['middleware' => ['auth:sanctum']], function () {
+    Route::post('/faceDetection', 'App\Http\Controllers\faceDetectionController@faceDetection');
+    Route::post('/faceVerification','App\Http\Controllers\faceVerificationController@faceVerification');
 });
