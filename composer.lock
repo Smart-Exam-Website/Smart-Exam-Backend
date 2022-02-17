@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0379c59fb1277dfa17bd4c12965af698",
+    "content-hash": "489ca39bbb115c1ed45b4629b1ff7433",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -124,21 +124,21 @@
         },
         {
             "name": "darkaonline/l5-swagger",
-            "version": "8.2.0",
+            "version": "8.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DarkaOnLine/L5-Swagger.git",
-                "reference": "f7f4451002d41ddaef120d2dc70e00630cccb787"
+                "reference": "b2e7885df13b0c43b48a8a1028d77428126228da"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DarkaOnLine/L5-Swagger/zipball/f7f4451002d41ddaef120d2dc70e00630cccb787",
-                "reference": "f7f4451002d41ddaef120d2dc70e00630cccb787",
+                "url": "https://api.github.com/repos/DarkaOnLine/L5-Swagger/zipball/b2e7885df13b0c43b48a8a1028d77428126228da",
+                "reference": "b2e7885df13b0c43b48a8a1028d77428126228da",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
-                "laravel/framework": ">=8.40.0 || ^7.0",
+                "laravel/framework": "^9.0 || >=8.40.0 || ^7.0",
                 "php": "^7.2 || ^8.0",
                 "swagger-api/swagger-ui": "^3.0 || ^4.0",
                 "symfony/yaml": "^5.0",
@@ -191,7 +191,7 @@
             ],
             "support": {
                 "issues": "https://github.com/DarkaOnLine/L5-Swagger/issues",
-                "source": "https://github.com/DarkaOnLine/L5-Swagger/tree/8.2.0"
+                "source": "https://github.com/DarkaOnLine/L5-Swagger/tree/8.3.0"
             },
             "funding": [
                 {
@@ -199,7 +199,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-02-03T07:36:33+00:00"
+            "time": "2022-02-14T07:30:01+00:00"
         },
         {
             "name": "dflydev/dot-access-data",

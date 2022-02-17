@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Validator;
 
 class faceVerificationController extends Controller
 {
@@ -23,7 +26,7 @@ class faceVerificationController extends Controller
      *          description="Successful operation",
      *          @OA\JsonContent(
      * @OA\Property(property="message", type="string", example="Success!"),
-     * @OA\Property(property="verified", type="bool", example=true),),
+     * @OA\Property(property="verified", type="bool", example=true),)
      *       ),
      *      @OA\Response(
      *          response=400,
@@ -40,7 +43,7 @@ class faceVerificationController extends Controller
      * )
      */
 
-    public function faceRecognition(Request $request)
+    public function faceVerification(Request $request)
     {
         if (auth()->user()->type != 'student') {
             return response()->json(['message' => 'Unauthorized!'], 400);
@@ -57,15 +60,18 @@ class faceVerificationController extends Controller
         if ($validator->fails()) {
             return response()->json(['message' => 'No image added!'], 400);
         }
-
-        $response = Http::post('http://3.142.238.250/verify', [
-            'imgs' => [
+        $params = [
+            'img' => json_encode([
                 'img1' => $request->image1,
                 'img2' => $request->image2,
-            ]
-        ]);
+            ])
+            ];
 
-        if (response()->ok()) {
+        $response = Http::post('http://3.142.238.250:5000/verify', $params);
+
+        return response()->json(['message' => 'Success!', 'verified' => $response->object()]);
+
+        if ($response->ok()) {
             if ($response->status() != 200) {
                 return response()->json(['message' => 'Failed to send images!'], 400);
             } else {
@@ -78,6 +84,8 @@ class faceVerificationController extends Controller
                     return response()->json(['message' => 'Error!'], 400);
                 }
             }
+        }  else {
+            return response()->json(['message' => 'Error!'], 400);
         }
     }
 }

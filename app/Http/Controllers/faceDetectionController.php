@@ -27,7 +27,7 @@ class faceDetectionController extends Controller
      *          description="Successful operation",
      *          @OA\JsonContent(
      * @OA\Property(property="message", type="string", example="Success!"),
-     * @OA\Property(property="numberOfFaces", type="integer", example=6),),
+     * @OA\Property(property="numberOfFaces", type="integer", example=6),)
      *       ),
      *      @OA\Response(
      *          response=400,
@@ -58,12 +58,17 @@ class faceDetectionController extends Controller
         $validator = Validator::make($request->all(), $rules);
 
         if($validator->fails()) {
-            return response()->json(['message' => 'No image added!'], 400);
+            return response()->json(['message' => 'Error validating request body'], 400);
         }
 
-        $response = Http::post('http://3.142.238.250/detect', [
+        $examId = $request->examId;
+        
+
+        $response = Http::post('http://3.142.238.250/m1/detect', [
             'image_encode' => $request->image,
         ]);
+
+        
 
         if($response->ok()) {
             if($response->status() != 200) {
@@ -71,7 +76,6 @@ class faceDetectionController extends Controller
             }
             else {
                 $numberOfFaces = $response->object()->number_of_faces;
-                $examId = $request->examId;
                 $status = DB::table('examSession')->update(['exam_id' => $examId, 'student_id' => $studentId, 'numberOfFaces' => $numberOfFaces]);
                 if($status) {
                     return response()->json(['message' => 'Success!', 'numberOfFaces' => $numberOfFaces]);
@@ -81,7 +85,7 @@ class faceDetectionController extends Controller
                 }
             }
         } else {
-            return response()->json(['message' => 'Error connecting to ML model!'], 400);
+            return response()->json(['message' => 'Error!'], 400);
         }
     }
 }

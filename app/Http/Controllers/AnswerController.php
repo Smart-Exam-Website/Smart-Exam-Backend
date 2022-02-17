@@ -65,7 +65,6 @@ class AnswerController extends Controller
             'option_id' => 'numeric',
             'question_id' => 'required|numeric',
             'exam_id' => 'required|numeric',
-            'studentAnswer' => 'max:255'
         ];
 
         $validator = Validator::make($request->all(), $rules);
