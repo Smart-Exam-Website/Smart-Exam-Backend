@@ -14,7 +14,7 @@ class QuestionFactory extends Factory
     public function definition()
     {
         return [
-            'questionText' => $this->faker->text(700),
+            'questionText' => $this->faker->sentence(),
             'type' => $this->faker->randomElement(['mcq'])
         ];
     }

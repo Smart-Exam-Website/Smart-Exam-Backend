@@ -14,7 +14,7 @@ class OptionFactory extends Factory
     public function definition()
     {
         return [
-            'value' => $this->faker->text(500),
+            'value' => $this->faker->word(),
             'type' => $this->faker->randomElement(['mcq'])
         ];
     }

@@ -60,14 +60,13 @@ class faceVerificationController extends Controller
         if ($validator->fails()) {
             return response()->json(['message' => 'No image added!'], 400);
         }
-        $params = [
+
+        $response = Http::post('http://3.142.238.250:5000/verify', [
             'img' => json_encode([
                 'img1' => $request->image1,
                 'img2' => $request->image2,
             ])
-            ];
-
-        $response = Http::post('http://3.142.238.250:5000/verify', $params);
+        ]);
 
         return response()->json(['message' => 'Success!', 'verified' => $response->object()]);
 
@@ -85,7 +84,7 @@ class faceVerificationController extends Controller
                 }
             }
         }  else {
-            return response()->json(['message' => 'Error!'], 400);
+            return response()->json(['message' => 'An error occurred!'], 400);
         }
     }
 }

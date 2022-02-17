@@ -68,7 +68,7 @@ class faceDetectionController extends Controller
             'image_encode' => $request->image,
         ]);
 
-        
+        // return response()->json(['message' => 'Success!', 'verified' => $response->object()]);
 
         if($response->ok()) {
             if($response->status() != 200) {
@@ -81,11 +81,11 @@ class faceDetectionController extends Controller
                     return response()->json(['message' => 'Success!', 'numberOfFaces' => $numberOfFaces]);
                 }
                 else {
-                    return response()->json(['message' => 'Error!'], 400);
+                    return response()->json(['message' => $status], 400);
                 }
             }
         } else {
-            return response()->json(['message' => 'Error!'], 400);
+            return response()->json(['message' => 'An error occurred!'], 400);
         }
     }
 }
