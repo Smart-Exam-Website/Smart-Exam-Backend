@@ -47,6 +47,17 @@ class Question
      * @var string
      */
     public $type;
+    /**
+     * @OA\Property(
+     *     title="isHidden",
+     *     description="isHidden",
+     *     format="int64",
+     *     example=1
+     * )
+     *
+     * @var integer
+     */
+    private $isHidden;
 
 
     /**

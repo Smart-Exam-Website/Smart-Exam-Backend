@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Department;
+use App\Models\ExamQuestion;
+use App\Models\examSession;
 use App\Models\Option;
 use App\Models\McqAnswer;
 use Illuminate\Http\Request;
 use App\Models\Question;
 use App\Models\Mcq;
+use App\Models\Exam;
 
 class McqController extends Controller
 {
@@ -115,6 +118,7 @@ class McqController extends Controller
             $question = Question::create([
                 'questionText' => $fields['questionText'],
                 'type' => 'mcq',
+                'isHidden' => false,
                 'instructor_id' => $user->id
             ]);
 
@@ -254,10 +258,69 @@ class McqController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $user = auth()->user();
+        $examQuestions = ExamQuestion::all();
+        $now = date("Y-m-d H:i:s");
+        foreach ($examQuestions as $exQ) {
+            $start_time = Exam::find($exQ->exam_id)->startAt;
+            if ($exQ->question_id == $id && $now >= $start_time) {
+                //create New Question Because this question is found in another prev exam
+                if ($user->type == 'instructor') {
+
+                    $fields = $request->validate([
+                        'questionText' => 'required|string|max:255',
+                        'type' => 'required|string',
+                        'answers'    => 'required|array|min:2',
+                        'answers.*'  => 'required|string|distinct|min:2',
+                        'correctAnswer' => 'required|string',
+                    ]);
+
+
+                    $question = Question::create([
+                        'questionText' => $fields['questionText'],
+                        'type' => 'mcq',
+                        'instructor_id' => $user->id
+                    ]);
+
+                    if ($question->type == 'mcq') {
+                        Mcq::create([
+                            'id' => $question->id
+                        ]);
+                    }
+
+                    $answers = $fields['answers'];
+
+                    foreach ($answers as $a) {
+                        $answerss = Option::create([
+                            'value' => $a,
+                            'type' => 'mcq'
+                        ]);
+
+                        if ($fields['correctAnswer'] == $answerss->value) {
+                            $mcqanswers = McqAnswer::create([
+                                'question_id' => $question->id,
+                                'id' => $answerss->id,
+                                'isCorrect' => true
+                            ]);
+                        } else {
+                            $mcqanswers = McqAnswer::create([
+                                'question_id' => $question->id,
+                                'id' => $answerss->id,
+                                'isCorrect' => false
+                            ]);
+                        }
+                    }
+                    return response($question, 201);
+                } else {
+                    return response()->json(['message' => 'There is no logged in Instructor'], 400);
+                }
+            }
+        }
+
+        //we can update this question because it is not in one of the prev exams
         $question = Mcq::find($id);
         $questionn = Question::find($id);
         $answers = $question->McqAnswers;
-        $user = auth()->user();
 
         if ($user->type == 'instructor') {
 
@@ -272,6 +335,11 @@ class McqController extends Controller
             $newanswers = [];
 
             for ($i = 0; $i < $answers->count(); $i++) {
+                $correctAnswerid = 0;
+                $op = Option::where(['id' => (int)($answers[$i]->id)])->first();
+
+                if ($op->value == $request['correctAnswer'])
+                    $correctAnswerid = $op->id;
                 if (isset(((object)$request)->answers[$i])) {
                     array_push(
                         $newanswers,
@@ -282,8 +350,9 @@ class McqController extends Controller
                         'value' => ((object)$request)->answers[$i]
                     ]);
                     if (isset(((object)$request)->correctAnswer)) {
+
                         $answers[$i]->update([
-                            'isCorrect' => (int)($option->id == Option::where(['value' => $request['correctAnswer']])->first()->id)
+                            'isCorrect' => (int)($option->id == $correctAnswerid)
                         ]);
                     }
                 } else {
