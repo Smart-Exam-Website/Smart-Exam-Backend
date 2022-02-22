@@ -26,6 +26,6 @@ class Exam extends Model
     }
 
     public function sessions() {
-        return $this->belongsToMany(examSession::class ,'examsession','exam_id')->withTimestamps()->withPivot(['numberOfFaces', 'isVerified', 'startTime']);
+        return $this->belongsToMany(examSession::class ,'examsession','exam_id')->withTimestamps()->withPivot(['numberOfFaces', 'isVerified', 'startTime', 'isSubmitted', 'submittedAt']);
     }
 }

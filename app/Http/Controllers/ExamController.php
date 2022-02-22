@@ -48,20 +48,28 @@ class ExamController extends Controller
         $finalExams = [];
 
         foreach ($exams as $exam) {
-            $configs = $exam->config;
-            $questions = $exam->questions;
+            $exam->config;
+            $exam->questions;
 
-            if (!$configs && !$questions) {
-                $exam['status'] = 'No config or questions';
-            } else if (!$configs) {
-                $exam['status'] = 'No config';
-            } else if (!$questions) {
-                $exam['status'] = 'No questions';
-            } else {
-                $exam['status'] = 'Complete';
-            }
             if ($exam->isPublished) {
                 array_push($finalExams, $exam);
+            }
+        }
+
+        if (auth()->user()->type == 'student') {
+            foreach ($finalExams as $exam) {
+                $isSubmitted = false;
+                $sessions = examSession::where(['exam_id' => $exam->id, 'student_id' => auth()->user()->id])->get();
+                if ($sessions) {
+                    foreach ($sessions as $session) {
+
+                        if ($session->isSubmitted) {
+                            $isSubmitted = true;
+                            break;
+                        }
+                    }
+                }
+                $exam['isSubmitted'] = $isSubmitted;
             }
         }
         return $finalExams;
@@ -112,6 +120,7 @@ class ExamController extends Controller
                 $exam['status'] = 'Complete';
             }
         }
+        
         return $exams;
     }
 
@@ -1070,8 +1079,7 @@ class ExamController extends Controller
         $student = auth()->user();
 
         $examSession = examSession::where(['exam_id' => $exam->id, 'student_id' => $student->id])->latest()->get()->first();
-
-        if (!examSession) {
+        if (!$examSession) {
             return response()->json(['message' => 'No exam session for this student!'], 400);
         }
 
@@ -1079,7 +1087,16 @@ class ExamController extends Controller
             return response()->json(['message' => 'Exam already submitted!'], 400);
         }
 
-        $status = DB::table('examSession')->update(['exam_id' => $exam->id, 'student_id' => $student->id, 'isSubmitted' => true, 'submittedAt' => now()]);
+        // check number of questions of exam
+        $questions = DB::table('exam_question')->where('exam_id', $exam->id)->join('questions', 'question_id', 'questions.id')->select(['questions.id', 'questions.questionText', 'exam_question.mark', 'questions.type'])->get();
+        // check how many questions the student answered!
+        $answers = DB::table('answers')->where(['exam_id' => $exam->id, 'student_id' => $student->id])->get();
+        // cannot submit until they are all answered!
+        if(count($answers) < count($questions)) {
+            return response()->json(['message' => 'You cannot submit yet!, you haven\'t answered all questions'], 400);
+        }
+
+        $status = DB::table('examsession')->update(['exam_id' => $exam->id, 'student_id' => $student->id, 'isSubmitted' => true, 'submittedAt' => now()]);
 
         if ($status) {
             return response()->json(['message' => 'Submitted exam successfully!']);
