@@ -475,7 +475,7 @@ class ExamController extends Controller
      *          response=200,
      *          description="Successful operation",
      *          @OA\JsonContent(
-     * @OA\Property(property="message", type="string", example="successfully published exam!"),
+     * @OA\Property(property="message", type="string", example="successfully started exam!"),
      * ),
      *       ),
      *      @OA\Response(
