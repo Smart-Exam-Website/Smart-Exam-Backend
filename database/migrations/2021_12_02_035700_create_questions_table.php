@@ -17,6 +17,9 @@ class CreateQuestionsTable extends Migration
             $table->id();
             $table->text('questionText');
             $table->string('type');
+            $table->boolean('isHidden')->default(false);
+            $table->unsignedBigInteger('instructor_id');
+            $table->foreign('instructor_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });
     }

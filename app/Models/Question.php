@@ -34,4 +34,8 @@ class Question extends Model
     {
         return $this->belongsToMany(Answer::class);
     }
+    public function instructor()
+    {
+        return $this->belongsTo(Instructor::class);
+    }
 }

@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Department;
+use App\Models\ExamQuestion;
+use App\Models\examSession;
 use App\Models\Option;
 use App\Models\McqAnswer;
 use Illuminate\Http\Request;
 use App\Models\Question;
 use App\Models\Mcq;
+use App\Models\Exam;
 
 class McqController extends Controller
 {
@@ -38,7 +41,11 @@ class McqController extends Controller
      */
     public function index()
     {
-        return Question::latest('created_at')->get();;
+        $questions = Question::latest('created_at')->get();
+        foreach ($questions as $q) {
+            $q->instructor->user;
+        }
+        return $questions;
     }
 
     /**
@@ -97,7 +104,6 @@ class McqController extends Controller
     {
 
         $user = auth()->user();
-
         if ($user->type == 'instructor') {
 
             $fields = $request->validate([
@@ -111,7 +117,9 @@ class McqController extends Controller
 
             $question = Question::create([
                 'questionText' => $fields['questionText'],
-                'type' => 'mcq'
+                'type' => 'mcq',
+                'isHidden' => false,
+                'instructor_id' => $user->id
             ]);
 
             if ($question->type == 'mcq') {
@@ -142,6 +150,11 @@ class McqController extends Controller
                     ]);
                 }
             }
+
+            $question->mcq->McqAnswers->each(function ($e) {
+                $e->option;
+            });
+
             return response($question, 201);
         } else {
             return response()->json(['message' => 'There is no logged in Instructor'], 400);
@@ -176,6 +189,7 @@ class McqController extends Controller
     public function show($id)
     {
         $question = Question::where('id', $id)->get()->first();
+        $question->instructor->user;
         $question->tags;
         $question->Mcq->McqAnswers->each(function ($m) {
             $m->option;
@@ -249,66 +263,146 @@ class McqController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $question = Mcq::find($id);
-        $questionn = Question::find($id);
-        $answers = $question->McqAnswers;
         $user = auth()->user();
+        $examQuestions = ExamQuestion::where(['question_id' => $id])->get();
+        $exams = [];
+        foreach ($examQuestions as $exQ) {
+            array_push($exams, Exam::find($exQ->exam_id));
+        }
+        usort($exams, function ($a, $b) {
+            return strcmp($a->startAt, $b->startAt);
+        });
 
-        if ($user->type == 'instructor') {
 
-            $request = $request->validate([
-                'questionText' => 'string|max:255',
-                'type' => 'string',
-                'answers'    => 'array|min:2',
-                'answers.*'  => 'string|distinct|min:2',
-                'correctAnswer' => 'string',
-            ]);
+        $now = date("Y-m-d H:i:s");
+        if (count($exams) > 0)
+            $start_time = $exams[0]->startAt;
+        else $start_time = 0;
+        //return response([$now, $start_time]);
+        if ($start_time != 0 && $now >= $start_time) {
+            //create New Question Because this question is found in another prev exam
+            if ($user->type == 'instructor') {
 
-            $newanswers = [];
+                $fields = $request->validate([
+                    'questionText' => 'required|string|max:255',
+                    'type' => 'required|string',
+                    'answers'    => 'required|array|min:2',
+                    'answers.*'  => 'required|string|distinct|min:2',
+                    'correctAnswer' => 'required|string',
+                ]);
 
-            for ($i = 0; $i < $answers->count(); $i++) {
-                if (isset(((object)$request)->answers[$i])) {
-                    array_push(
-                        $newanswers,
-                        ((object)$request)->answers[$i]
-                    );
-                    $option = Option::where(['id' => $answers[$i]->id])->first();
-                    $option->update([
-                        'value' => ((object)$request)->answers[$i]
+
+                $question = Question::create([
+                    'questionText' => $fields['questionText'],
+                    'type' => 'mcq',
+                    'instructor_id' => $user->id
+                ]);
+
+                if ($question->type == 'mcq') {
+                    Mcq::create([
+                        'id' => $question->id
                     ]);
-                    if (isset(((object)$request)->correctAnswer)) {
-                        $answers[$i]->update([
-                            'isCorrect' => (int)($option->id == Option::where(['value' => $request['correctAnswer']])->first()->id)
+                }
+
+                $answers = $fields['answers'];
+
+                foreach ($answers as $a) {
+                    $answerss = Option::create([
+                        'value' => $a,
+                        'type' => 'mcq'
+                    ]);
+
+                    if ($fields['correctAnswer'] == $answerss->value) {
+                        $mcqanswers = McqAnswer::create([
+                            'question_id' => $question->id,
+                            'id' => $answerss->id,
+                            'isCorrect' => true
                         ]);
-                    }
-                } else {
-                    array_push(
-                        $newanswers,
-                        Option::where(['id' => $answers[$i]->id])->first()->value
-                    );
-                    $option = Option::where(['id' => $answers[$i]->id])->first();
-                    if (isset(((object)$request)->correctAnswer)) {
-                        $answers[$i]->update([
-                            'isCorrect' => (int)($option->id == Option::where(['value' => $request['correctAnswer']])->first()->id)
+                    } else {
+                        $mcqanswers = McqAnswer::create([
+                            'question_id' => $question->id,
+                            'id' => $answerss->id,
+                            'isCorrect' => false
                         ]);
                     }
                 }
+
+                $question->mcq->McqAnswers->each(function ($e) {
+                    $e->option;
+                });
+
+                return response($question, 201);
+            } else {
+                return response()->json(['message' => 'There is no logged in Instructor'], 400);
             }
-
-
-            $questionn->update([
-                'questionText' => $request['questionText'] ? $request['questionText'] : $questionn->questionText,
-                'type' => isset($request['type']) ? $request['type'] : $questionn->type
-            ]);
-
-            $question->McqAnswers->each(function ($e) {
-                $e->option;
-            });
-
-
-            return response(['question' => $question], 200);
         } else {
-            return response()->json(['message' => 'There is no logged in Instructor'], 400);
+            //we can update this question because it is not in one of the prev exams
+            $question = Mcq::find($id);
+            $questionn = Question::find($id);
+            $answers = $question->McqAnswers;
+
+            if ($user->type == 'instructor') {
+
+                $request = $request->validate([
+                    'questionText' => 'string|max:255',
+                    'type' => 'string',
+                    'answers'    => 'array|min:2',
+                    'answers.*'  => 'string|distinct|min:2',
+                    'correctAnswer' => 'string',
+                ]);
+
+                $newanswers = [];
+
+                for ($i = 0; $i < $answers->count(); $i++) {
+                    $correctAnswerid = 0;
+                    $op = Option::where(['id' => (int)($answers[$i]->id)])->first();
+
+                    if ($op->value == $request['correctAnswer'])
+                        $correctAnswerid = $op->id;
+                    if (isset(((object)$request)->answers[$i])) {
+                        array_push(
+                            $newanswers,
+                            ((object)$request)->answers[$i]
+                        );
+                        $option = Option::where(['id' => $answers[$i]->id])->first();
+                        $option->update([
+                            'value' => ((object)$request)->answers[$i]
+                        ]);
+                        if (isset(((object)$request)->correctAnswer)) {
+
+                            $answers[$i]->update([
+                                'isCorrect' => (int)($option->id == $correctAnswerid)
+                            ]);
+                        }
+                    } else {
+                        array_push(
+                            $newanswers,
+                            Option::where(['id' => $answers[$i]->id])->first()->value
+                        );
+                        $option = Option::where(['id' => $answers[$i]->id])->first();
+                        if (isset(((object)$request)->correctAnswer)) {
+                            $answers[$i]->update([
+                                'isCorrect' => (int)($option->id == Option::where(['value' => $request['correctAnswer']])->first()->id)
+                            ]);
+                        }
+                    }
+                }
+
+
+                $questionn->update([
+                    'questionText' => $request['questionText'] ? $request['questionText'] : $questionn->questionText,
+                    'type' => isset($request['type']) ? $request['type'] : $questionn->type
+                ]);
+
+                $question->McqAnswers->each(function ($e) {
+                    $e->option;
+                });
+
+
+                return response(['question' => $question], 200);
+            } else {
+                return response()->json(['message' => 'There is no logged in Instructor'], 400);
+            }
         }
     }
 
@@ -359,12 +453,38 @@ class McqController extends Controller
     {
 
         $user = auth()->user();
+        $examQuestions = ExamQuestion::where(['question_id' => $id])->get();
+        $exams = [];
+        foreach ($examQuestions as $exQ) {
+            array_push($exams, Exam::find($exQ->exam_id));
+        }
+        usort($exams, function ($a, $b) {
+            return strcmp($a->startAt, $b->startAt);
+        });
 
-        if ($user->type == 'instructor') {
-            $question = Question::where(['id' => $id])->first();
-            $question->delete();
+
+        $now = date("Y-m-d H:i:s");
+        if (count($exams) > 0)
+            $start_time = $exams[0]->startAt;
+        else $start_time = 0;
+        return response([$now, $start_time]);
+        if ($start_time != 0 && $now >= $start_time) {
+            //We cannot delete only set is hidden to true
+            if ($user->type == 'instructor') {
+                $question = Question::where(['id' => $id])->first();
+                $question->update(['isHidden' => true]);
+                $question->save();
+            } else {
+                return response()->json(['message' => 'There is no logged in Instructor'], 400);
+            }
         } else {
-            return response()->json(['message' => 'There is no logged in Instructor'], 400);
+
+            if ($user->type == 'instructor') {
+                $question = Question::where(['id' => $id])->first();
+                $question->delete();
+            } else {
+                return response()->json(['message' => 'There is no logged in Instructor'], 400);
+            }
         }
     }
 }

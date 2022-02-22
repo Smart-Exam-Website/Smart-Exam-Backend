@@ -47,6 +47,17 @@ class Question
      * @var string
      */
     public $type;
+    /**
+     * @OA\Property(
+     *     title="isHidden",
+     *     description="isHidden",
+     *     format="int64",
+     *     example=1
+     * )
+     *
+     * @var integer
+     */
+    private $isHidden;
 
 
     /**
@@ -74,6 +85,29 @@ class Question
      * @var \DateTime
      */
     private $updated_at;
+
+    /**
+     * @OA\Property(
+     *      title="Instructor ID",
+     *      description="Instructor id",
+     *      format="int64",
+     *      example=4
+     * )
+     *
+     * @var integer
+     */
+    public $instructor_id;
+
+
+    /**
+     * @OA\Property(
+     *     title="instructor",
+     *     description="instructor"
+     * )
+     *
+     * @var \App\Virtual\Models\Instructor
+     */
+    private $instructor;
 
     /**
      * @OA\Property(
