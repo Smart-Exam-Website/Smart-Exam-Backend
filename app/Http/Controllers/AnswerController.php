@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Answer;
+use App\Models\Option;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class AnswerController extends Controller
@@ -77,13 +79,23 @@ class AnswerController extends Controller
 
         $answerDetails = $request->only(['option_id', 'question_id', 'exam_id', 'studentAnswer']);
 
+        
+
         $answerDetails['student_id'] = auth()->user()->id;
 
-        $answer = Answer::create($answerDetails);
+        $answer = Answer::where(['exam_id' => $request->exam_id, 'student_id' => auth()->user()->id, 'question_id' => $request->question_id])->get()->first();
 
-        if(!$answer) {
-            return response()->json(['message' => 'failed to add answer'], 400);
+        if($answer) {
+            DB::table('answers')->update($answerDetails);
+            // $answer->update($answerDetails);
+        } else {
+            $answer = Answer::create($answerDetails);
+            if(!$answer) {
+                return response()->json(['message' => 'failed to add answer'], 400);
+            }  
         }
+
+
 
         return response()->json(['message' => 'data stored successfully']);
     }

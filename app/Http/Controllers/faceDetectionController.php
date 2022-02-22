@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Exam;
 use App\Models\examSession;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -12,7 +13,7 @@ class faceDetectionController extends Controller
 {
 
 
-        /**
+    /**
      * @OA\Post(
      *      path="/faceDetection",
      *      operationId="faceDetectionAPI",
@@ -45,34 +46,32 @@ class faceDetectionController extends Controller
      * )
      */
 
-    
-    public function faceDetection(Request $request) {
-        if(auth()->user()->type != 'student') {
+
+    public function faceDetection(Request $request)
+    {
+        if (auth()->user()->type != 'student') {
             return response()->json(['message' => 'Unauthorized!'], 400);
         }
-        $studentId = auth()->user()->id;
-        $examId = $request->examId;
         $rules = [
             'image' => 'required',
             'examId' => 'required',
         ];
-
-        // attempt???
-
-        $examSession = examSession::where(['exam_id' => $examId, 'student_id' => $studentId])->latest()->get()->first();
-
-        if(!$examSession) {
-            return response()->json(['message' => 'No exam session present for this student!']);
-        }
-    
         $validator = Validator::make($request->all(), $rules);
 
-        if($validator->fails()) {
+        if ($validator->fails()) {
             return response()->json(['message' => 'Error validating request body'], 400);
         }
 
-        
-        
+        $exam = Exam::where(['id' => $request->examId])->get()->first();
+
+        $config = $exam->config;
+
+        if(!$config->faceDetection) {
+            return response()->json(['message' => 'This exam does not support face detection!'], 400);
+        }
+
+
+
 
         $response = Http::post('http://3.142.238.250/m1/detect', [
             'image_encode' => $request->image,
@@ -80,24 +79,13 @@ class faceDetectionController extends Controller
 
         // return response()->json(['message' => 'Success!', 'verified' => $response->object()]);
 
-        if($response->ok()) {
-            if($response->status() != 200) {
+        if ($response->ok()) {
+            if ($response->status() != 200) {
                 return response()->json(['message' => 'Failed to send image!'], 400);
-            }
-            else {
+            } else {
                 $numberOfFaces = $response->object()->number_of_faces;
-                if($examSession->numberOfFaces != $numberOfFaces) {
-                    
-                    $status = DB::table('examSession')->update(['exam_id' => $examId, 'student_id' => $studentId, 'numberOfFaces' => $numberOfFaces]);
-                } else {
-                    $status = true;
-                }
-                if($status) {
-                    return response()->json(['message' => 'Success!', 'numberOfFaces' => $numberOfFaces]);
-                }
-                else {
-                    return response()->json(['message' => $status], 400);
-                }
+
+                return response()->json(['message' => 'Success!', 'numberOfFaces' => $numberOfFaces]);
             }
         } else {
             return response()->json(['message' => 'An error occurred!'], 400);

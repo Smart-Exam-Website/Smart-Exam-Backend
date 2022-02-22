@@ -47,28 +47,27 @@ class ExamController extends Controller
         $exams = Exam::latest('created_at')->get();
         $finalExams = [];
 
-        foreach($exams as $exam) {
+        foreach ($exams as $exam) {
             $configs = $exam->config;
             $questions = $exam->questions;
 
-            if(!$configs && !$questions) {
+            if (!$configs && !$questions) {
                 $exam['status'] = 'No config or questions';
-            } else if(!$configs) {
+            } else if (!$configs) {
                 $exam['status'] = 'No config';
             } else if (!$questions) {
                 $exam['status'] = 'No questions';
-            }
-            else {
+            } else {
                 $exam['status'] = 'Complete';
             }
-            if($exam->isPublished) {
+            if ($exam->isPublished) {
                 array_push($finalExams, $exam);
             }
         }
         return $finalExams;
     }
 
-        /**
+    /**
      * @OA\Get(
      *      path="/instructors/myExams",
      *      operationId="getexamsList",
@@ -94,25 +93,24 @@ class ExamController extends Controller
      *     )
      */
 
-    public function indexInstructor() {
+    public function indexInstructor()
+    {
         // get all instructor's exams, whether published or not.
         $exams = Exam::where(['instructor_id' => auth()->user()->id])->latest('created_at')->get();
 
-        foreach($exams as $exam) {
+        foreach ($exams as $exam) {
             $configs = $exam->config;
             $questions = $exam->questions;
 
-            if(!$configs && !$questions) {
+            if (!$configs && !$questions) {
                 $exam['status'] = 'No config or questions';
-            } else if(!$configs) {
+            } else if (!$configs) {
                 $exam['status'] = 'No config';
             } else if (!$questions) {
                 $exam['status'] = 'No questions';
-            }
-            else {
+            } else {
                 $exam['status'] = 'Complete';
             }
-        
         }
         return $exams;
     }
@@ -152,7 +150,7 @@ class ExamController extends Controller
      */
     public function storeStepOne(Request $request)
     {
-        if(auth()->user()->type != 'instructor') {
+        if (auth()->user()->type != 'instructor') {
             return response()->json(['message' => 'Unauthorized to create exam!'], 403);
         }
         // create exam
@@ -220,7 +218,7 @@ class ExamController extends Controller
      */
     public function storeStepTwo(Request $request)
     {
-        if(auth()->user()->type != 'instructor') {
+        if (auth()->user()->type != 'instructor') {
             return response()->json(['message' => 'Unauthorized to create exam!'], 403);
         }
         // create exam
@@ -293,7 +291,7 @@ class ExamController extends Controller
 
     public function storeStepThree(Request $request)
     {
-        if(auth()->user()->type != 'instructor') {
+        if (auth()->user()->type != 'instructor') {
             return response()->json(['message' => 'Unauthorized to create exam!'], 403);
         }
         // create exam
@@ -358,7 +356,7 @@ class ExamController extends Controller
      */
     public function storeStepFour(Request $request)
     {
-        if(auth()->user()->type != 'instructor') {
+        if (auth()->user()->type != 'instructor') {
             return response()->json(['message' => 'Unauthorized to create exam!'], 403);
         }
         // create exam
@@ -375,7 +373,7 @@ class ExamController extends Controller
         }
 
         $exam = Exam::where('id', $request->examId)->first();
-        
+
 
         $questions = $request->questions;
 
@@ -415,7 +413,7 @@ class ExamController extends Controller
     }
 
 
-     /**
+    /**
      * @OA\Get(
      *      path="/exams/{exam}/questions",
      *      operationId="getExamQuestions",
@@ -458,11 +456,13 @@ class ExamController extends Controller
 
     public function startExam(Request $request, Exam $exam)
     {
-        if(auth()->user()->type != 'student') {
+        if (auth()->user()->type != 'student') {
             return response()->json(['message' => 'cannot take exam as instructor!'], 400);
         }
         $rules = [
-            'startTime' => 'required|date'
+            'startTime' => 'required|date',
+            'numberOfFaces' => 'required|integer',
+            'isVerified' => 'required|boolean'
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -470,23 +470,40 @@ class ExamController extends Controller
             return response()->json(['message' => 'the given data is invalid'], 400);
         }
 
-        if($exam->startAt > $request->startTime) {
+        if ($exam->startAt > $request->startTime) {
             return response()->json(['message' => 'You cannot start this exam yet!', 400]);
         }
 
-        if($exam->endAt < $request->startTime) {
+        if ($exam->endAt < $request->startTime) {
             return response()->json(['message' => 'Exam is closed now!'], 400);
         }
 
-        // attempt???
+        $examSession = examSession::where(['exam_id' => $exam->id, 'student_id' => auth()->user()->id])->latest()->get()->first();
+        if ($examSession) {
+            $attempt = $examSession->attempt + 1;
+            if ($attempt <= $exam->numberOfTrials) {
+                $examSession = examSession::create([
+                    'exam_id' => $exam->id,
+                    'student_id' => auth()->user()->id,
+                    'startTime' => $request->startTime,
+                    'attempt' => $attempt,
+                    'isVerified' => $request->isVerified,
+                    'numberOfFaces' => $request->numberOfFaces
+                ]);
+            } else {
+                return response()->json(['message' => 'Exceeded number of attempts!']);
+            }
+        } else {
+            $examSession = examSession::create([
+                'exam_id' => $exam->id,
+                'student_id' => auth()->user()->id,
+                'startTime' => $request->startTime,
+                'isVerified' => $request->isVerified,
+                'numberOfFaces' => $request->numberOfFaces
+            ]);
+        }
 
-        
 
-        $examSession = examSession::create([
-            'exam_id' => $exam->id,
-            'student_id' => auth()->user()->id,
-            'startTime' => $request->startTime
-        ]);
 
         if (!$examSession) {
             return response()->json(['message' => 'Failed to add exam session'], 400);
@@ -505,10 +522,9 @@ class ExamController extends Controller
             $question->answers = $answers;
         }
         return response()->json(['questions' => $questions]);
-
     }
 
-     /**
+    /**
      * @OA\Get(
      *      path="/exams/{exam}/configs",
      *      operationId="getExamConfigs",
@@ -534,13 +550,14 @@ class ExamController extends Controller
      *     )
      */
 
-    public function getExamConfigurations(Exam $exam) {
-        if(!$exam) {
+    public function getExamConfigurations(Exam $exam)
+    {
+        if (!$exam) {
             return response()->json(['message' => 'No exam with this id!'], 404);
         }
-        $config = Configuration::where('exam_id' , $exam->id)->get()->first();
+        $config = Configuration::where('exam_id', $exam->id)->get()->first();
 
-        if(!$config) {
+        if (!$config) {
             return response()->json(['message' => 'No configurations found for this exam!'], 400);
         }
         return response()->json(['configuration' => $config]);
@@ -585,6 +602,10 @@ class ExamController extends Controller
 
     public function getExamAllStudentMarks($id)
     {
+        $exam = Exam::where(['id' => $id])->get()->first();
+        if (now() <= $exam->endAt) {
+            return response()->json(['message' => 'Cannot mark exam yet!'], 400);
+        }
         $students = Student::all();
 
         foreach ($students as $s) {
@@ -649,7 +670,7 @@ class ExamController extends Controller
         //
     }
 
-        /**
+    /**
      * @OA\Put(
      *      path="/exams/{exam}/step1",
      *      operationId="updateExamStepOne",
@@ -681,10 +702,10 @@ class ExamController extends Controller
      */
     public function updateStepOne(Request $request, Exam $exam)
     {
-        if(!$exam) {
+        if (!$exam) {
             return response()->json(['message' => 'Exam not found!']);
         }
-        if(auth()->user()->type != 'instructor') {
+        if (auth()->user()->type != 'instructor') {
             return response()->json(['message' => 'Unauthorized to update exam!'], 403);
         }
         // create exam
@@ -712,9 +733,9 @@ class ExamController extends Controller
 
         return response()->json(['message' => 'successfully updated exam!']);
     }
-    
 
-            /**
+
+    /**
      * @OA\Put(
      *      path="/exams/{exam}/step2",
      *      operationId="updateExamStepTwo",
@@ -746,10 +767,10 @@ class ExamController extends Controller
      */
     public function updateStepTwo(Request $request, Exam $exam)
     {
-        if(!$exam) {
+        if (!$exam) {
             return response()->json(['message' => 'Exam not found!']);
         }
-        if(auth()->user()->type != 'instructor') {
+        if (auth()->user()->type != 'instructor') {
             return response()->json(['message' => 'Unauthorized to update exam!'], 403);
         }
         // create exam
@@ -809,7 +830,7 @@ class ExamController extends Controller
      */
     public function updateStepThree(Request $request, Exam $exam)
     {
-        if(auth()->user()->type != 'instructor') {
+        if (auth()->user()->type != 'instructor') {
             return response()->json(['message' => 'Unauthorized to create exam!'], 403);
         }
         // update exam
@@ -831,7 +852,7 @@ class ExamController extends Controller
         // $exam->questions()->sync($questions, ['mark' => $mark]);
         return response()->json(['message' => 'successfully added questions to exam!']);
     }
-       /**
+    /**
      * @OA\Put(
      *      path="/exams/{exam}/step4",
      *      operationId="updateExamStepFour",
@@ -863,7 +884,7 @@ class ExamController extends Controller
      */
     public function updateStepFour(Request $request, Exam $exam)
     {
-        if(auth()->user()->type != 'instructor') {
+        if (auth()->user()->type != 'instructor') {
             return response()->json(['message' => 'Unauthorized to create exam!'], 403);
         }
         // create exam
@@ -878,7 +899,7 @@ class ExamController extends Controller
         if ($validator->fails()) {
             return response()->json(['message' => 'the given data is invalid'], 400);
         }
-        
+
 
         $questions = $request->questions;
 
@@ -887,7 +908,7 @@ class ExamController extends Controller
         return response()->json(['message' => 'successfully created exam!']);
     }
 
-     /**
+    /**
      * @OA\Delete(
      *      path="/exams/{exam}",
      *      operationId="deleteExam",
@@ -914,12 +935,11 @@ class ExamController extends Controller
     public function destroy(Exam $exam)
     {
         $user = auth()->user();
-        if($user-> type != 'instructor') {
+        if ($user->type != 'instructor') {
             return response()->json(['message' => 'Not authorized to delete exam']);
         }
         $exam->delete();
         return response()->json('Exam deleted successfully', 200);
-        
     }
 
     /**
@@ -950,21 +970,22 @@ class ExamController extends Controller
      */
 
 
-    public function getStudentAnswers(Exam $exam) {
+    public function getStudentAnswers(Exam $exam)
+    {
 
         $student = auth()->user();
-        if($student->type != 'student') {
-            return response()->json(['message' => 'Not a student!'],400);
+        if ($student->type != 'student') {
+            return response()->json(['message' => 'Not a student!'], 400);
         }
         $studentId = $student->id;
 
-        $answers = Answer::where(['student_id'=> $studentId, 'exam_id' => $exam->id])->get();
+        $answers = Answer::where(['student_id' => $studentId, 'exam_id' => $exam->id])->get();
 
-        if(!$answers) {
-            return response()->json(['message' => 'No answers found!'],400);
+        if (!$answers) {
+            return response()->json(['message' => 'No answers found!'], 400);
         }
 
-        return response()->json(['message' => 'Success!' , 'answers' => $answers]);
+        return response()->json(['message' => 'Success!', 'answers' => $answers]);
     }
 
 
@@ -999,7 +1020,8 @@ class ExamController extends Controller
      */
 
 
-    public function submitExam(Exam $exam) {
+    public function submitExam(Exam $exam)
+    {
 
         // attempt???
 
@@ -1007,17 +1029,17 @@ class ExamController extends Controller
 
         $examSession = examSession::where(['exam_id' => $exam->id, 'student_id' => $student->id])->latest()->get()->first();
 
-        if(!examSession) {
+        if (!examSession) {
             return response()->json(['message' => 'No exam session for this student!'], 400);
         }
-        
-        if($examSession->isSubmitted) {
+
+        if ($examSession->isSubmitted) {
             return response()->json(['message' => 'Exam already submitted!'], 400);
         }
 
-        $status = DB::table('examSession')->update(['exam_id' => $exam->id, 'student_id' => $student->id, 'isSubmitted' => true]);
+        $status = DB::table('examSession')->update(['exam_id' => $exam->id, 'student_id' => $student->id, 'isSubmitted' => true, 'submittedAt' => now()]);
 
-        if($status) { 
+        if ($status) {
             return response()->json(['message' => 'Submitted exam successfully!']);
         } else {
             return response()->json(['message' => 'Failed to submit exam!'], 400);
@@ -1067,17 +1089,18 @@ class ExamController extends Controller
 
 
 
-    public function publishExam(Request $request, Exam $exam) {
+    public function publishExam(Request $request, Exam $exam)
+    {
         $rules = [
             'isPublished' => 'boolean|required'
         ];
         $validator = Validator::make($request->all(), $rules);
 
-        if($validator->fails()) {
+        if ($validator->fails()) {
             return response()->json(['message' => 'The given data is invalid!'], 400);
         }
 
-        if($exam->isPublished && $request->isPublished) {
+        if ($exam->isPublished && $request->isPublished) {
             return response()->json(['message' => 'Exam already published!'], 400);
         }
 
@@ -1087,5 +1110,4 @@ class ExamController extends Controller
 
         return response()->json(['message' => 'Exam publish settings set successfully!']);
     }
-    
 }
