@@ -2,7 +2,7 @@
 
 /**
  * @OA\Schema(
- *      title="changePasswordRequest",
+ *      title="ChangePasswordRequest",
  *      description="change password request body data",
  *      type="object",
  *      required={"currentPassword","newPassword"}

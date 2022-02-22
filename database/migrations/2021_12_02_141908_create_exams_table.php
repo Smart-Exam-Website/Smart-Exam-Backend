@@ -23,6 +23,9 @@ class CreateExamsTable extends Migration
             $table->integer('numberOfTrials');
             $table->integer('totalMark');
             $table->string('examSubject');
+            $table->boolean('isPublished')->default(false);
+            $table->unsignedBigInteger('instructor_id');
+            $table->foreign('instructor_id')->references('id')->on('instructors')->onDelete('cascade');
             $table->timestamps();
         });
         Schema::create('exam_question', function (Blueprint $table) {
@@ -42,6 +45,9 @@ class CreateExamsTable extends Migration
             $table->dateTime('startTime');
             $table->integer('numberOfFaces')->default(0);
             $table->boolean('isVerified')->default(false);
+            $table->integer('attempt')->default(1);
+            $table->boolean('isSubmitted')->default(false);
+            $table->primary(['exam_id', 'student_id', 'attempt'], 'id');
             $table->timestamps();
         });
     }
