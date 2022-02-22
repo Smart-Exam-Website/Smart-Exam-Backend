@@ -67,6 +67,8 @@ class AnswerController extends Controller
             'exam_id' => 'required|numeric',
         ];
 
+        // check if question was already answered before..
+
         $validator = Validator::make($request->all(), $rules);
 
         if($validator->fails()) {

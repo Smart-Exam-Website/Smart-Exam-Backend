@@ -14,7 +14,7 @@ class Exam extends Model
     protected $guarded = [];
 
     public function config(): HasOne {
-        return $this->hasOne(Configuration::class);
+        return $this->hasOne(Configuration::class, 'exam_id');
     }
 
     public function questions(): BelongsToMany {
@@ -23,5 +23,9 @@ class Exam extends Model
 
     public function answers(): BelongsToMany {
         return $this->belongsToMany(Answer::class);
+    }
+
+    public function sessions() {
+        return $this->belongsToMany(examSession::class ,'examsession','exam_id')->withTimestamps()->withPivot(['numberOfFaces', 'isVerified', 'startTime']);
     }
 }

@@ -11,6 +11,7 @@ class Configuration extends Model
     use HasFactory;
     protected $guarded = [];
     protected $table = 'configs';
+    public $primaryKey = 'exam_id';
 
 
     public function exam(): BelongsTo {

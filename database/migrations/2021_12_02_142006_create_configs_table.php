@@ -24,7 +24,7 @@ class CreateConfigsTable extends Migration
             $table->string('gradingMethod');
             $table->timestamps();
 
-            $table->primary(['exam_id' , 'gradingMethod']);
+            $table->primary('exam_id');
         });
     }
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\examSession;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
@@ -50,10 +51,19 @@ class faceDetectionController extends Controller
             return response()->json(['message' => 'Unauthorized!'], 400);
         }
         $studentId = auth()->user()->id;
+        $examId = $request->examId;
         $rules = [
             'image' => 'required',
             'examId' => 'required',
         ];
+
+        // attempt???
+
+        $examSession = examSession::where(['exam_id' => $examId, 'student_id' => $studentId])->latest()->get()->first();
+
+        if(!$examSession) {
+            return response()->json(['message' => 'No exam session present for this student!']);
+        }
     
         $validator = Validator::make($request->all(), $rules);
 
@@ -61,7 +71,7 @@ class faceDetectionController extends Controller
             return response()->json(['message' => 'Error validating request body'], 400);
         }
 
-        $examId = $request->examId;
+        
         
 
         $response = Http::post('http://3.142.238.250/m1/detect', [
@@ -76,7 +86,12 @@ class faceDetectionController extends Controller
             }
             else {
                 $numberOfFaces = $response->object()->number_of_faces;
-                $status = DB::table('examSession')->update(['exam_id' => $examId, 'student_id' => $studentId, 'numberOfFaces' => $numberOfFaces]);
+                if($examSession->numberOfFaces != $numberOfFaces) {
+                    
+                    $status = DB::table('examSession')->update(['exam_id' => $examId, 'student_id' => $studentId, 'numberOfFaces' => $numberOfFaces]);
+                } else {
+                    $status = true;
+                }
                 if($status) {
                     return response()->json(['message' => 'Success!', 'numberOfFaces' => $numberOfFaces]);
                 }

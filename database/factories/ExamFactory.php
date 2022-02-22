@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Instructor;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class ExamFactory extends Factory
@@ -22,6 +23,7 @@ class ExamFactory extends Factory
             'numberOfTrials' => $this->faker->randomDigit(),
             'totalMark' => $this->faker->randomNumber(2),
             'examSubject' => $this->faker->word(),
+            'instructor_id' => Instructor::all()->random()->id,
         ];
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\examSession;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
@@ -49,6 +50,7 @@ class faceVerificationController extends Controller
             return response()->json(['message' => 'Unauthorized!'], 400);
         }
         $studentId = auth()->user()->id;
+        $examId = $request->examId;
         $rules = [
             'image1' => 'required',
             'image2' => 'required',
@@ -61,29 +63,41 @@ class faceVerificationController extends Controller
             return response()->json(['message' => 'No image added!'], 400);
         }
 
+        // attempt???
+
+        $examSession = examSession::where(['exam_id' => $examId, 'student_id' => $studentId])->latest()->get()->first();
+        if(!$examSession) {
+            return response()->json(['message' => 'No exam session present for this student!']);
+        }
         $response = Http::post('http://3.142.238.250:5000/verify', [
-            'img' => json_encode([
+            'img' => [[
                 'img1' => $request->image1,
                 'img2' => $request->image2,
-            ])
-        ]);
-
-        return response()->json(['message' => 'Success!', 'verified' => $response->object()]);
-
+                ]]
+            ]);
+            
+            
         if ($response->ok()) {
             if ($response->status() != 200) {
                 return response()->json(['message' => 'Failed to send images!'], 400);
             } else {
-                $verified = $response->object()->verified;
                 $examId = $request->examId;
-                $status = DB::table('examSession')->update(['exam_id' => $examId, 'student_id' => $studentId, 'isVerified' => $verified]);
+                // $examSession = DB::table('examSession')->where(['exam_id' => $examId, 'student_id' => $studentId])->get()->latest()->first();
+                $verified = $response->object()->pair_1->verified;
+                if($examSession->verified != $verified) {
+                    
+                    $status = DB::table('examSession')->update(['exam_id' => $examId, 'student_id' => $studentId, 'isVerified' => $verified]);
+                } else {
+                    $status = true;
+                }
+
                 if ($status) {
                     return response()->json(['message' => 'Success!', 'verified' => $verified]);
                 } else {
                     return response()->json(['message' => 'Error!'], 400);
                 }
             }
-        }  else {
+        } else {
             return response()->json(['message' => 'An error occurred!'], 400);
         }
     }

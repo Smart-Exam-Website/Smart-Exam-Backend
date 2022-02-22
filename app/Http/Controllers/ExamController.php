@@ -7,6 +7,7 @@ use App\Models\Exam;
 use App\Models\Answer;
 use App\Models\McqAnswer;
 use App\Models\ExamQuestion;
+use App\Models\examSession;
 use App\Models\ExamStudent;
 use App\Models\Student;
 use Illuminate\Http\Request;
@@ -42,7 +43,9 @@ class ExamController extends Controller
      */
     public function index()
     {
+        // Get list of published exams!
         $exams = Exam::latest('created_at')->get();
+        $finalExams = [];
 
         foreach($exams as $exam) {
             $configs = $exam->config;
@@ -58,18 +61,60 @@ class ExamController extends Controller
             else {
                 $exam['status'] = 'Complete';
             }
+            if($exam->isPublished) {
+                array_push($finalExams, $exam);
+            }
         }
-        return $exams;
+        return $finalExams;
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
+        /**
+     * @OA\Get(
+     *      path="/instructors/myExams",
+     *      operationId="getexamsList",
+     *      tags={"Instructor"},
+     *      summary="Get list of exams",
+     *      description="Returns list of exams",
+     *      security={ {"bearer": {} }},
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\JsonContent(
+     * @OA\Property(property="exams", type="array", @OA\Items(ref="#/components/schemas/Exam"))
+     * ),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     *     )
      */
-    public function create()
-    {
-        //
+
+    public function indexInstructor() {
+        // get all instructor's exams, whether published or not.
+        $exams = Exam::where(['instructor_id' => auth()->user()->id])->latest('created_at')->get();
+
+        foreach($exams as $exam) {
+            $configs = $exam->config;
+            $questions = $exam->questions;
+
+            if(!$configs && !$questions) {
+                $exam['status'] = 'No config or questions';
+            } else if(!$configs) {
+                $exam['status'] = 'No config';
+            } else if (!$questions) {
+                $exam['status'] = 'No questions';
+            }
+            else {
+                $exam['status'] = 'Complete';
+            }
+        
+        }
+        return $exams;
     }
 
     /**
@@ -107,6 +152,9 @@ class ExamController extends Controller
      */
     public function storeStepOne(Request $request)
     {
+        if(auth()->user()->type != 'instructor') {
+            return response()->json(['message' => 'Unauthorized to create exam!'], 403);
+        }
         // create exam
         $rules = [
             'name' => 'required|string',
@@ -127,6 +175,8 @@ class ExamController extends Controller
         //create the exam
 
         $examDetails = $request->only(['name', 'totalMark', 'description', 'startAt', 'endAt', 'duration', 'numberOfTrials', 'examSubject']);
+        $examDetails['instructor_id'] = auth()->user()->id;
+        $examDetails['isPublished'] = false;
         $exam = Exam::create($examDetails);
         if (!$exam) {
             return response()->json(['message' => 'failed to create exam'], 400);
@@ -170,6 +220,9 @@ class ExamController extends Controller
      */
     public function storeStepTwo(Request $request)
     {
+        if(auth()->user()->type != 'instructor') {
+            return response()->json(['message' => 'Unauthorized to create exam!'], 403);
+        }
         // create exam
         $rules = [
             'examId' => 'required',
@@ -240,6 +293,9 @@ class ExamController extends Controller
 
     public function storeStepThree(Request $request)
     {
+        if(auth()->user()->type != 'instructor') {
+            return response()->json(['message' => 'Unauthorized to create exam!'], 403);
+        }
         // create exam
         $rules = [
             'examId' => 'required',
@@ -260,7 +316,6 @@ class ExamController extends Controller
         $questions = $request->questions;
         $mark = $exam->totalMark / count($questions);
         // $duration = $exam->duration / count($questions);
-    
 
         $exam->questions()->attach($questions, ['mark' => $mark]);
 
@@ -303,6 +358,9 @@ class ExamController extends Controller
      */
     public function storeStepFour(Request $request)
     {
+        if(auth()->user()->type != 'instructor') {
+            return response()->json(['message' => 'Unauthorized to create exam!'], 403);
+        }
         // create exam
         $rules = [
             'examId' => 'required',
@@ -412,11 +470,27 @@ class ExamController extends Controller
             return response()->json(['message' => 'the given data is invalid'], 400);
         }
 
-        DB::table('examSession')->insert([
+        if($exam->startAt > $request->startTime) {
+            return response()->json(['message' => 'You cannot start this exam yet!', 400]);
+        }
+
+        if($exam->endAt < $request->startTime) {
+            return response()->json(['message' => 'Exam is closed now!'], 400);
+        }
+
+        // attempt???
+
+        
+
+        $examSession = examSession::create([
             'exam_id' => $exam->id,
             'student_id' => auth()->user()->id,
             'startTime' => $request->startTime
         ]);
+
+        if (!$examSession) {
+            return response()->json(['message' => 'Failed to add exam session'], 400);
+        }
 
 
         //return all questions.
@@ -575,16 +649,242 @@ class ExamController extends Controller
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+        /**
+     * @OA\Put(
+     *      path="/exams/{exam}/step1",
+     *      operationId="updateExamStepOne",
+     *      tags={"Exam"},
+     *      summary="Store Exam Data",
+     *      description="Returns success message",
+     *      security={ {"bearer": {} }},
+     *      @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(ref="#/components/schemas/StoreExamStepOne")
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request"
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     * )
      */
-    public function update(Request $request, $id)
+    public function updateStepOne(Request $request, Exam $exam)
     {
-        //
+        if(!$exam) {
+            return response()->json(['message' => 'Exam not found!']);
+        }
+        if(auth()->user()->type != 'instructor') {
+            return response()->json(['message' => 'Unauthorized to update exam!'], 403);
+        }
+        // create exam
+        $rules = [
+            'name' => 'required|string',
+            'numberOfTrials' => 'required',
+            'description' => 'required',
+            'totalMark' => 'required',
+            'duration' => 'required',
+            'startAt' => 'required|date',
+            'endAt' => 'required|date',
+            'examSubject' => 'required',
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            return response()->json(['message' => $validator->errors()], 400);
+        }
+
+        // update exam details
+
+        $examDetails = $request->only(['name', 'totalMark', 'description', 'startAt', 'endAt', 'duration', 'numberOfTrials', 'examSubject']);
+        $examDetails['instructor_id'] = auth()->user()->id;
+        $exam->update($examDetails);
+
+        return response()->json(['message' => 'successfully updated exam!']);
+    }
+    
+
+            /**
+     * @OA\Put(
+     *      path="/exams/{exam}/step2",
+     *      operationId="updateExamStepTwo",
+     *      tags={"Exam"},
+     *      summary="Store Exam Data",
+     *      description="Returns success message",
+     *      security={ {"bearer": {} }},
+     *      @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(ref="#/components/schemas/StoreExamStepTwo")
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request"
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     * )
+     */
+    public function updateStepTwo(Request $request, Exam $exam)
+    {
+        if(!$exam) {
+            return response()->json(['message' => 'Exam not found!']);
+        }
+        if(auth()->user()->type != 'instructor') {
+            return response()->json(['message' => 'Unauthorized to update exam!'], 403);
+        }
+        // create exam
+        $rules = [
+            'faceRecognition' => 'required|boolean',
+            'faceDetection' => 'required|boolean',
+            'questionsRandomOrder' => 'required|boolean',
+            'plagiarismCheck' => 'required|boolean',
+            'disableSwitchBrowser' => 'required|boolean',
+            'gradingMethod' => 'required|string',
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            return response()->json(['message' => 'the given data is invalid'], 400);
+        }
+
+
+        $options = $request->only(['faceRecognition', 'faceDetection', 'questionsRandomOrder', 'plagiarismCheck', 'disableSwitchBrowser', 'gradingMethod']);
+
+        //add its options
+
+        $option = $exam->config;
+        $option->update($options);
+
+        return response()->json(['message' => 'successfully adjusted exam options!']);
+    }
+    /**
+     * @OA\Put(
+     *      path="/exams/{exam}/step3",
+     *      operationId="updateExamStepThree",
+     *      tags={"Exam"},
+     *      summary="Store Exam Data",
+     *      description="Returns success message",
+     *      security={ {"bearer": {} }},
+     *      @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(ref="#/components/schemas/StoreExamStepThree")
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request"
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     * )
+     */
+    public function updateStepThree(Request $request, Exam $exam)
+    {
+        if(auth()->user()->type != 'instructor') {
+            return response()->json(['message' => 'Unauthorized to create exam!'], 403);
+        }
+        // update exam
+        $rules = [
+            'questions.*.question_id' => ['required', 'numeric', 'exists:questions,id'],
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            return response()->json(['message' => 'the given data is invalid'], 400);
+        }
+
+
+        $questions = $request->questions;
+        $mark = $exam->totalMark / count($questions);
+        // $duration = $exam->duration / count($questions);
+        $exam->questions()->detach();
+        $exam->questions()->attach($questions, ['mark' => $mark]);
+        // $exam->questions()->sync($questions, ['mark' => $mark]);
+        return response()->json(['message' => 'successfully added questions to exam!']);
+    }
+       /**
+     * @OA\Put(
+     *      path="/exams/{exam}/step4",
+     *      operationId="updateExamStepFour",
+     *      tags={"Exam"},
+     *      summary="Store Exam Data",
+     *      description="Returns success message",
+     *      security={ {"bearer": {} }},
+     *      @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(ref="#/components/schemas/StoreExamStepFour")
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request"
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     * )
+     */
+    public function updateStepFour(Request $request, Exam $exam)
+    {
+        if(auth()->user()->type != 'instructor') {
+            return response()->json(['message' => 'Unauthorized to create exam!'], 403);
+        }
+        // create exam
+        $rules = [
+            'examId' => 'required',
+            'questions.*.question_id' => ['required', 'numeric', 'exists:questions,id'],
+            'questions.*.mark' => 'required',
+            'questions.*.time' => 'required',
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            return response()->json(['message' => 'the given data is invalid'], 400);
+        }
+        
+
+        $questions = $request->questions;
+
+        $exam->questions()->sync($questions);
+
+        return response()->json(['message' => 'successfully created exam!']);
     }
 
      /**
@@ -667,5 +967,125 @@ class ExamController extends Controller
         return response()->json(['message' => 'Success!' , 'answers' => $answers]);
     }
 
+
+    /**
+     * @OA\Post(
+     *      path="/exams/{exam}/submit",
+     *      operationId="submitExam",
+     *      tags={"Exam"},
+     *      summary="submit exam",
+     *      description="change exam status for student to submitted",
+     * security={ {"bearer": {} }},
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\JsonContent(
+     * @OA\Property(property="message", type="string", example="successfully submitted exam!"),
+     * ),
+     *       ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request"
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     * )
+     */
+
+
+    public function submitExam(Exam $exam) {
+
+        // attempt???
+
+        $student = auth()->user();
+
+        $examSession = examSession::where(['exam_id' => $exam->id, 'student_id' => $student->id])->latest()->get()->first();
+
+        if(!examSession) {
+            return response()->json(['message' => 'No exam session for this student!'], 400);
+        }
+        
+        if($examSession->isSubmitted) {
+            return response()->json(['message' => 'Exam already submitted!'], 400);
+        }
+
+        $status = DB::table('examSession')->update(['exam_id' => $exam->id, 'student_id' => $student->id, 'isSubmitted' => true]);
+
+        if($status) { 
+            return response()->json(['message' => 'Submitted exam successfully!']);
+        } else {
+            return response()->json(['message' => 'Failed to submit exam!'], 400);
+        }
+
+        // if marking is automatic, should i mark the exam?
+
+
+
+    }
+
+
+    /**
+     * @OA\Post(
+     *      path="/exams/{exam}/publish",
+     *      operationId="publishExam",
+     *      tags={"Exam"},
+     *      summary="publish exam",
+     *      description="change exam status ",
+     * security={ {"bearer": {} }},
+     * @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(
+     *  @OA\Property(property="isPublished", type="boolean", example="true"),),
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\JsonContent(
+     * @OA\Property(property="message", type="string", example="successfully published exam!"),
+     * ),
+     *       ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request"
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     * )
+     */
+
+
+
+    public function publishExam(Request $request, Exam $exam) {
+        $rules = [
+            'isPublished' => 'boolean|required'
+        ];
+        $validator = Validator::make($request->all(), $rules);
+
+        if($validator->fails()) {
+            return response()->json(['message' => 'The given data is invalid!'], 400);
+        }
+
+        if($exam->isPublished && $request->isPublished) {
+            return response()->json(['message' => 'Exam already published!'], 400);
+        }
+
+        $exam->isPublished = $request->isPublished;
+
+        $exam->save();
+
+        return response()->json(['message' => 'Exam publish settings set successfully!']);
+    }
     
 }

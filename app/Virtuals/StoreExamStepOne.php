@@ -95,5 +95,15 @@ class StoreExamStepOne
      * @var string
      */
     public $examSubject;
+    /**
+     * @OA\Property(
+     *      title="Is exam published",
+     *      description="Exam Subject",
+     *      example="true"
+     * )
+     *
+     * @var boolean
+     */
+    public $isPublished;
 
 }
