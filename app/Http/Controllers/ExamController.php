@@ -454,6 +454,48 @@ class ExamController extends Controller
         return response()->json(['questions' => $questions]);
     }
 
+
+    /**
+     * @OA\Post(
+     *      path="/exams/{exam}/start",
+     *      operationId="startExam",
+     *      tags={"Exam"},
+     *      summary="start exam",
+     *      description="change exam status ",
+     * security={ {"bearer": {} }},
+     * @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(
+     *  @OA\Property(property="startTime", type="datetime", example="2022-02-22 02:45:00"),
+     * @OA\Property(property="numberOfFaces", type="integer", example="5"),
+     * @OA\Property(property="isVerified", type="boolean", example="true")
+     * ),
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\JsonContent(
+     * @OA\Property(property="message", type="string", example="successfully published exam!"),
+     * ),
+     *       ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request"
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     * )
+     */
+
+
+
+
     public function startExam(Request $request, Exam $exam)
     {
         if (auth()->user()->type != 'student') {
