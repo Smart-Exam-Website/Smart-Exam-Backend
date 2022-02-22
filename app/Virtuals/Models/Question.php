@@ -77,6 +77,29 @@ class Question
 
     /**
      * @OA\Property(
+     *      title="Instructor ID",
+     *      description="Instructor id",
+     *      format="int64",
+     *      example=4
+     * )
+     *
+     * @var integer
+     */
+    public $instructor_id;
+
+
+    /**
+     * @OA\Property(
+     *     title="instructor",
+     *     description="instructor"
+     * )
+     *
+     * @var \App\Virtual\Models\Instructor
+     */
+    private $instructor;
+
+    /**
+     * @OA\Property(
      *      title="Mcq ID",
      *      description="Mcq id",
      *      format="int64",

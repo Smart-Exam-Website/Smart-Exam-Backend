@@ -38,7 +38,11 @@ class McqController extends Controller
      */
     public function index()
     {
-        return Question::latest('created_at')->get();;
+        $questions = Question::latest('created_at')->get();
+        foreach ($questions as $q) {
+            $q->instructor->user;
+        }
+        return $questions;
     }
 
     /**
@@ -97,7 +101,6 @@ class McqController extends Controller
     {
 
         $user = auth()->user();
-
         if ($user->type == 'instructor') {
 
             $fields = $request->validate([
@@ -111,7 +114,8 @@ class McqController extends Controller
 
             $question = Question::create([
                 'questionText' => $fields['questionText'],
-                'type' => 'mcq'
+                'type' => 'mcq',
+                'instructor_id' => $user->id
             ]);
 
             if ($question->type == 'mcq') {
@@ -176,6 +180,7 @@ class McqController extends Controller
     public function show($id)
     {
         $question = Question::where('id', $id)->get()->first();
+        $question->instructor->user;
         $question->tags;
         $question->Mcq->McqAnswers->each(function ($m) {
             $m->option;
