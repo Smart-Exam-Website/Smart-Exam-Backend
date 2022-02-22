@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Exam;
 use App\Models\examSession;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
