@@ -87,6 +87,32 @@ class UserSeeder extends Seeder
                     'password' => Hash::make('secret'), // password
                     'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
                     'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
+                ],
+                [
+                    'firstName' => 'Hossam',
+                    'lastName' => 'Sherif',
+                    'email' => 'husam287@hotmail.com',
+                    'email_verified_at' => now(),
+                    'gender' => 'male',
+                    'image' => 'https://southernplasticsurgery.com.au/wp-content/uploads/2013/10/user-placeholder.png',
+                    'phone' => '01045634578',
+                    'type' => 'student',
+                    'password' => Hash::make('secret'), // password
+                    'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
+                    'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
+                ],
+                [
+                    'firstName' => 'Hazem',
+                    'lastName' => 'Ali',
+                    'email' => 'hazemali100@outlook.com',
+                    'email_verified_at' => now(),
+                    'gender' => 'male',
+                    'image' => 'https://southernplasticsurgery.com.au/wp-content/uploads/2013/10/user-placeholder.png',
+                    'phone' => '01045634578',
+                    'type' => 'student',
+                    'password' => Hash::make('secret'), // password
+                    'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
+                    'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
                 ]
             ]);
         }
