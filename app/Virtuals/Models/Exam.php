@@ -109,4 +109,14 @@ class Exam
      * @var string
      */
     public $examSubject;
+    /**
+     * @OA\Property(
+     *      title="isPublished",
+     *      description="Status of Exam",
+     *      example="true"
+     * )
+     *
+     * @var boolean
+     */
+    public $isPublished;
 }
