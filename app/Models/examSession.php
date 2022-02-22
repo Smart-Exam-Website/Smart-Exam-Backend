@@ -9,7 +9,7 @@ class examSession extends Model
 {
     use HasFactory;
     protected $guarded = [];
-    protected $table = 'examsession';
+    protected $table = 'examSession';
     public $timestamps = true;
 
     public function exams() {
