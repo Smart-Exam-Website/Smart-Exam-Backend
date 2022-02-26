@@ -76,7 +76,7 @@ class StoreInstructorRequest
      * @OA\Property(
      *      title="image",
      *      description="image of the new instructor",
-     *      example="https://google.com/pepepepaaa"
+     *      example="image.jpg"
      * )
      *
      * @var string

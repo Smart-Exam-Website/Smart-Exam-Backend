@@ -1092,7 +1092,7 @@ class ExamController extends Controller
         // check how many questions the student answered!
         $answers = DB::table('answers')->where(['exam_id' => $exam->id, 'student_id' => $student->id])->get();
         // cannot submit until they are all answered!
-        if(count($answers) < count($questions)) {
+        if($answers->count() < $questions->count()) {
             return response()->json(['message' => 'You cannot submit yet!, you haven\'t answered all questions'], 400);
         }
 

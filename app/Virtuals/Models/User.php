@@ -80,7 +80,7 @@ class User
      * @OA\Property(
      *      title="image",
      *      description="image of User",
-     *      example="http://pixels.com/4040"
+     *      example="image.jpg"
      * )
      *
      * @var string
