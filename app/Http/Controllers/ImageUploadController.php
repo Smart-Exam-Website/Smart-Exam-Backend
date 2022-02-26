@@ -19,7 +19,7 @@ class ImageUploadController extends Controller
      *      description="Returns success message and image name",
      *      security={ {"bearer": {} }},
      *      @OA\RequestBody(
-     *          required=true,_
+     *          required=true,
      *      ),
      *      @OA\Response(
      *          response=200,
