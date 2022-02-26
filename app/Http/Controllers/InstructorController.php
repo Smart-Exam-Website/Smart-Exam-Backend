@@ -326,7 +326,7 @@ class InstructorController extends Controller
             'description' => 'required',
             'email' => 'email',
             'gender' => 'required',
-            'image' => 'required|url',
+            'image' => 'required',
             'phone' => 'required|size:11',
             'degree' => 'required',
             'departments.*.department_id' => ['required', 'numeric', 'exists:departments,id'],

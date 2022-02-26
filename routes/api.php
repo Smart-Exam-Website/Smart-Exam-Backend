@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ImageUploadController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\StudentController;
@@ -18,6 +19,10 @@ use App\Http\Controllers\McqController;
 */
 
 //----------------------------User Routes----------------------------
+
+
+// Image Upload Route
+Route::post('image-upload', [ ImageUploadController::class, 'imageUploadPost' ])->name('image.upload.post');
 
 // Authentication Routes
 
