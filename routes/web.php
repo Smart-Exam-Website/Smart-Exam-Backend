@@ -19,6 +19,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/students', [StudentController::class, 'index']);
-Route::get('/students/{id}', [StudentController::class, 'show']);
-Route::get('/auth/changePassword', [UserController::class, 'changePassword']);
+Route::get('/api/documentation', function () {
+    return view('swagger.index');
+});

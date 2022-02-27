@@ -1,0 +1,77 @@
+swagger: "2.0"
+info:
+  description: Smart Exam APis
+  version: 1.0.0
+  title: Smart Exam API's
+basePath: /api/
+
+paths:
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Login
+      description: "Login with this API"
+      operationId: Login
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: email
+          type: string
+          required: true
+        - in: query
+          name: password
+          type: string
+          required: true
+      responses:
+        "200":
+          description: successful operation
+        "400":
+          description: Bad request
+      security:
+        - api_key: []
+
+  /exams/manual:
+    post:
+      tags:
+        - Exam
+      summary: Mark Exam Manually
+      description: "Mark Exam Manually with this API"
+      operationId: markExamManually
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: student_id
+          type: integer
+          required: true
+        - in: query
+          name: exam_id
+          type: integer
+          required: true
+        - in: query
+          name: question_id
+          type: integer
+          required: true
+        - in: query
+          name: questionMark
+          type: number
+          required: true
+      responses:
+        "200":
+          description: successful operation
+        "400":
+          description: Bad request
+      security:
+        - api_key: []
+
+securityDefinitions:
+  api_key:
+    type: apiKey
+    name: Authorization
+    in: header
