@@ -23,7 +23,6 @@ class CreateConfigsTable extends Migration
             $table->boolean('disableSwitchBrowser');
             $table->string('gradingMethod');
             $table->timestamps();
-
             $table->primary('exam_id');
         });
     }

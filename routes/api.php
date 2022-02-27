@@ -22,7 +22,7 @@ use App\Http\Controllers\McqController;
 
 
 // Image Upload Route
-Route::post('image-upload', [ ImageUploadController::class, 'imageUploadPost' ])->name('image.upload.post');
+Route::post('image-upload', [ImageUploadController::class, 'imageUploadPost'])->name('image.upload.post');
 
 // Authentication Routes
 
@@ -108,8 +108,13 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     // Get exam details
     Route::get('/exams/{exam}', 'App\Http\Controllers\ExamController@show');
     // ----------------------------------------------------------------------------------------
-    // Mark all exams automatically
-    Route::get('/exams/totalMark/{id}', 'App\Http\Controllers\ExamController@getExamAllStudentMarks');
+    // Mark exam automatically
+    Route::get('/exams/totalMark/{exam}', 'App\Http\Controllers\MarkMCQController@MarkAllStudentsExam');
+    Route::get('/exams/totalMark/{exam}/{s}', 'App\Http\Controllers\MarkMCQController@MarkOneStudentExam');
+    // Mark Exam Manual
+    Route::post('/exams/manual', 'App\Http\Controllers\MarkMCQController@MarkExamManual');
+    // Exam Report
+    Route::get('/exams/report/{exam}', 'App\Http\Controllers\MarkMCQController@ExamReportForStudent');
 });
 
 
@@ -146,5 +151,5 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/faceDetection', 'App\Http\Controllers\faceDetectionController@faceDetection');
-    Route::post('/faceVerification','App\Http\Controllers\faceVerificationController@faceVerification');
+    Route::post('/faceVerification', 'App\Http\Controllers\faceVerificationController@faceVerification');
 });

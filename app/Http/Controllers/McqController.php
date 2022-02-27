@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Department;
 use App\Models\ExamQuestion;
-use App\Models\examSession;
 use App\Models\Option;
 use App\Models\McqAnswer;
 use Illuminate\Http\Request;

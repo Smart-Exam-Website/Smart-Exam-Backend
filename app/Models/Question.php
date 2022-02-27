@@ -34,8 +34,16 @@ class Question extends Model
     {
         return $this->belongsToMany(Answer::class);
     }
+    public function answer()
+    {
+        return $this->hasMany(Answer::class);
+    }
     public function instructor()
     {
         return $this->belongsTo(Instructor::class);
+    }
+    public function mcqAnswer()
+    {
+        return $this->hasMany(McqAnswer::class);
     }
 }
