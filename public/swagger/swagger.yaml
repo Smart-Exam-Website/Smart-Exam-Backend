@@ -413,6 +413,7 @@ paths:
         '400':
           description: Bad Request
         '401':
+  
           description: Unauthenticated
         '403':
           description: Forbidden
@@ -1378,6 +1379,61 @@ paths:
           description: Bad request
       security:
         - api_key: []
+  "/exams/{exam}/solutions":
+    get:
+      tags:
+      - Exam
+      summary: Get exam solutions
+      description: Returns question solutions for certain student
+      operationId: getExamSolutions
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                properties:
+                  solvedExams:
+                    type: array
+                    items:
+                      properties:
+                        exam_id:
+                          type: integer
+                          example: 1
+                        student_id:
+                          type: integer
+                          example: 1
+                        startTime:
+                          type: DateTime
+                          example: '2021-12-26 17:06:31'
+                        numberOfFaces:
+                          type: integer
+                          example: 1
+                        isVerified:
+                          type: boolean
+                          example: true
+                        isSubmitted:
+                          type: boolean
+                          example: true
+                        submittedAt:
+                          type: DateTime
+                          example: '2021-12-26 17:06:31'
+                        name:
+                          type: String
+                          example: 'Haidy'
+                        isMarked:
+                          type: boolean
+                          example: true
+                        mark:
+                          type: float
+                          example: 30.2
+                type: object
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Forbidden
+      security:
+      - bearer: []
 components:
   schemas:
     ChangePasswordRequest:
