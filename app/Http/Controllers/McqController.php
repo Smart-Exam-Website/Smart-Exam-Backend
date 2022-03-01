@@ -39,7 +39,7 @@ class McqController extends Controller
      */
     public function index()
     {
-        $questions = Question::latest('created_at')->get();
+        $questions = Question::latest('created_at')->where(['isHidden' => false])->get();
         foreach ($questions as $q) {
             $q->instructor->user;
         }
