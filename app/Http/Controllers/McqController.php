@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Department;
 use App\Models\ExamQuestion;
-use App\Models\examSession;
 use App\Models\Option;
 use App\Models\McqAnswer;
 use Illuminate\Http\Request;
@@ -41,7 +39,7 @@ class McqController extends Controller
      */
     public function index()
     {
-        $questions = Question::latest('created_at')->get();
+        $questions = Question::latest('created_at')->where(['isHidden' => false])->get();
         foreach ($questions as $q) {
             $q->instructor->user;
         }

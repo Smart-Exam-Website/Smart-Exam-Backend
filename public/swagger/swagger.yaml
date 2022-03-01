@@ -1,0 +1,273 @@
+swagger: "2.0"
+info:
+  description: Smart Exam APis
+  version: 1.0.0
+  title: Smart Exam API's
+basePath: /api/
+
+paths:
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Login
+      description: "Login with this API"
+      operationId: Login
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: email
+          type: string
+          required: true
+        - in: query
+          name: password
+          type: string
+          required: true
+      responses:
+        "200":
+          description: successful operation
+        "400":
+          description: Bad request
+  /auth/logout:
+    post:
+      tags:
+        - Auth
+      summary: Logout
+      description: "Logout with this API"
+      operationId: Logout
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: successful operation
+        "400":
+          description: Bad request
+  /auth/changePassword:
+    put:
+      tags:
+        - Auth
+      summary: change password
+      description: "Change Password with this API"
+      operationId: changePassword
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: currentPassword
+          type: string
+          required: true
+        - in: query
+          name: newPassword
+          type: string
+          required: true
+      responses:
+        "200":
+          description: successful operation
+        "400":
+          description: Bad request
+      security:
+        - api_key: []
+  /auth/forgotPassword:
+    put:
+      tags:
+        - Auth
+      summary: forgot password
+      description: "Forgot Password with this API"
+      operationId: forgotPassword
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: email
+          type: string
+          required: true
+        - in: query
+          name: token
+          type: string
+          required: true
+        - in: query
+          name: password
+          type: string
+          required: true
+      responses:
+        "200":
+          description: successful operation
+        "400":
+          description: Bad request
+    post:
+      tags:
+        - Auth
+      summary: forgot password
+      description: "Forgot Password with this API"
+      operationId: forgotPassword
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: email
+          type: string
+          required: true
+      responses:
+        "200":
+          description: successful operation
+        "400":
+          description: Bad request
+  /auth/verifyEmail:
+    post:
+      tags:
+        - Auth
+      summary: verify email
+      description: "Verify Email with this API"
+      operationId: verifyEmail
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: email
+          type: string
+          required: true
+        - in: query
+          name: code
+          type: string
+          required: true
+      responses:
+        "200":
+          description: successful operation
+        "400":
+          description: Bad request
+
+  /exams/manual:
+    post:
+      tags:
+        - Exam
+      summary: Mark MCQ Exam Manually
+      description: "Mark MCQ Exam Manually with this API"
+      operationId: markMCQExamManually
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: student_id
+          type: integer
+          required: true
+        - in: query
+          name: exam_id
+          type: integer
+          required: true
+        - in: query
+          name: question_id
+          type: integer
+          required: true
+        - in: query
+          name: questionMark
+          type: number
+          required: true
+      responses:
+        "200":
+          description: successful operation
+        "400":
+          description: Bad request
+      security:
+        - api_key: []
+  /exams/totalMark/{exam}/{student}:
+    get:
+      tags:
+        - Exam
+      summary: Mark One Student Exam
+      description: "Mark One Student Exam with this API"
+      operationId: MarkOneStudentExam
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: "examId"
+          in: "path"
+          description: "ID of exam to return"
+          required: true
+          type: "integer"
+          format: "int64"
+        - name: "studentId"
+          in: "path"
+          description: "ID of student to return"
+          required: true
+          type: "integer"
+          format: "int64"
+      responses:
+        "200":
+          description: successful operation
+        "400":
+          description: Bad request
+      security:
+        - api_key: []
+  /exams/totalMark/{exam}:
+    get:
+      tags:
+        - Exam
+      summary: Mark All Students Exam
+      description: "Mark All Students Exam with this API"
+      operationId: MarkAllStudentsExam
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: "examId"
+          in: "path"
+          description: "ID of exam to return"
+          required: true
+          type: "integer"
+          format: "int64"
+      responses:
+        "200":
+          description: successful operation
+        "400":
+          description: Bad request
+      security:
+        - api_key: []
+  /exams/report/{exam}:
+    get:
+      tags:
+        - Exam
+      summary: Exam Report For Student
+      description: "Exam Report For Student with this API"
+      operationId: ExamReportForStudent
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: "examId"
+          in: "path"
+          description: "ID of exam to return"
+          required: true
+          type: "integer"
+          format: "int64"
+      responses:
+        "200":
+          description: successful operation
+        "400":
+          description: Bad request
+      security:
+        - api_key: []
+
+securityDefinitions:
+  api_key:
+    type: apiKey
+    name: Authorization
+    in: header

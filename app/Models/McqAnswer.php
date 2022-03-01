@@ -21,4 +21,9 @@ class McqAnswer extends Model
     {
         return $this->belongsTo(Mcq::class);
     }
+
+    public function questions(): BelongsToMany
+    {
+        return $this->belongsToMany(Question::class);
+    }
 }

@@ -112,7 +112,7 @@ class InstructorController extends Controller
             'password' => 'required',
             'description' => 'required',
             'gender' => 'required',
-            'image' => 'required|url',
+            'image' => 'required',
             'phone' => 'required|size:11',
             'type' => 'required',
             'degree' => 'required',

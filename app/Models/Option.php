@@ -13,17 +13,23 @@ class Option extends Model
     use HasFactory;
     protected $guarded = [];
 
-    
+
 
     public function McqAnswer()
     {
         return $this->hasOne(McqAnswer::class);
     }
 
-    public function question() {
+    public function question()
+    {
         return $this->belongsTo(Question::class);
     }
-    public function answers(): BelongsToMany {
+    public function answers(): BelongsToMany
+    {
         return $this->belongsToMany(Answer::class);
+    }
+    public function answer()
+    {
+        return $this->hasOne(Answer::class);
     }
 }

@@ -5,11 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Configuration;
 use App\Models\Exam;
 use App\Models\Answer;
-use App\Models\McqAnswer;
-use App\Models\ExamQuestion;
 use App\Models\examSession;
-use App\Models\ExamStudent;
-use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -120,7 +116,7 @@ class ExamController extends Controller
                 $exam['status'] = 'Complete';
             }
         }
-        
+
         return $exams;
     }
 
@@ -614,102 +610,6 @@ class ExamController extends Controller
         return response()->json(['configuration' => $config]);
     }
 
-
-    /**
-     * @OA\Get(
-     *      path="/exams/totalMark/{id}",
-     *      operationId="getExamAllStudentMarks",
-     *      tags={"Exam"},
-     *      summary="Get students exam marks",
-     *      description="Returns students exam marks",
-     *      security={ {"bearer": {} }},
-     *      @OA\Parameter(
-     *          name="id",
-     *          description="Exam id",
-     *          required=true,
-     *          in="path",
-     *          @OA\Schema(
-     *              type="integer"
-     *          )
-     *      ),
-     *      @OA\Response(
-     *          response=200,
-     *          description="successfully Calculated Exam Total Marks for all students",
-     *          @OA\JsonContent(
-     *              @OA\Property(property="exam", type="object", ref="#/components/schemas/ExamStudent")
-     *          ),
-     *       ),
-     *      @OA\Response(
-     *          response=401,
-     *          description="Unauthenticated",
-     *      ),
-     *      @OA\Response(
-     *          response=403,
-     *          description="Forbidden"
-     *      )
-     *     )
-     */
-
-
-    public function getExamAllStudentMarks($id)
-    {
-        $exam = Exam::where(['id' => $id])->get()->first();
-        if (now() <= $exam->endAt) {
-            return response()->json(['message' => 'Cannot mark exam yet!'], 400);
-        }
-        $students = Student::all();
-
-        foreach ($students as $s) {
-
-            $answers = Answer::where(['exam_id' => $id, 'student_id' => $s->id])->get();
-
-            $totalMark = 0;
-
-            foreach ($answers as $a) {
-
-                $m = McqAnswer::where(['id' => $a['option_id'], 'question_id' => $a['question_id']])->first();
-                if ($m != NULL && $m->isCorrect == 1) {
-
-                    $ex = ExamQuestion::where('exam_id', '=', $id)->where('question_id', '=', $a->question_id)->first();
-
-                    Answer::where(['exam_id' => $id, 'student_id' => $s->id, 'option_id' => $a['option_id'], 'question_id' => $a->question_id])->update(['questionMark' => $ex->mark]);
-
-                    $totalMark += $ex->mark;
-                }
-            }
-
-            if ($answers->count() != 0) {
-
-                if (ExamStudent::where(['student_id' => $s->id, 'exam_id' => $id])->first() == NULL) {
-
-                    $exst = ExamStudent::create([
-                        'student_id' => $s->id,
-                        'exam_id' => $id,
-                        'totalMark' => $totalMark
-                    ]);
-                } else {
-
-                    $exst = ExamStudent::where(['student_id' => $s->id, 'exam_id' => $id])->first();
-                    $exst->update(['totalMark' => $totalMark]);
-                }
-            }
-        }
-
-        $res = ExamStudent::where(['exam_id' => $id])->get();
-
-        $res->each(function ($e) {
-            $e->student;
-            $e->student->user;
-            $e->student->department;
-            $e->student->department->school;
-            $e->exam;
-        });
-
-        //return response($res);
-
-        return response()->json(['studentsMark' => $res, 'message' => 'successfully Calculated Exam Total Marks for all students']);
-    }
-
     /**
      * Show the form for editing the specified resource.
      *
@@ -967,11 +867,11 @@ class ExamController extends Controller
      *      summary="delete exam",
      *      description="deletes exam",
      *      security={ {"bearer": {} }},
-     *    
+     *
      *      @OA\Response(
      *          response=200,
      *          description="successfully deleted exam",
-     *      
+     *
      *       ),
      *      @OA\Response(
      *          response=401,
@@ -1001,7 +901,7 @@ class ExamController extends Controller
      *      summary="get student answers",
      *      description="returns all student answers of a certain exam",
      *      security={ {"bearer": {} }},
-     *    
+     *
      *      @OA\Response(
      *          response=200,
      *          description="success!",
@@ -1092,7 +992,7 @@ class ExamController extends Controller
         // check how many questions the student answered!
         $answers = DB::table('answers')->where(['exam_id' => $exam->id, 'student_id' => $student->id])->get();
         // cannot submit until they are all answered!
-        if($answers->count() < $questions->count()) {
+        if ($answers->count() < $questions->count()) {
             return response()->json(['message' => 'You cannot submit yet!, you haven\'t answered all questions'], 400);
         }
 

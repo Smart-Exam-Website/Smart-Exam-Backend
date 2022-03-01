@@ -129,11 +129,9 @@ class StudentController extends Controller
             'email' => 'required|email|max:255|unique:users',
             'password' => 'required|min:6',
             'gender' => 'required|in:male,female',
+            'image' => 'required',
             'phone' => 'required|unique:users|digits:11',
-            //'department' => 'string|max:255',
             'departments.*.department_id' => ['required', 'numeric', 'exists:departments,id'],
-            //'department_id' => 'required|numeric|exists:departments,id',
-            //'school' => 'required|string|max:255',
             'studentCode' => 'required|string|unique:students'
         ]);
 
@@ -147,48 +145,10 @@ class StudentController extends Controller
             'email_verified_at' => date('Y-m-d H:i:s'),
             'password' => Hash::make($fields['password']),
             'gender' => $fields['gender'],
-            'image' => 'https://southernplasticsurgery.com.au/wp-content/uploads/2013/10/user-placeholder.png',
+            'image' => $fields['image'],
             'type' => 'student',
             'phone' => $fields['phone']
         ]);
-
-
-
-        // //if school already exist in database add it's id to the department
-        // $schools = School::all();
-        // $school_id = 0;
-        // foreach ($schools as $school) {
-        //     if ($school->name === $fields['school']) {
-        //         $school_id = $school->id;
-        //     }
-        // }
-
-        // //if school doesnot exist create school
-        // if ($school_id == 0) {
-        //     $school = School::create([
-        //         'name' => $fields['school']
-        //     ]);
-        //     $school_id = $school->id;
-        // }
-
-
-        // //if department already exist in database add it's id to the student
-        // $departments = Department::all();
-        // $department_id = 0;
-        // foreach ($departments as $department) {
-        //     if ($department->name === $fields['department']) {
-        //         $department_id = $department->id;
-        //     }
-        // }
-
-        // //if department doesnot exist create department
-        // if ($department_id == 0) {
-        //     $department = Department::create([
-        //         'name' => $fields['department'],
-        //         'school_id' => $school_id,
-        //     ]);
-        //     $department_id = $department->id;
-        // }
 
         //create student
         $student = Student::create([
