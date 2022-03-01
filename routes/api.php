@@ -105,6 +105,10 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/answers', 'App\Http\Controllers\AnswerController@store');
     // Get student answers
     Route::get('/exams/{exam}/answers', 'App\Http\Controllers\ExamController@getStudentAnswers');
+    // Get all student solutions
+    Route::get('/exams/{exam}/solutions', 'App\Http\Controllers\ExamController@getExamSolutions');
+    // get detailed student report
+    Route::get('/exams/{exam}/solutions/report', 'App\Http\Controllers\ExamController@getDetailedExamSolution');
     // ----------------------------------------------------------------------------------------
     // Get exam details
     Route::get('/exams/{exam}', 'App\Http\Controllers\ExamController@show');

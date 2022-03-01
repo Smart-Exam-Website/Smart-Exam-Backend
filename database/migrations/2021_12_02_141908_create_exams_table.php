@@ -47,7 +47,7 @@ class CreateExamsTable extends Migration
             $table->boolean('isVerified')->default(false);
             $table->integer('attempt')->default(1);
             $table->boolean('isSubmitted')->default(false);
-            $table->dateTime('submittedAt');
+            $table->dateTime('submittedAt')->nullable();
             $table->primary(['exam_id', 'student_id', 'attempt'], 'id');
             $table->timestamps();
         });

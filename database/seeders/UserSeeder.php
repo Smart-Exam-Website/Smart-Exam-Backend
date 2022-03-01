@@ -115,6 +115,31 @@ class UserSeeder extends Seeder
                     'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
                 ]
             ]);
+            $users = User::all();
+            foreach($users as $user) {
+                if($user->id % 2) {
+                    DB::table('instructors')->insert([
+                        [
+                            'degree' => 'Phd',
+                            'verified' => 'true',
+                            'description' => 'This is the root instructor',
+                            'id' => $user->id,
+                            'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
+                            'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
+                        ]
+                    ]);
+                } else {
+                    DB::table('students')->insert([
+                        [
+                            'studentCode' => '1122',
+                            'department_id' => 1,
+                            'id' => $user->id,
+                            'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
+                            'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
+                        ]
+                    ]);
+                }
+            }
         }
 
         User::factory(10)->create()->each(function ($user) {
