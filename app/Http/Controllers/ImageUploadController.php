@@ -49,11 +49,13 @@ class ImageUploadController extends Controller
             'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        $imageName = time() . '.' . $request->image->extension();
+        // $imageName = time() . '.' . $request->image->extension();
 
         $path = Storage::disk('s3')->put('uploads', $request->image);
         $path = Storage::disk('s3')->url($path);
 
-        return response()->json(['message' => 'success ,You have successfully upload image.', 'image' => $imageName]);
+        $imageName = substr($path, -44);
+
+        return response()->json(['message' => 'Success! You have successfully uploaded the image.', 'image' => $imageName]);
     }
 }

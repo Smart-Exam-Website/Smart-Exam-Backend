@@ -55,6 +55,7 @@ Route::get('/schools', 'App\Http\Controllers\SchoolController@index');
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/auth/logout', [UserController::class, 'logout']);
     Route::put('/auth/changePassword', [UserController::class, 'changePassword']);
+    Route::get('/image', 'App\Http\Controllers\UserController@getImage');
 });
 
 

@@ -1559,7 +1559,7 @@
     "components": {
         "schemas": {
             "ChangePasswordRequest": {
-                "title": "changePasswordRequest",
+                "title": "ChangePasswordRequest",
                 "description": "change password request body data",
                 "required": [
                     "currentPassword",

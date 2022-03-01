@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -348,5 +350,12 @@ class UserController extends Controller
             $specialUser->save();
             return response()->json(['message' => 'Account verified!'], 200);
         }
+    }
+
+    public function getImage() {
+
+        $image2 = Storage::disk('s3')->get('uploads/AOGRQGLjcMhNCOZGiWs0faJRfsxCrcteVfWUwrfE.jpg');
+        // image malformed issue
+        return base64_encode($image2);
     }
 }
