@@ -246,6 +246,12 @@ paths:
     get:
       tags:
       - Exam
+      parameters:
+        - in: path
+          name: exam
+          schema:
+            type: integer
+          required: true
       summary: Get exam details
       description: Returns exam details
       operationId: getExamDetails
@@ -284,6 +290,12 @@ paths:
     get:
       tags:
       - Exam
+      parameters:
+        - in: path
+          name: exam
+          schema:
+            type: integer
+          required: true
       summary: Get exam questions
       description: Returns question details
       operationId: getExamQuestions
@@ -309,6 +321,12 @@ paths:
     post:
       tags:
       - Exam
+      parameters:
+        - in: path
+          name: exam
+          schema:
+            type: integer
+          required: true
       summary: start exam
       description: 'change exam status '
       operationId: startExam
@@ -351,6 +369,12 @@ paths:
     get:
       tags:
       - Exam
+      parameters:
+        - in: path
+          name: exam
+          schema:
+            type: integer
+          required: true
       summary: Get exam configs
       description: Returns exam configurations
       operationId: getExamConfigs
@@ -374,6 +398,12 @@ paths:
     put:
       tags:
       - Exam
+      parameters:
+        - in: path
+          name: exam
+          schema:
+            type: integer
+          required: true
       summary: Store Exam Data
       description: Returns success message
       operationId: updateExamStepOne
@@ -398,6 +428,12 @@ paths:
     put:
       tags:
       - Exam
+      parameters:
+        - in: path
+          name: exam
+          schema:
+            type: integer
+          required: true
       summary: Store Exam Data
       description: Returns success message
       operationId: updateExamStepTwo
@@ -423,6 +459,12 @@ paths:
     put:
       tags:
       - Exam
+      parameters:
+        - in: path
+          name: exam
+          schema:
+            type: integer
+          required: true
       summary: Store Exam Data
       description: Returns success message
       operationId: updateExamStepThree
@@ -447,6 +489,12 @@ paths:
     put:
       tags:
       - Exam
+      parameters:
+        - in: path
+          name: exam
+          schema:
+            type: integer
+          required: true
       summary: Store Exam Data
       description: Returns success message
       operationId: updateExamStepFour
@@ -471,6 +519,12 @@ paths:
     get:
       tags:
       - Exam
+      parameters:
+        - in: path
+          name: exam
+          schema:
+            type: integer
+          required: true
       summary: get student answers
       description: returns all student answers of a certain exam
       operationId: getStudentAnswers
@@ -494,6 +548,12 @@ paths:
     post:
       tags:
       - Exam
+      parameters:
+        - in: path
+          name: exam
+          schema:
+            type: integer
+          required: true
       summary: submit exam
       description: change exam status for student to submitted
       operationId: submitExam
@@ -520,6 +580,12 @@ paths:
     post:
       tags:
       - Exam
+      parameters:
+        - in: path
+          name: exam
+          schema:
+            type: integer
+          required: true
       summary: publish exam
       description: 'change exam status '
       operationId: publishExam
@@ -786,6 +852,12 @@ paths:
       tags:
       - Questions
       - Exam
+      parameters:
+        - in: path
+          name: question
+          schema:
+            type: integer
+          required: true
       summary: Get question details
       description: Returns question details
       operationId: getquestionDetails
@@ -809,16 +881,15 @@ paths:
     put:
       tags:
       - Questions
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
       summary: Edit question
       description: Returns Question data
       operationId: editQuestion
-      parameters:
-      - name: id
-        in: path
-        description: Question id
-        required: true
-        schema:
-          type: integer
       requestBody:
         required: false
         content:
@@ -951,6 +1022,12 @@ paths:
     get:
       tags:
       - Student
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
       summary: Get student
       description: Returns student
       operationId: getStudent
@@ -1383,6 +1460,12 @@ paths:
     get:
       tags:
       - Exam
+      parameters:
+        - in: path
+          name: exam
+          schema:
+            type: integer
+          required: true
       summary: Get exam solutions
       description: Returns question solutions for certain student
       operationId: getExamSolutions
@@ -1427,6 +1510,92 @@ paths:
                         mark:
                           type: float
                           example: 30.2
+                type: object
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Forbidden
+      security:
+      - bearer: []
+  "/exams/{exam}/solutions/report":
+    get:
+      tags:
+      - Exam
+      parameters:
+        - in: path
+          name: exam
+          schema:
+            type: integer
+          required: true
+        - in: query
+          name: student_id
+          schema:
+            type: integer
+          required: true
+      summary: Get exam solutions
+      description: Returns question solutions for certain student
+      operationId: getExamSolutions
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                properties:
+                  studentName:
+                    type: string
+                    example: "Haidy Elnahass"
+                  numberOfFaces:
+                    type: integer
+                    example: 1
+                  isVerified:
+                    type: boolean
+                    example: true
+                  solution:
+                    type: array
+                    items:
+                      properties:
+                        exam_id:
+                          type: integer
+                          example: 1
+                        student_id:
+                          type: integer
+                          example: 1
+                        question_id:
+                          type: integer
+                          example: 1
+                        option_id:
+                          type: integer
+                          example: 1
+                        studentAnswer:
+                          type: String
+                          example: 'Answer'
+                        question:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                              example: 1
+                            questionText:
+                              type: String
+                              example: "How old are you?"
+                            type:
+                              type: String
+                              example: "MCQ"
+                            answers:
+                              type: array
+                              items:
+                                properties:
+                                  id:
+                                    type: integer
+                                    example: 2
+                                  isCorrect:
+                                    type: boolean
+                                    example: true
+                                  value:
+                                    type: String
+                                    example: "Answer 1"
+
                 type: object
         '401':
           description: Unauthenticated

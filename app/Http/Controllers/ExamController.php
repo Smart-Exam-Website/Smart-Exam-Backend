@@ -1117,6 +1117,9 @@ class ExamController extends Controller
         }
 
         $studentId = request('student_id');
+        if(!$studentId) {
+            return response()->json(['message' => 'No student ID specified!']);
+        }
         $user = DB::table('users')->where(['id' => $studentId])->get()->first();
         $studentName = $user->firstName . ' ' . $user->lastName;
         // $studentCode = $user->student->studentCode;
