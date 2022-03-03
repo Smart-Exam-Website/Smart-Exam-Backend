@@ -10,13 +10,13 @@ info:
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   version: 1.0.0
 servers:
-- url: http://localhost:8000/api/
-  description: Smart Exam API Server
+  - url: http://localhost:8000/api/
+    description: Smart Exam API Server
 paths:
   "/answers":
     post:
       tags:
-      - Exam
+        - Exam
       summary: store student answer
       description: Returns success message
       operationId: storeAnswer
@@ -27,25 +27,25 @@ paths:
             schema:
               "$ref": "#/components/schemas/StoreAnswerRequest"
       responses:
-        '201':
+        "201":
           description: Successful operation
-        '400':
+        "400":
           description: Bad Request
-        '401':
+        "401":
           description: Unauthenticated
-        '403':
+        "403":
           description: Forbidden
       security:
-      - bearer: []
+        - bearer: []
   "/departments":
     get:
       tags:
-      - Departments
+        - Departments
       summary: Get list of Departments
       description: Returns list of Departments
       operationId: getDepartmentsList
       responses:
-        '200':
+        "200":
           description: Successful operation
           content:
             application/json:
@@ -56,21 +56,21 @@ paths:
                     items:
                       "$ref": "#/components/schemas/Department"
                 type: object
-        '401':
+        "401":
           description: Unauthenticated
-        '403':
+        "403":
           description: Forbidden
       security:
-      - bearer: []
+        - bearer: []
   "/exams":
     get:
       tags:
-      - Exams
+        - Exams
       summary: Get list of exams
       description: Returns list of exams
       operationId: getexamsList
       responses:
-        '200':
+        "200":
           description: Successful operation
           content:
             application/json:
@@ -81,21 +81,21 @@ paths:
                     items:
                       "$ref": "#/components/schemas/Exam"
                 type: object
-        '401':
+        "401":
           description: Unauthenticated
-        '403':
+        "403":
           description: Forbidden
       security:
-      - bearer: []
+        - bearer: []
   "/instructors/myExams":
     get:
       tags:
-      - Instructor
+        - Instructor
       summary: Get list of exams
       description: Returns list of exams
       operationId: getexamsList
       responses:
-        '200':
+        "200":
           description: Successful operation
           content:
             application/json:
@@ -106,16 +106,16 @@ paths:
                     items:
                       "$ref": "#/components/schemas/Exam"
                 type: object
-        '401':
+        "401":
           description: Unauthenticated
-        '403':
+        "403":
           description: Forbidden
       security:
-      - bearer: []
+        - bearer: []
   "/exams/step1":
     post:
       tags:
-      - Exams
+        - Exams
       summary: Store Exam Data
       description: Returns created exam id
       operationId: storeExamStepOne
@@ -126,7 +126,7 @@ paths:
             schema:
               "$ref": "#/components/schemas/StoreExamStepOne"
       responses:
-        '201':
+        "201":
           description: Successful operation
           content:
             application/json:
@@ -138,18 +138,18 @@ paths:
                   examId:
                     type: integer
                 type: object
-        '400':
+        "400":
           description: Bad Request
-        '401':
+        "401":
           description: Unauthenticated
-        '403':
+        "403":
           description: Forbidden
       security:
-      - bearer: []
+        - bearer: []
   "/exams/step2":
     post:
       tags:
-      - Exams
+        - Exams
       summary: Store Exam Data
       description: Add Exam Options
       operationId: storeExamStepTwo
@@ -160,7 +160,7 @@ paths:
             schema:
               "$ref": "#/components/schemas/StoreExamStepTwo"
       responses:
-        '200':
+        "200":
           description: Successful operation
           content:
             application/json:
@@ -170,18 +170,18 @@ paths:
                     type: string
                     example: successfully added exam options!
                 type: object
-        '400':
+        "400":
           description: Bad Request
-        '401':
+        "401":
           description: Unauthenticated
-        '403':
+        "403":
           description: Forbidden
       security:
-      - bearer: []
+        - bearer: []
   "/exams/step3":
     post:
       tags:
-      - Exams
+        - Exams
       summary: Store Exam Data
       description: Add Questions
       operationId: storeExamStepThree
@@ -192,7 +192,7 @@ paths:
             schema:
               "$ref": "#/components/schemas/StoreExamStepThree"
       responses:
-        '200':
+        "200":
           description: Successful operation
           content:
             application/json:
@@ -202,18 +202,18 @@ paths:
                     type: string
                     example: successfully added questions to exam!
                 type: object
-        '400':
+        "400":
           description: Bad Request
-        '401':
+        "401":
           description: Unauthenticated
-        '403':
+        "403":
           description: Forbidden
       security:
-      - bearer: []
+        - bearer: []
   "/exams/step4":
     post:
       tags:
-      - Exams
+        - Exams
       summary: Store Exam Data
       description: Add question marks and time
       operationId: storeExamStepFour
@@ -224,7 +224,7 @@ paths:
             schema:
               "$ref": "#/components/schemas/StoreExamStepFour"
       responses:
-        '200':
+        "200":
           description: Successful operation
           content:
             application/json:
@@ -234,14 +234,14 @@ paths:
                     type: string
                     example: successfully created exam!
                 type: object
-        '400':
+        "400":
           description: Bad Request
-        '401':
+        "401":
           description: Unauthenticated
-        '403':
+        "403":
           description: Forbidden
       security:
-      - bearer: []
+        - bearer: []
   "/exams/{exam}":
     get:
       tags:
@@ -256,7 +256,7 @@ paths:
       description: Returns exam details
       operationId: getExamDetails
       responses:
-        '200':
+        "200":
           description: Successful operation
           content:
             application/json:
@@ -265,27 +265,27 @@ paths:
                   exam:
                     "$ref": "#/components/schemas/Exam"
                 type: object
-        '401':
+        "401":
           description: Unauthenticated
-        '403':
+        "403":
           description: Forbidden
       security:
-      - bearer: []
+        - bearer: []
     delete:
       tags:
-      - Exam
+        - Exam
       summary: delete exam
       description: deletes exam
       operationId: deleteExam
       responses:
-        '200':
+        "200":
           description: successfully deleted exam
-        '401':
+        "401":
           description: Unauthenticated
-        '403':
+        "403":
           description: Forbidden
       security:
-      - bearer: []
+        - bearer: []
   "/exams/{exam}/questions":
     get:
       tags:
@@ -300,7 +300,7 @@ paths:
       description: Returns question details
       operationId: getExamQuestions
       responses:
-        '200':
+        "200":
           description: Successful operation
           content:
             application/json:
@@ -311,12 +311,12 @@ paths:
                     items:
                       "$ref": "#/components/schemas/Question"
                 type: object
-        '401':
+        "401":
           description: Unauthenticated
-        '403':
+        "403":
           description: Forbidden
       security:
-      - bearer: []
+        - bearer: []
   "/exams/{exam}/start":
     post:
       tags:
@@ -328,7 +328,7 @@ paths:
             type: integer
           required: true
       summary: start exam
-      description: 'change exam status '
+      description: "change exam status "
       operationId: startExam
       requestBody:
         required: true
@@ -338,16 +338,16 @@ paths:
               properties:
                 startTime:
                   type: datetime
-                  example: '2022-02-22 02:45:00'
+                  example: "2022-02-22 02:45:00"
                 numberOfFaces:
                   type: integer
-                  example: '5'
+                  example: "5"
                 isVerified:
                   type: boolean
-                  example: 'true'
+                  example: "true"
               type: object
       responses:
-        '200':
+        "200":
           description: Successful operation
           content:
             application/json:
@@ -357,14 +357,14 @@ paths:
                     type: string
                     example: successfully started exam!
                 type: object
-        '400':
+        "400":
           description: Bad Request
-        '401':
+        "401":
           description: Unauthenticated
-        '403':
+        "403":
           description: Forbidden
       security:
-      - bearer: []
+        - bearer: []
   "/exams/{exam}/configs":
     get:
       tags:
@@ -379,7 +379,7 @@ paths:
       description: Returns exam configurations
       operationId: getExamConfigs
       responses:
-        '200':
+        "200":
           description: Successful operation
           content:
             application/json:
@@ -388,12 +388,12 @@ paths:
                   configuration:
                     "$ref": "#/components/schemas/Configuration"
                 type: object
-        '401':
+        "401":
           description: Unauthenticated
-        '403':
+        "403":
           description: Forbidden
       security:
-      - bearer: []
+        - bearer: []
   "/exams/{exam}/step1":
     put:
       tags:
@@ -414,16 +414,16 @@ paths:
             schema:
               "$ref": "#/components/schemas/StoreExamStepOne"
       responses:
-        '200':
+        "200":
           description: Successful operation
-        '400':
+        "400":
           description: Bad Request
-        '401':
+        "401":
           description: Unauthenticated
-        '403':
+        "403":
           description: Forbidden
       security:
-      - bearer: []
+        - bearer: []
   "/exams/{exam}/step2":
     put:
       tags:
@@ -444,17 +444,16 @@ paths:
             schema:
               "$ref": "#/components/schemas/StoreExamStepTwo"
       responses:
-        '200':
+        "200":
           description: Successful operation
-        '400':
+        "400":
           description: Bad Request
-        '401':
-  
+        "401":
           description: Unauthenticated
-        '403':
+        "403":
           description: Forbidden
       security:
-      - bearer: []
+        - bearer: []
   "/exams/{exam}/step3":
     put:
       tags:
@@ -475,16 +474,16 @@ paths:
             schema:
               "$ref": "#/components/schemas/StoreExamStepThree"
       responses:
-        '200':
+        "200":
           description: Successful operation
-        '400':
+        "400":
           description: Bad Request
-        '401':
+        "401":
           description: Unauthenticated
-        '403':
+        "403":
           description: Forbidden
       security:
-      - bearer: []
+        - bearer: []
   "/exams/{exam}/step4":
     put:
       tags:
@@ -505,16 +504,16 @@ paths:
             schema:
               "$ref": "#/components/schemas/StoreExamStepFour"
       responses:
-        '200':
+        "200":
           description: Successful operation
-        '400':
+        "400":
           description: Bad Request
-        '401':
+        "401":
           description: Unauthenticated
-        '403':
+        "403":
           description: Forbidden
       security:
-      - bearer: []
+        - bearer: []
   "/exams/{exam}/answers":
     get:
       tags:
@@ -529,7 +528,7 @@ paths:
       description: returns all student answers of a certain exam
       operationId: getStudentAnswers
       responses:
-        '200':
+        "200":
           description: success!
           content:
             application/json:
@@ -538,12 +537,12 @@ paths:
                   studentAnswer:
                     "$ref": "#/components/schemas/StudentAnswer"
                 type: object
-        '401':
+        "401":
           description: Unauthenticated
-        '403':
+        "403":
           description: Forbidden
       security:
-      - bearer: []
+        - bearer: []
   "/exams/{exam}/submit":
     post:
       tags:
@@ -558,7 +557,7 @@ paths:
       description: change exam status for student to submitted
       operationId: submitExam
       responses:
-        '200':
+        "200":
           description: Successful operation
           content:
             application/json:
@@ -568,14 +567,14 @@ paths:
                     type: string
                     example: successfully submitted exam!
                 type: object
-        '400':
+        "400":
           description: Bad Request
-        '401':
+        "401":
           description: Unauthenticated
-        '403':
+        "403":
           description: Forbidden
       security:
-      - bearer: []
+        - bearer: []
   "/exams/{exam}/publish":
     post:
       tags:
@@ -587,7 +586,7 @@ paths:
             type: integer
           required: true
       summary: publish exam
-      description: 'change exam status '
+      description: "change exam status "
       operationId: publishExam
       requestBody:
         required: true
@@ -597,10 +596,10 @@ paths:
               properties:
                 isPublished:
                   type: boolean
-                  example: 'true'
+                  example: "true"
               type: object
       responses:
-        '200':
+        "200":
           description: Successful operation
           content:
             application/json:
@@ -610,14 +609,14 @@ paths:
                     type: string
                     example: successfully published exam!
                 type: object
-        '400':
+        "400":
           description: Bad Request
-        '401':
+        "401":
           description: Unauthenticated
-        '403':
+        "403":
           description: Forbidden
       security:
-      - bearer: []
+        - bearer: []
   /image-upload:
     post:
       tags:
@@ -634,7 +633,7 @@ paths:
           name: image
           type: image
           required: true
-        
+
       responses:
         "200":
           description: successful operation
@@ -658,12 +657,12 @@ paths:
   "/instructors":
     get:
       tags:
-      - Instructors
+        - Instructors
       summary: Get list of Instructors
       description: Returns list of Instructors
       operationId: getInstructorsList
       responses:
-        '200':
+        "200":
           description: Successful operation
           content:
             application/json:
@@ -674,16 +673,16 @@ paths:
                     items:
                       "$ref": "#/components/schemas/Instructor"
                 type: object
-        '401':
+        "401":
           description: Unauthenticated
-        '403':
+        "403":
           description: Forbidden
       security:
-      - bearer: []
+        - bearer: []
   "/instructors/register":
     post:
       tags:
-      - Instructors
+        - Instructors
       summary: Sign up as instructor
       description: Returns Instructor data
       operationId: storeInstructor
@@ -694,7 +693,7 @@ paths:
             schema:
               "$ref": "#/components/schemas/StoreInstructorRequest"
       responses:
-        '201':
+        "201":
           description: Successful operation
           content:
             application/json:
@@ -706,21 +705,21 @@ paths:
                   instructor:
                     "$ref": "#/components/schemas/Instructor"
                 type: object
-        '400':
+        "400":
           description: Bad Request
-        '401':
+        "401":
           description: Unauthenticated
-        '403':
+        "403":
           description: Forbidden
   "/instructors/{instructor}":
     get:
       tags:
-      - Instructor
+        - Instructor
       summary: Get instructor
       description: Returns instructor
       operationId: getInstructor
       responses:
-        '200':
+        "200":
           description: Successful operation
           content:
             application/json:
@@ -729,21 +728,21 @@ paths:
                   instructor:
                     "$ref": "#/components/schemas/Instructor"
                 type: object
-        '401':
+        "401":
           description: Unauthenticated
-        '403':
+        "403":
           description: Forbidden
       security:
-      - bearer: []
+        - bearer: []
   "/instructors/me":
     get:
       tags:
-      - Instructor
+        - Instructor
       summary: Get instructor profile
       description: Returns instructor profile
       operationId: getInstructorProfile
       responses:
-        '200':
+        "200":
           description: Successful operation
           content:
             application/json:
@@ -752,15 +751,15 @@ paths:
                   instructor:
                     "$ref": "#/components/schemas/Instructor"
                 type: object
-        '401':
+        "401":
           description: Unauthenticated
-        '403':
+        "403":
           description: Forbidden
       security:
-      - bearer: []
+        - bearer: []
     put:
       tags:
-      - Instructors
+        - Instructors
       summary: Edit instructor
       description: Returns Instructor data
       operationId: editInstructor
@@ -771,7 +770,7 @@ paths:
             schema:
               "$ref": "#/components/schemas/StoreInstructorRequest"
       responses:
-        '201':
+        "201":
           description: Successful operation
           content:
             application/json:
@@ -783,23 +782,23 @@ paths:
                   instructor:
                     "$ref": "#/components/schemas/Instructor"
                 type: object
-        '400':
+        "400":
           description: Bad Request
-        '401':
+        "401":
           description: Unauthenticated
-        '403':
+        "403":
           description: Forbidden
       security:
-      - bearer: []
+        - bearer: []
   "/questions":
     get:
       tags:
-      - Questions
+        - Questions
       summary: Get list of Questions
       description: Returns list of Questions
       operationId: getQuestionsList
       responses:
-        '200':
+        "200":
           description: Successful operation
           content:
             application/json:
@@ -810,16 +809,16 @@ paths:
                     items:
                       "$ref": "#/components/schemas/Question"
                 type: object
-        '401':
+        "401":
           description: Unauthenticated
-        '403':
+        "403":
           description: Forbidden
       security:
-      - bearer: []
+        - bearer: []
   "/questions/create":
     post:
       tags:
-      - Questions
+        - Questions
       summary: create question
       description: Returns Question data
       operationId: storeQuestion
@@ -830,7 +829,7 @@ paths:
             schema:
               "$ref": "#/components/schemas/StoreQuestionRequest"
       responses:
-        '201':
+        "201":
           description: Successful operation
           content:
             application/json:
@@ -839,14 +838,14 @@ paths:
                   question:
                     "$ref": "#/components/schemas/Question"
                 type: object
-        '400':
+        "400":
           description: Bad Request
-        '401':
+        "401":
           description: Unauthenticated
-        '403':
+        "403":
           description: Forbidden
       security:
-      - bearer: []
+        - bearer: []
   "/questions/{question}":
     get:
       tags:
@@ -862,7 +861,7 @@ paths:
       description: Returns question details
       operationId: getquestionDetails
       responses:
-        '200':
+        "200":
           description: Successful operation
           content:
             application/json:
@@ -871,25 +870,26 @@ paths:
                   question:
                     "$ref": "#/components/schemas/Question"
                 type: object
-        '401':
+        "401":
           description: Unauthenticated
-        '403':
+        "403":
           description: Forbidden
       security:
-      - bearer: []
+        - bearer: []
   "/questions/{id}":
     put:
       tags:
-      - Questions
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          required: true
+        - Questions
       summary: Edit question
       description: Returns Question data
       operationId: editQuestion
+      parameters:
+        - name: id
+          in: path
+          description: Question id
+          required: true
+          schema:
+            type: integer
       requestBody:
         required: false
         content:
@@ -897,7 +897,7 @@ paths:
             schema:
               "$ref": "#/components/schemas/StoreQuestionRequest"
       responses:
-        '201':
+        "201":
           description: Successful operation
           content:
             application/json:
@@ -906,45 +906,45 @@ paths:
                   question:
                     "$ref": "#/components/schemas/Question"
                 type: object
-        '400':
+        "400":
           description: Bad Request
-        '401':
+        "401":
           description: Unauthenticated
-        '403':
+        "403":
           description: Forbidden
       security:
-      - bearer: []
+        - bearer: []
     delete:
       tags:
-      - Questions
+        - Questions
       summary: Delete existing question
       description: Deletes a record and returns no content
       operationId: deleteQuestion
       parameters:
-      - name: id
-        in: path
-        description: Question id
-        required: true
-        schema:
-          type: integer
+        - name: id
+          in: path
+          description: Question id
+          required: true
+          schema:
+            type: integer
       responses:
-        '204':
+        "204":
           description: Successful operation
-        '401':
+        "401":
           description: Unauthenticated
-        '403':
+        "403":
           description: Forbidden
-        '404':
+        "404":
           description: Resource Not Found
   "/schools":
     get:
       tags:
-      - Schools
+        - Schools
       summary: Get list of Schools
       description: Returns list of Schools
       operationId: getSchoolsList
       responses:
-        '200':
+        "200":
           description: Successful operation
           content:
             application/json:
@@ -955,21 +955,21 @@ paths:
                     items:
                       "$ref": "#/components/schemas/School"
                 type: object
-        '401':
+        "401":
           description: Unauthenticated
-        '403':
+        "403":
           description: Forbidden
       security:
-      - bearer: []
+        - bearer: []
   "/students":
     get:
       tags:
-      - Students
+        - Students
       summary: Get list of Students
       description: Returns list of Students
       operationId: getStudentsList
       responses:
-        '200':
+        "200":
           description: Successful operation
           content:
             application/json:
@@ -980,16 +980,16 @@ paths:
                     items:
                       "$ref": "#/components/schemas/Student"
                 type: object
-        '401':
+        "401":
           description: Unauthenticated
-        '403':
+        "403":
           description: Forbidden
       security:
-      - bearer: []
+        - bearer: []
   "/students/register":
     post:
       tags:
-      - Students
+        - Students
       summary: Sign up as Student
       description: Returns Student data
       operationId: storeStudent
@@ -1000,7 +1000,7 @@ paths:
             schema:
               "$ref": "#/components/schemas/StoreStudentRequest"
       responses:
-        '201':
+        "201":
           description: Successful operation
           content:
             application/json:
@@ -1012,27 +1012,21 @@ paths:
                   student:
                     "$ref": "#/components/schemas/Student"
                 type: object
-        '400':
+        "400":
           description: Bad Request
-        '401':
+        "401":
           description: Unauthenticated
-        '403':
+        "403":
           description: Forbidden
   "/students/{id}":
     get:
       tags:
-      - Student
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          required: true
+        - Student
       summary: Get student
       description: Returns student
       operationId: getStudent
       responses:
-        '200':
+        "200":
           description: Successful operation
           content:
             application/json:
@@ -1041,21 +1035,21 @@ paths:
                   student:
                     "$ref": "#/components/schemas/Student"
                 type: object
-        '401':
+        "401":
           description: Unauthenticated
-        '403':
+        "403":
           description: Forbidden
       security:
-      - bearer: []
+        - bearer: []
   "/students/me":
     get:
       tags:
-      - Student
+        - Student
       summary: Get Student profile
       description: Returns student profile
       operationId: getStudentProfile
       responses:
-        '200':
+        "200":
           description: Successful operation
           content:
             application/json:
@@ -1064,15 +1058,15 @@ paths:
                   student:
                     "$ref": "#/components/schemas/Student"
                 type: object
-        '401':
+        "401":
           description: Unauthenticated
-        '403':
+        "403":
           description: Forbidden
       security:
-      - bearer: []
+        - bearer: []
     put:
       tags:
-      - Students
+        - Students
       summary: Edit student
       description: Returns Student data
       operationId: editStudent
@@ -1083,7 +1077,7 @@ paths:
             schema:
               "$ref": "#/components/schemas/StoreStudentRequest"
       responses:
-        '201':
+        "201":
           description: Successful operation
           content:
             application/json:
@@ -1095,18 +1089,18 @@ paths:
                   student:
                     "$ref": "#/components/schemas/Student"
                 type: object
-        '400':
+        "400":
           description: Bad Request
-        '401':
+        "401":
           description: Unauthenticated
-        '403':
+        "403":
           description: Forbidden
       security:
-      - bearer: []
+        - bearer: []
   "/auth/login":
     post:
       tags:
-      - Auth
+        - Auth
       summary: Sign in as Student or as Instructor
       description: login to your account
       operationId: login
@@ -1117,7 +1111,7 @@ paths:
             schema:
               "$ref": "#/components/schemas/StoreLoginRequest"
       responses:
-        '201':
+        "201":
           description: Successfull operation
           content:
             application/json:
@@ -1129,21 +1123,21 @@ paths:
                   auth:
                     "$ref": "#/components/schemas/User"
                 type: object
-        '400':
+        "400":
           description: Bad Request
-        '401':
+        "401":
           description: Email Or Password is incorrect
-        '403':
+        "403":
           description: Forbidden
   "/auth/logout":
     post:
       tags:
-      - Auth
+        - Auth
       summary: Log out From your Account
       description: logout from your account
       operationId: logout
       responses:
-        '201':
+        "201":
           description: Successfully Logged Out
           content:
             application/json:
@@ -1153,16 +1147,16 @@ paths:
                     type: string
                     example: You Have Successfully Logged Out
                 type: object
-        '400':
+        "400":
           description: Bad Request
-        '401':
+        "401":
           description: Unauthenticated
-        '403':
+        "403":
           description: Forbidden
   "/auth/changePassword":
     put:
       tags:
-      - Auth
+        - Auth
       summary: changing password
       operationId: changePassword
       requestBody:
@@ -1172,7 +1166,7 @@ paths:
             schema:
               "$ref": "#/components/schemas/ChangePasswordRequest"
       responses:
-        '201':
+        "201":
           description: Successful operation
           content:
             application/json:
@@ -1182,16 +1176,16 @@ paths:
                     type: string
                     example: Password Updated Successfully
                 type: object
-        '400':
+        "400":
           description: Bad Request
-        '401':
+        "401":
           description: Unauthenticated
-        '403':
+        "403":
           description: Forbidden
   "/auth/forgotPassword":
     put:
       tags:
-      - Auth
+        - Auth
       summary: Resetting password
       operationId: resetPassword
       requestBody:
@@ -1201,7 +1195,7 @@ paths:
             schema:
               "$ref": "#/components/schemas/ResetPasswordRequest"
       responses:
-        '200':
+        "200":
           description: Successful operation
           content:
             application/json:
@@ -1211,15 +1205,15 @@ paths:
                     type: string
                     example: Password has been successfully changed!
                 type: object
-        '400':
+        "400":
           description: Bad Request
-        '401':
+        "401":
           description: Unauthenticated
-        '403':
+        "403":
           description: Forbidden
     post:
       tags:
-      - Auth
+        - Auth
       summary: Request to reset password
       operationId: forgotPassword
       requestBody:
@@ -1229,7 +1223,7 @@ paths:
             schema:
               "$ref": "#/components/schemas/ForgotPasswordRequest"
       responses:
-        '200':
+        "200":
           description: Successful operation
           content:
             application/json:
@@ -1239,16 +1233,16 @@ paths:
                     type: string
                     example: Reset link sent!
                 type: object
-        '400':
+        "400":
           description: Bad Request
-        '401':
+        "401":
           description: Unauthenticated
-        '403':
+        "403":
           description: Forbidden
   "/verifyEmail":
     post:
       tags:
-      - Auth
+        - Auth
       summary: Request to verify email
       operationId: verifyEmail
       requestBody:
@@ -1258,7 +1252,7 @@ paths:
             schema:
               "$ref": "#/components/schemas/VerifyEmailRequest"
       responses:
-        '200':
+        "200":
           description: Successful operation
           content:
             application/json:
@@ -1268,16 +1262,16 @@ paths:
                     type: string
                     example: Account verified!
                 type: object
-        '400':
+        "400":
           description: Bad Request
-        '401':
+        "401":
           description: Unauthenticated
-        '403':
+        "403":
           description: Forbidden
   "/faceDetection":
     post:
       tags:
-      - ML Models
+        - ML Models
       summary: face detection
       description: Returns number of faces
       operationId: faceDetectionAPI
@@ -1288,7 +1282,7 @@ paths:
             schema:
               "$ref": "#/components/schemas/FaceDetectionRequest"
       responses:
-        '200':
+        "200":
           description: Successful operation
           content:
             application/json:
@@ -1301,16 +1295,16 @@ paths:
                     type: integer
                     example: 6
                 type: object
-        '400':
+        "400":
           description: Bad Request
-        '401':
+        "401":
           description: Unauthenticated
-        '403':
+        "403":
           description: Forbidden
   "/faceVerification":
     post:
       tags:
-      - ML Models
+        - ML Models
       summary: face Verification
       description: Returns number of faces
       operationId: faceVerificationAPI
@@ -1321,7 +1315,7 @@ paths:
             schema:
               "$ref": "#/components/schemas/FaceVerificationRequest"
       responses:
-        '200':
+        "200":
           description: Successful operation
           content:
             application/json:
@@ -1334,47 +1328,47 @@ paths:
                     type: bool
                     example: true
                 type: object
-        '400':
+        "400":
           description: Bad Request
-        '401':
+        "401":
           description: Unauthenticated
-        '403':
+        "403":
           description: Forbidden
-    /exams/manual:
-      post:
-        tags:
-          - Exam
-        summary: Mark MCQ Exam Manually
-        description: "Mark MCQ Exam Manually with this API"
-        operationId: markMCQExamManually
-        consumes:
-          - application/json
-        produces:
-          - application/json
-        parameters:
-          - in: query
-            name: student_id
-            type: integer
-            required: true
-          - in: query
-            name: exam_id
-            type: integer
-            required: true
-          - in: query
-            name: question_id
-            type: integer
-            required: true
-          - in: query
-            name: questionMark
-            type: number
-            required: true
-        responses:
-          "200":
-            description: successful operation
-          "400":
-            description: Bad request
-        security:
-          - api_key: []
+  /exams/manual:
+    post:
+      tags:
+        - Exam
+      summary: Mark MCQ Exam Manually
+      description: "Mark MCQ Exam Manually with this API"
+      operationId: markMCQExamManually
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/StoreManualRequest"
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                properties:
+                  answer:
+                    "$ref": "#/components/schemas/StudentAnswer"
+                type: object
+        "400":
+          description: Bad request
+        "401":
+          description: Unauthenticated
+        "403":
+          description: Forbidden
+      security:
+        - bearer: []
   /exams/totalMark/{exam}/{student}:
     get:
       tags:
@@ -1402,10 +1396,17 @@ paths:
       responses:
         "200":
           description: successful operation
+          content:
+            application/json:
+              schema:
+                properties:
+                  totalMark:
+                    "$ref": "#/components/schemas/ExamStudent"
+                type: object
         "400":
           description: Bad request
       security:
-        - api_key: []
+        - bearer: []
   /exams/totalMark/{exam}:
     get:
       tags:
@@ -1427,10 +1428,17 @@ paths:
       responses:
         "200":
           description: successful operation
+          content:
+            application/json:
+              schema:
+                properties:
+                  studentsMark:
+                    "$ref": "#/components/schemas/ExamStudent"
+                type: object
         "400":
           description: Bad request
       security:
-        - api_key: []
+        - bearer: []
   /exams/report/{exam}:
     get:
       tags:
@@ -1452,10 +1460,17 @@ paths:
       responses:
         "200":
           description: successful operation
+          content:
+            application/json:
+              schema:
+                properties:
+                  studentsMark:
+                    "$ref": "#/components/schemas/StudentAnswer"
+                type: object
         "400":
           description: Bad request
       security:
-        - api_key: []
+        - bearer: []
   "/exams/{exam}/solutions":
     get:
       tags:
@@ -1470,7 +1485,7 @@ paths:
       description: Returns question solutions for certain student
       operationId: getExamSolutions
       responses:
-        '200':
+        "200":
           description: Successful operation
           content:
             application/json:
@@ -1488,7 +1503,7 @@ paths:
                           example: 1
                         startTime:
                           type: DateTime
-                          example: '2021-12-26 17:06:31'
+                          example: "2021-12-26 17:06:31"
                         numberOfFaces:
                           type: integer
                           example: 1
@@ -1500,10 +1515,10 @@ paths:
                           example: true
                         submittedAt:
                           type: DateTime
-                          example: '2021-12-26 17:06:31'
+                          example: "2021-12-26 17:06:31"
                         name:
                           type: String
-                          example: 'Haidy'
+                          example: "Haidy"
                         isMarked:
                           type: boolean
                           example: true
@@ -1511,9 +1526,9 @@ paths:
                           type: float
                           example: 30.2
                 type: object
-        '401':
+        "401":
           description: Unauthenticated
-        '403':
+        "403":
           description: Forbidden
       security:
       - bearer: []
@@ -1605,18 +1620,48 @@ paths:
       - bearer: []
 components:
   schemas:
+    StoreManualRequest:
+      title: StoreManualRequest
+      description: Manual Marking
+      required:
+        - studentId
+        - examId
+        - questionId
+        - questionMark
+      properties:
+        studentId:
+          title: student id
+          description: id of student
+          type: integer
+          example: 5
+        examId:
+          title: exam id
+          description: id of exam
+          type: integer
+          example: 1
+        questionId:
+          title: question id
+          description: id of question
+          type: integer
+          example: 1
+        questionMark:
+          title: question mark
+          description: question mark
+          type: string
+          example: 7
+      type: object
     ChangePasswordRequest:
       title: ChangePasswordRequest
       description: change password request body data
       required:
-      - currentPassword
-      - newPassword
+        - currentPassword
+        - newPassword
       properties:
         currentPassword:
           title: currentPassword
           description: User Current Password
           type: string
-          example: '12345678'
+          example: "12345678"
         newPassword:
           title: newPassword
           description: User New Password
@@ -1627,8 +1672,8 @@ components:
       title: FaceDetectionRequest
       description: Face Detection
       required:
-      - image
-      - examId
+        - image
+        - examId
       properties:
         image:
           title: image
@@ -1645,8 +1690,8 @@ components:
       title: FaceVerificationRequest
       description: Face verification
       required:
-      - image1
-      - examId
+        - image1
+        - examId
       properties:
         image1:
           title: image
@@ -1663,7 +1708,7 @@ components:
       title: ForgotPasswordRequest
       description: Forgot password request body data
       required:
-      - email
+        - email
       properties:
         email:
           title: email
@@ -1684,23 +1729,23 @@ components:
         faceRecognition:
           title: Face Recognition
           type: boolean
-          example: 'true'
+          example: "true"
         faceDetection:
           title: Face Detection
           type: boolean
-          example: 'true'
+          example: "true"
         questionsRandomOrder:
           title: Questions Random Order
           type: boolean
-          example: 'true'
+          example: "true"
         plagiarismCheck:
           title: plagiarism check
           type: boolean
-          example: 'true'
+          example: "true"
         disableSwitchBrowser:
           title: disable switching browser
           type: boolean
-          example: 'true'
+          example: "true"
         gradingMethod:
           title: grading method
           description: grading method
@@ -1729,13 +1774,13 @@ components:
           description: Created at
           type: string
           format: datetime
-          example: '2020-01-27 17:50:45'
+          example: "2020-01-27 17:50:45"
         updated_at:
           title: Updated at
           description: Updated at
           type: string
           format: datetime
-          example: '2020-01-27 17:50:45'
+          example: "2020-01-27 17:50:45"
         school_id:
           title: School ID
           description: School id of instructor or student
@@ -1772,28 +1817,28 @@ components:
           description: Start time of exam(DateTime)
           type: string
           format: datetime
-          example: '2021-10-29 14:28:54'
+          example: "2021-10-29 14:28:54"
         endAt:
           title: endAt
           description: End time of exam
           type: string
           format: datetime
-          example: '2021-10-29 14:28:54'
+          example: "2021-10-29 14:28:54"
         duration:
           title: Duration
           description: duration of exam
           format: date
-          example: '01:30:00'
+          example: "01:30:00"
         numberOfTrials:
           title: numberOfTrials
           description: Number of trials of exam
           type: integer
-          example: '3'
+          example: "3"
         totalMark:
           title: totalMark
           description: Total mark of exam
           type: integer
-          example: '60'
+          example: "60"
         examSubject:
           title: examSubject
           description: Subject of Exam
@@ -1803,7 +1848,7 @@ components:
           title: isPublished
           description: Status of Exam
           type: boolean
-          example: 'true'
+          example: "true"
       type: object
       xml:
         name: Exam
@@ -1823,21 +1868,17 @@ components:
           type: integer
           format: int64
           example: 1
-        student:
-          "$ref": "#/components/schemas/Student"
         exam_id:
           title: exam ID
           description: Exam id
           type: integer
           format: int64
           example: 1
-        exam:
-          "$ref": "#/components/schemas/Exam"
         totalMark:
           title: totalMark
           description: Total mark of exam
           type: integer
-          example: '60'
+          example: "60"
       type: object
       xml:
         name: ExamStudent
@@ -1860,25 +1901,25 @@ components:
           title: verified
           description: verified Instructor
           type: boolean
-          example: 'true'
+          example: "true"
         created_at:
           title: Created at
           description: Created at
           type: string
           format: datetime
-          example: '2020-01-27 17:50:45'
+          example: "2020-01-27 17:50:45"
         updated_at:
           title: Updated at
           description: Updated at
           type: string
           format: datetime
-          example: '2020-01-27 17:50:45'
+          example: "2020-01-27 17:50:45"
         deleted_at:
           title: Deleted at
           description: Deleted at
           type: string
           format: datetime
-          example: '2020-01-27 17:50:45'
+          example: "2020-01-27 17:50:45"
         user_id:
           title: user ID
           description: User id of instructor
@@ -1907,13 +1948,13 @@ components:
           description: Created at
           type: string
           format: datetime
-          example: '2020-01-27 17:50:45'
+          example: "2020-01-27 17:50:45"
         updated_at:
           title: Updated at
           description: Updated at
           type: string
           format: datetime
-          example: '2020-01-27 17:50:45'
+          example: "2020-01-27 17:50:45"
         mcqanswer_id:
           title: McqAnswer ID
           description: McqAnswer id
@@ -1954,13 +1995,13 @@ components:
           description: Created at
           type: string
           format: datetime
-          example: '2020-01-27 17:50:45'
+          example: "2020-01-27 17:50:45"
         updated_at:
           title: Updated at
           description: Updated at
           type: string
           format: datetime
-          example: '2020-01-27 17:50:45'
+          example: "2020-01-27 17:50:45"
       type: object
       xml:
         name: McqAnswer
@@ -1989,13 +2030,13 @@ components:
           description: Created at
           type: string
           format: datetime
-          example: '2020-01-27 17:50:45'
+          example: "2020-01-27 17:50:45"
         updated_at:
           title: Updated at
           description: Updated at
           type: string
           format: datetime
-          example: '2020-01-27 17:50:45'
+          example: "2020-01-27 17:50:45"
       type: object
       xml:
         name: Option
@@ -2030,13 +2071,13 @@ components:
           description: Created at
           type: string
           format: datetime
-          example: '2021-05-22 17:50:45'
+          example: "2021-05-22 17:50:45"
         updated_at:
           title: Updated at
           description: Updated at
           type: string
           format: datetime
-          example: '2021-05-22 17:50:45'
+          example: "2021-05-22 17:50:45"
         instructor_id:
           title: Instructor ID
           description: Instructor id
@@ -2084,13 +2125,13 @@ components:
           description: Created at
           type: string
           format: datetime
-          example: '2020-01-27 17:50:45'
+          example: "2020-01-27 17:50:45"
         updated_at:
           title: Updated at
           description: Updated at
           type: string
           format: datetime
-          example: '2020-01-27 17:50:45'
+          example: "2020-01-27 17:50:45"
       type: object
       xml:
         name: School
@@ -2108,19 +2149,19 @@ components:
           title: studentCode
           description: studentCode of student
           type: string
-          example: '1702'
+          example: "1702"
         created_at:
           title: Created at
           description: Created at
           type: string
           format: datetime
-          example: '2021-05-22 17:50:45'
+          example: "2021-05-22 17:50:45"
         updated_at:
           title: Updated at
           description: Updated at
           type: string
           format: datetime
-          example: '2021-05-22 17:50:45'
+          example: "2021-05-22 17:50:45"
         user_id:
           title: user ID
           description: User id of student
@@ -2203,13 +2244,13 @@ components:
           description: Created at
           type: string
           format: datetime
-          example: '2020-01-27 17:50:45'
+          example: "2020-01-27 17:50:45"
         updated_at:
           title: Updated at
           description: Updated at
           type: string
           format: datetime
-          example: '2020-01-27 17:50:45'
+          example: "2020-01-27 17:50:45"
       type: object
       xml:
         name: Tag
@@ -2242,7 +2283,7 @@ components:
           title: Password
           description: Password of User
           type: string
-          example: '123456'
+          example: "123456"
         gender:
           title: gender
           description: gender of User
@@ -2262,25 +2303,25 @@ components:
           title: phone
           description: phone of User
           type: string
-          example: '012233344455'
+          example: "012233344455"
         created_at:
           title: Created at
           description: Created at
           type: string
           format: datetime
-          example: '2020-01-27 17:50:45'
+          example: "2020-01-27 17:50:45"
         updated_at:
           title: Updated at
           description: Updated at
           type: string
           format: datetime
-          example: '2020-01-27 17:50:45'
+          example: "2020-01-27 17:50:45"
         email_verified_at:
           title: Email verified at
           description: Email verified at
           type: string
           format: datetime
-          example: '2020-01-27 17:50:45'
+          example: "2020-01-27 17:50:45"
       type: object
       xml:
         name: User
@@ -2288,9 +2329,9 @@ components:
       title: ResetPasswordRequest
       description: Reset password request body data
       required:
-      - email
-      - token
-      - password
+        - email
+        - token
+        - password
       properties:
         email:
           title: email
@@ -2312,9 +2353,9 @@ components:
       title: StoreAnswerRequest
       description: Store Answer request body data
       required:
-      - option_id
-      - question_id
-      - exam_id
+        - option_id
+        - question_id
+        - exam_id
       properties:
         option_id:
           title: ID
@@ -2342,16 +2383,16 @@ components:
       type: object
     StoreExamStepFour:
       title: StoreExamStepFour
-      description: 'Creating an exam, step Two: add questions'' marks and time'
+      description: "Creating an exam, step Two: add questions' marks and time"
       required:
-      - examId
-      - questions
+        - examId
+        - questions
       properties:
         examId:
           title: Exam Id
           description: id of Exam
           type: integer
-          example: '3'
+          example: "3"
         questions:
           title: questions
           description: questions of the new instructor
@@ -2362,24 +2403,24 @@ components:
                 type: integer
               mark:
                 type: float
-                example: '50'
+                example: "50"
               time:
                 type: time
-                example: '01:30:00'
+                example: "01:30:00"
             type: object
       type: object
     StoreExamStepOne:
       title: StoreExamStepOne
-      description: 'Creating an exam, step one: storing its data'
+      description: "Creating an exam, step one: storing its data"
       required:
-      - name
-      - numberOfTrials
-      - description
-      - totalMark
-      - duration
-      - startAt
-      - endAt
-      - examSubject
+        - name
+        - numberOfTrials
+        - description
+        - totalMark
+        - duration
+        - startAt
+        - endAt
+        - examSubject
       properties:
         name:
           title: Name
@@ -2390,7 +2431,7 @@ components:
           title: numberOfTrials
           description: Number of trials of exam
           type: integer
-          example: '3'
+          example: "3"
         description:
           title: Description
           description: Description of Exam
@@ -2400,24 +2441,24 @@ components:
           title: totalMark
           description: Total mark of exam
           type: integer
-          example: '60'
+          example: "60"
         duration:
           title: Duration
           description: duration of exam
           format: date
-          example: '01:30:00'
+          example: "01:30:00"
         startAt:
           title: startAt
           description: Start time of exam(DateTime)
           type: string
           format: datetime
-          example: '2021-10-29 14:28:54'
+          example: "2021-10-29 14:28:54"
         endAt:
           title: endAt
           description: End time of exam
           type: string
           format: datetime
-          example: '2021-10-29 14:28:54'
+          example: "2021-10-29 14:28:54"
         examSubject:
           title: Exam Subject
           description: Exam Subject
@@ -2427,20 +2468,20 @@ components:
           title: Is exam published
           description: Exam Subject
           type: boolean
-          example: 'true'
+          example: "true"
       type: object
     StoreExamStepThree:
       title: StoreExamStepThree
-      description: 'Creating an exam, step Two: add questions'
+      description: "Creating an exam, step Two: add questions"
       required:
-      - examId
-      - questions
+        - examId
+        - questions
       properties:
         examId:
           title: Exam Id
           description: id of Exam
           type: integer
-          example: '3'
+          example: "3"
         questions:
           title: questions
           description: questions of the new instructor
@@ -2453,41 +2494,41 @@ components:
       type: object
     StoreExamStepTwo:
       title: StoreExamStepTwo
-      description: 'Creating an exam, step Two: add configuration options'
+      description: "Creating an exam, step Two: add configuration options"
       required:
-      - examId
-      - faceRecognition
-      - faceDetection
-      - questionsRandomOrder
-      - plagiarismCheck
-      - disableSwitchBrowser
-      - gradingMethod
+        - examId
+        - faceRecognition
+        - faceDetection
+        - questionsRandomOrder
+        - plagiarismCheck
+        - disableSwitchBrowser
+        - gradingMethod
       properties:
         examId:
           title: Exam Id
           description: id of Exam
           type: integer
-          example: '3'
+          example: "3"
         faceRecognition:
           title: Face Recognition
           type: boolean
-          example: 'true'
+          example: "true"
         faceDetection:
           title: Face Detection
           type: boolean
-          example: 'true'
+          example: "true"
         questionsRandomOrder:
           title: Questions Random Order
           type: boolean
-          example: 'true'
+          example: "true"
         plagiarismCheck:
           title: plagiarism check
           type: boolean
-          example: 'true'
+          example: "true"
         disableSwitchBrowser:
           title: disable switching browser
           type: boolean
-          example: 'true'
+          example: "true"
         gradingMethod:
           title: grading method
           description: grading method
@@ -2498,17 +2539,17 @@ components:
       title: StoreInstructorRequest
       description: Store Instructor request body data
       required:
-      - firstName
-      - lastName
-      - email
-      - password
-      - description
-      - gender
-      - image
-      - phone
-      - type
-      - degree
-      - departments
+        - firstName
+        - lastName
+        - email
+        - password
+        - description
+        - gender
+        - image
+        - phone
+        - type
+        - degree
+        - departments
       properties:
         firstName:
           title: first Name
@@ -2549,7 +2590,7 @@ components:
           title: phone
           description: phone of the new instructor
           type: string
-          example: '02221111111'
+          example: "02221111111"
         type:
           title: type
           description: type of the new instructor
@@ -2574,8 +2615,8 @@ components:
       title: StoreLoginRequest
       description: Store Login request body data
       required:
-      - email
-      - password
+        - email
+        - password
       properties:
         email:
           title: email
@@ -2586,16 +2627,16 @@ components:
           title: password
           description: password of the user
           type: string
-          example: '12345678'
+          example: "12345678"
       type: object
     StoreQuestionRequest:
       title: StoreQuestionRequest
       description: Store Question request body data
       required:
-      - questionText
-      - type
-      - answers
-      - correctAnswer
+        - questionText
+        - type
+        - answers
+        - correctAnswer
       properties:
         questionText:
           title: Question Text
@@ -2614,10 +2655,10 @@ components:
           items:
             type: string
             example:
-            - seven
-            - four
-            - two
-            - ten
+              - seven
+              - four
+              - two
+              - ten
         correctAnswer:
           title: correctAnswer
           description: correct Answer
@@ -2628,17 +2669,17 @@ components:
       title: StoreStudentRequest
       description: Store Student request body data
       required:
-      - firstName
-      - lastName
-      - email
-      - password
-      - description
-      - gender
-      - image
-      - phone
-      - type
-      - studentCode
-      - department
+        - firstName
+        - lastName
+        - email
+        - password
+        - description
+        - gender
+        - image
+        - phone
+        - type
+        - studentCode
+        - department
       properties:
         firstName:
           title: first Name
@@ -2659,7 +2700,7 @@ components:
           title: password
           description: password of the new student
           type: string
-          example: '123456'
+          example: "123456"
         gender:
           title: gender
           description: gender of the new student
@@ -2674,7 +2715,7 @@ components:
           title: phone
           description: phone of the new student
           type: string
-          example: '012233344455'
+          example: "012233344455"
         type:
           title: type
           description: type of the new student
@@ -2684,7 +2725,7 @@ components:
           title: studentCode
           description: studentCode of the new student
           type: string
-          example: '1702'
+          example: "1702"
         department:
           title: department
           description: department of the new student
@@ -2693,15 +2734,15 @@ components:
             properties:
               id:
                 type: integer
-                example: '1'
+                example: "1"
             type: object
       type: object
     VerifyEmailRequest:
       title: VerifyEmailRequest
       description: Email verification request body data
       required:
-      - email
-      - code
+        - email
+        - code
       properties:
         email:
           title: email
@@ -2721,35 +2762,7 @@ components:
       name: Authorization
       in: header
 security:
-- []
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  - []
 # openapi: "3.0.18"
 # info:
 #   description: Smart Exam APIs
@@ -3034,7 +3047,7 @@ security:
 #             name: image
 #             type: image
 #             required: true
-          
+
 #         responses:
 #           "200":
 #             description: successful operation
