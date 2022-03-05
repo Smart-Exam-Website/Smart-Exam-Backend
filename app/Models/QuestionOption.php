@@ -6,23 +6,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class McqAnswer extends Model
+class QuestionOption extends Model
 {
     use HasFactory;
     protected $guarded = [];
-    protected $table = 'mcq_answers';
+    protected $table = 'question_option';
 
-    public function option()
-    {
-        return $this->belongsTo(Option::class, 'id');
-    }
-
-    public function Mcq()
-    {
-        return $this->belongsTo(Mcq::class);
-    }
-
-    public function questions(): BelongsToMany
+    public function questions()
     {
         return $this->belongsToMany(Question::class);
     }

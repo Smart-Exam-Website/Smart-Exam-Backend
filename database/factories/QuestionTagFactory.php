@@ -2,9 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Models\Question;
+use App\Models\Tag;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-class TagFactory extends Factory
+class QuestionTagFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -14,7 +16,8 @@ class TagFactory extends Factory
     public function definition()
     {
         return [
-            'name' => $this->faker->randomElement(['Science', 'Maths', 'Physics', 'Chemistry' , 'Mechanics', 'Control', 'Programming']),
+            'question_id' => Question::all()->random()->id,
+            'tag_id' => Tag::all()->random()->id
         ];
     }
 }

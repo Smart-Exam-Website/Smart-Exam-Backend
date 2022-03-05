@@ -19,6 +19,15 @@ class CreateOptionsTable extends Migration
             $table->string('type');
             $table->timestamps();
         });
+
+        Schema::create('question_option', function (Blueprint $table) {
+            $table->unsignedBigInteger('option_id');
+            $table->foreign('option_id')->references('id')->on('options')->onDelete('cascade');
+            $table->unsignedBigInteger('question_id');
+            $table->foreign('question_id')->references('id')->on('questions')->onDelete('cascade');;
+            $table->boolean('isCorrect');
+            $table->timestamps();
+        });
     }
 
     /**
@@ -29,5 +38,6 @@ class CreateOptionsTable extends Migration
     public function down()
     {
         Schema::dropIfExists('options');
+        Schema::dropIfExists('question_option');
     }
 }

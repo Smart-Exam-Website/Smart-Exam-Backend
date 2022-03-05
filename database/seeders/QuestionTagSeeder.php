@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
+use App\Models\QuestionTag;
 use Illuminate\Database\Seeder;
-use App\Models\McqAnswer;
 
-class McqAnswerSeeder extends Seeder
+class QuestionTagSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -14,6 +14,6 @@ class McqAnswerSeeder extends Seeder
      */
     public function run()
     {
-        McqAnswer::factory(10)->create();
+        QuestionTag::factory(10)->create();
     }
 }

@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Models\Question;
 use App\Models\Mcq;
 use App\Models\Exam;
+use App\Models\Tag;
 
 class McqController extends Controller
 {
@@ -39,7 +40,14 @@ class McqController extends Controller
      */
     public function index()
     {
-        $questions = Question::latest('created_at')->where(['isHidden' => false])->get();
+        $queryTag = request('tag');
+        if($queryTag) {
+            $tag = Tag::where('name' , 'LIKE' , $queryTag . '%')->get()->first();
+            $questions = $tag->questions;
+        } else {
+
+            $questions = Question::latest('created_at')->where(['isHidden' => false])->get();
+        }
         foreach ($questions as $q) {
             $q->instructor->user;
         }

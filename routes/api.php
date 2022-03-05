@@ -151,6 +151,11 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::delete('/questions/{id}', [McqController::class, 'destroy']);
 });
 
+// ------------------- TAG ROUTES ----------------------
+Route::group(['middleware' => ['auth:sanctum']], function () {
+    Route::apiResource('tags', 'App\Http\Controllers\TagController');
+});
+
 
 //---------------------------ML ROUTES----------------------------
 

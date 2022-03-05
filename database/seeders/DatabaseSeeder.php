@@ -28,5 +28,6 @@ class DatabaseSeeder extends Seeder
         $this->call(QuestionSeeder::class);
         $this->call(TagSeeder::class);
         $this->call(ExamSeeder::class);
+        $this->call(QuestionTagSeeder::class);
     }
 }
