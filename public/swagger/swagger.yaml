@@ -16,7 +16,7 @@ paths:
   "/answers":
     post:
       tags:
-        - Exam
+        - "Take Exam"
       summary: store student answer
       description: Returns success message
       operationId: storeAnswer
@@ -320,7 +320,7 @@ paths:
   "/exams/{exam}/start":
     post:
       tags:
-      - Exam
+      - "Take Exam"
       parameters:
         - in: path
           name: exam
@@ -517,7 +517,7 @@ paths:
   "/exams/{exam}/answers":
     get:
       tags:
-      - Exam
+      - "Take Exam"
       parameters:
         - in: path
           name: exam
@@ -546,7 +546,7 @@ paths:
   "/exams/{exam}/submit":
     post:
       tags:
-      - Exam
+      - "Take Exam"
       parameters:
         - in: path
           name: exam
@@ -1337,7 +1337,7 @@ paths:
   /exams/manual:
     post:
       tags:
-        - Exam
+        - Mark Exam
       summary: Mark MCQ Exam Manually
       description: "Mark MCQ Exam Manually with this API"
       operationId: markMCQExamManually
@@ -1370,9 +1370,9 @@ paths:
       security:
         - bearer: []
   /exams/totalMark/{exam}/{student}:
-    get:
+    post:
       tags:
-        - Exam
+        - Mark Exam
       summary: Mark One Student Exam
       description: "Mark One Student Exam with this API"
       operationId: MarkOneStudentExam
@@ -1408,9 +1408,9 @@ paths:
       security:
         - bearer: []
   /exams/totalMark/{exam}:
-    get:
+    post:
       tags:
-        - Exam
+        - Mark Exam
       summary: Mark All Students Exam
       description: "Mark All Students Exam with this API"
       operationId: MarkAllStudentsExam
@@ -1442,7 +1442,7 @@ paths:
   /exams/report/{exam}:
     get:
       tags:
-        - Exam
+        - Student
       summary: Exam Report For Student
       description: "Exam Report For Student with this API"
       operationId: ExamReportForStudent
@@ -1474,7 +1474,7 @@ paths:
   "/exams/{exam}/solutions":
     get:
       tags:
-      - Exam
+      - Mark Exam
       parameters:
         - in: path
           name: exam
@@ -1538,7 +1538,7 @@ paths:
   "/exams/{exam}/solutions/report":
     get:
       tags:
-      - Exam
+      - Mark Exam
       parameters:
         - in: path
           name: exam
