@@ -1498,6 +1498,9 @@ paths:
                         exam_id:
                           type: integer
                           example: 1
+                        image:
+                          type: string
+                          example: "zN9OKytQykJMSbI8lMBfDeYgWVVxNs2VJSeV9Z1s.jpg"
                         student_id:
                           type: integer
                           example: 1
