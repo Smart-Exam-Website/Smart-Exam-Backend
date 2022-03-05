@@ -1369,7 +1369,7 @@ paths:
           description: Forbidden
       security:
         - bearer: []
-  /exams/total-mark/{exam}/{student}:
+  /exams/mark/{exam}/{student}:
     post:
       tags:
         - Mark Exam
@@ -1407,7 +1407,7 @@ paths:
           description: Bad request
       security:
         - bearer: []
-  /exams/totalMark/{exam}:
+  /exams/mark/{exam}:
     post:
       tags:
         - Mark Exam
@@ -1439,7 +1439,7 @@ paths:
           description: Bad request
       security:
         - bearer: []
-  /exams/report/{exam}:
+  /exams/{exam}/report:
     get:
       tags:
         - Student

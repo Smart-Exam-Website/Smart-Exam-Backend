@@ -114,12 +114,12 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/exams/{exam}', 'App\Http\Controllers\ExamController@show');
     // ----------------------------------------------------------------------------------------
     // Mark exam automatically
-    Route::post('/exams/total-mark/{exam}', 'App\Http\Controllers\MarkMCQController@MarkAllStudentsExam');
-    Route::post('/exams/total-mark/{exam}/{student}', 'App\Http\Controllers\MarkMCQController@MarkOneStudentExam');
+    Route::post('/exams/mark/{exam}', 'App\Http\Controllers\MarkMCQController@MarkAllStudentsExam');
+    Route::post('/exams/mark/{exam}/{student}', 'App\Http\Controllers\MarkMCQController@MarkOneStudentExam');
     // Mark Exam Manual
     Route::post('/exams/manual', 'App\Http\Controllers\MarkMCQController@MarkExamManual');
     // Exam Report
-    Route::get('/exams/report/{exam}', 'App\Http\Controllers\MarkMCQController@ExamReportForStudent');
+    Route::get('/exams/{exam}/report', 'App\Http\Controllers\MarkMCQController@ExamReportForStudent');
 });
 
 
