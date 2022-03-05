@@ -1095,6 +1095,7 @@ class ExamController extends Controller
             $user = DB::table('users')->where(['id' => $solvedExam->student_id])->get()->first();
             $solvedExam->name = $user->firstName . ' ' . $user->lastName;
             $solvedExam->studentCode = $user->student->studentCode;
+            $solvedExam->image = $user->image;
             // if exam is marked, get mark and send it with the request.
             $foundExam = DB::table('exam_students')->where(['exam_id' => $exam->id, 'student_id' => $solvedExam->student_id])->get()->first();
             if ($foundExam) {
