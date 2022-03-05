@@ -514,7 +514,7 @@ paths:
           description: Forbidden
       security:
         - bearer: []
-  "/exams/{exam}/answers":
+  "/exams/{exam}/my-answers":
     get:
       tags:
       - "Take Exam"
@@ -1369,7 +1369,7 @@ paths:
           description: Forbidden
       security:
         - bearer: []
-  /exams/totalMark/{exam}/{student}:
+  /exams/total-mark/{exam}/{student}:
     post:
       tags:
         - Mark Exam
@@ -1471,7 +1471,7 @@ paths:
           description: Bad request
       security:
         - bearer: []
-  "/exams/{exam}/solutions":
+  "/exams/{exam}/all-answers":
     get:
       tags:
       - Mark Exam
@@ -1535,7 +1535,7 @@ paths:
           description: Forbidden
       security:
       - bearer: []
-  "/exams/{exam}/solutions/report":
+  "/exams/{exam}/all-answers/answer":
     get:
       tags:
       - Mark Exam

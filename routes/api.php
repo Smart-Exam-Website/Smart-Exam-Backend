@@ -104,18 +104,18 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     // Store student answer
     Route::post('/answers', 'App\Http\Controllers\AnswerController@store');
     // Get student answers
-    Route::get('/exams/{exam}/answers', 'App\Http\Controllers\ExamController@getStudentAnswers');
+    Route::get('/exams/{exam}/my-answers', 'App\Http\Controllers\ExamController@getStudentAnswers');
     // Get all student solutions
-    Route::get('/exams/{exam}/solutions', 'App\Http\Controllers\ExamController@getExamSolutions');
+    Route::get('/exams/{exam}/all-answers', 'App\Http\Controllers\ExamController@getExamAnswers');
     // get detailed student report
-    Route::get('/exams/{exam}/solutions/report', 'App\Http\Controllers\ExamController@getDetailedExamSolution');
+    Route::get('/exams/{exam}/all-answers/answer', 'App\Http\Controllers\ExamController@getDetailedExamAnswer');
     // ----------------------------------------------------------------------------------------
     // Get exam details
     Route::get('/exams/{exam}', 'App\Http\Controllers\ExamController@show');
     // ----------------------------------------------------------------------------------------
     // Mark exam automatically
-    Route::post('/exams/totalMark/{exam}', 'App\Http\Controllers\MarkMCQController@MarkAllStudentsExam');
-    Route::post('/exams/totalMark/{exam}/{s}', 'App\Http\Controllers\MarkMCQController@MarkOneStudentExam');
+    Route::post('/exams/total-mark/{exam}', 'App\Http\Controllers\MarkMCQController@MarkAllStudentsExam');
+    Route::post('/exams/total-mark/{exam}/{student}', 'App\Http\Controllers\MarkMCQController@MarkOneStudentExam');
     // Mark Exam Manual
     Route::post('/exams/manual', 'App\Http\Controllers\MarkMCQController@MarkExamManual');
     // Exam Report

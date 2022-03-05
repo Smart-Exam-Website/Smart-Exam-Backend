@@ -1081,7 +1081,7 @@ class ExamController extends Controller
     }
 
 
-    public function getExamSolutions(Exam $exam)
+    public function getExamAnswers(Exam $exam)
     {
         if (auth()->user()->type != 'instructor') {
             return response()->json(['message' => 'Unauthorized!'], 403);
@@ -1111,7 +1111,7 @@ class ExamController extends Controller
     }
 
 
-    public function getDetailedExamSolution(Exam $exam)
+    public function getDetailedExamAnswer(Exam $exam)
     {
         if (auth()->user()->type != 'instructor') {
             return response()->json(['message' => 'Unauthorized!'], 403);
