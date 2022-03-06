@@ -51,8 +51,10 @@ class QuestionController extends Controller
         }
         foreach ($questions as $q) {
             $q->instructor->user;
-            $q->options;
-            $q->QuestionOption;
+            $q->tags;
+            $q->QuestionOption->each(function ($m) {
+                $m->option;
+            });
         }
 
         return $questions;
@@ -169,8 +171,9 @@ class QuestionController extends Controller
                 }
             }
 
-            $question->options;
-            $question->QuestionOption;
+            $question->QuestionOption->each(function ($m) {
+                $m->option;
+            });
 
             return response($question, 201);
         } else {
@@ -208,7 +211,7 @@ class QuestionController extends Controller
         $question = Question::where('id', $id)->get()->first();
         $question->instructor->user;
         $question->tags;
-        $question->Mcq->McqAnswers->each(function ($m) {
+        $question->QuestionOption->each(function ($m) {
             $m->option;
         });
         return response()->json(['question' => $question]);

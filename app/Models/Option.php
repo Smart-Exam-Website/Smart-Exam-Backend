@@ -17,4 +17,8 @@ class Option extends Model
     {
         return $this->belongsTo(Question::class);
     }
+    public function QuestionOption()
+    {
+        return $this->hasOne(QuestionOption::class);
+    }
 }
