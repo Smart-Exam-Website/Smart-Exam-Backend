@@ -10,6 +10,7 @@ use App\Models\Question;
 use App\Models\Mcq;
 use App\Models\Exam;
 use App\Models\QuestionOption;
+use App\Models\QuestionTag;
 use App\Models\Tag;
 
 class QuestionController extends Controller
@@ -123,6 +124,8 @@ class QuestionController extends Controller
                 'type' => 'required|string',
                 'answers'    => 'required|array',
                 'answers.*'  => 'required|string|distinct',
+                'tags'    => 'array',
+                'tags.*'  => 'string|distinct',
                 'correctAnswer' => 'string',
             ]);
 
@@ -134,6 +137,29 @@ class QuestionController extends Controller
             ]);
 
             $answers = $fields['answers'];
+            $tags = $fields['tags'];
+
+            foreach ($tags as $a) {
+                $taggs = Tag::where(['name' => $a])->first();
+                if ($taggs != null) {
+                    $tid = $taggs->id;
+                } else {
+                    $t = Tag::create([
+                        'name' => $a
+                    ]);
+                    $tid = $t->id;
+                }
+
+                $qtags = QuestionTag::where(['question_id' => $question->id, 'tag_id' => $tid])->first();
+
+                if ($qtags == null) {
+
+                    $t = QuestionTag::create([
+                        'question_id' => $question->id,
+                        'tag_id' => $tid
+                    ]);
+                }
+            }
 
             if ($fields['type'] == 'mcq') {
                 foreach ($answers as $a) {
@@ -174,6 +200,7 @@ class QuestionController extends Controller
             $question->QuestionOption->each(function ($m) {
                 $m->option;
             });
+            $question->tags;
 
             return response($question, 201);
         } else {
