@@ -119,38 +119,52 @@ class QuestionController extends Controller
             $fields = $request->validate([
                 'questionText' => 'required|string|max:255',
                 'type' => 'required|string',
-                'answers'    => 'required|array|min:2',
+                'answers'    => 'required|array',
                 'answers.*'  => 'required|string|distinct',
-                'correctAnswer' => 'required|string',
+                'correctAnswer' => 'string',
             ]);
-
 
             $question = Question::create([
                 'questionText' => $fields['questionText'],
-                'type' => 'mcq',
+                'type' => $fields['type'],
                 'isHidden' => false,
                 'instructor_id' => $user->id
             ]);
 
             $answers = $fields['answers'];
 
-            foreach ($answers as $a) {
-                $answerss = Option::create([
-                    'value' => $a,
-                    'type' => 'mcq'
-                ]);
+            if ($fields['type'] == 'mcq') {
+                foreach ($answers as $a) {
+                    $answerss = Option::create([
+                        'value' => $a,
+                        'type' => $fields['type']
+                    ]);
 
-                if ($fields['correctAnswer'] == $answerss->value) {
+                    if ($fields['correctAnswer'] == $answerss->value) {
+                        $mcqanswers = QuestionOption::create([
+                            'question_id' => $question->id,
+                            'id' => $answerss->id,
+                            'isCorrect' => true
+                        ]);
+                    } else {
+                        $mcqanswers = QuestionOption::create([
+                            'question_id' => $question->id,
+                            'id' => $answerss->id,
+                            'isCorrect' => false
+                        ]);
+                    }
+                }
+            } else if ($fields['type'] == 'essay') {
+                foreach ($answers as $a) {
+                    $answerss = Option::create([
+                        'value' => $a,
+                        'type' => $fields['type']
+                    ]);
+
                     $mcqanswers = QuestionOption::create([
                         'question_id' => $question->id,
                         'id' => $answerss->id,
                         'isCorrect' => true
-                    ]);
-                } else {
-                    $mcqanswers = QuestionOption::create([
-                        'question_id' => $question->id,
-                        'id' => $answerss->id,
-                        'isCorrect' => false
                     ]);
                 }
             }
