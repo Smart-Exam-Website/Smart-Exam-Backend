@@ -318,37 +318,45 @@ class QuestionController extends Controller
                     'instructor_id' => $user->id
                 ]);
 
-                if ($question->type == 'mcq') {
-                    Mcq::create([
-                        'id' => $question->id
-                    ]);
-                }
-
                 $answers = $fields['answers'];
+                if ($fields['type'] == 'mcq') {
+                    foreach ($answers as $a) {
+                        $answerss = Option::create([
+                            'value' => $a,
+                            'type' => $fields['type']
+                        ]);
 
-                foreach ($answers as $a) {
-                    $answerss = Option::create([
-                        'value' => $a,
-                        'type' => 'mcq'
-                    ]);
+                        if ($fields['correctAnswer'] == $answerss->value) {
+                            $mcqanswers = QuestionOption::create([
+                                'question_id' => $question->id,
+                                'id' => $answerss->id,
+                                'isCorrect' => true
+                            ]);
+                        } else {
+                            $mcqanswers = QuestionOption::create([
+                                'question_id' => $question->id,
+                                'id' => $answerss->id,
+                                'isCorrect' => false
+                            ]);
+                        }
+                    }
+                } else if ($fields['type'] == 'essay') {
+                    foreach ($answers as $a) {
+                        $answerss = Option::create([
+                            'value' => $a,
+                            'type' => $fields['type']
+                        ]);
 
-                    if ($fields['correctAnswer'] == $answerss->value) {
-                        $mcqanswers = McqAnswer::create([
+                        $mcqanswers = QuestionOption::create([
                             'question_id' => $question->id,
                             'id' => $answerss->id,
                             'isCorrect' => true
                         ]);
-                    } else {
-                        $mcqanswers = McqAnswer::create([
-                            'question_id' => $question->id,
-                            'id' => $answerss->id,
-                            'isCorrect' => false
-                        ]);
                     }
                 }
 
-                $question->mcq->McqAnswers->each(function ($e) {
-                    $e->option;
+                $question->QuestionOption->each(function ($m) {
+                    $m->option;
                 });
 
                 return response($question, 201);
@@ -357,52 +365,83 @@ class QuestionController extends Controller
             }
         } else {
             //we can update this question because it is not in one of the prev exams
-            $question = Mcq::find($id);
             $questionn = Question::find($id);
-            $answers = $question->McqAnswers;
+            $answers = $questionn->options;
 
             if ($user->type == 'instructor') {
 
-                $request = $request->validate([
+                $fields = $request->validate([
                     'questionText' => 'string|max:255',
-                    'type' => 'string',
-                    'answers'    => 'array|min:2',
-                    'answers.*'  => 'string|distinct|min:2',
+                    'answers'    => 'array',
+                    'answers.*'  => 'string|distinct',
                     'correctAnswer' => 'string',
                 ]);
 
                 $newanswers = [];
 
-                for ($i = 0; $i < $answers->count(); $i++) {
-                    $correctAnswerid = 0;
-                    $op = Option::where(['id' => (int)($answers[$i]->id)])->first();
+                if ($questionn->type == 'mcq') {
 
-                    if ($op->value == $request['correctAnswer'])
-                        $correctAnswerid = $op->id;
-                    if (isset(((object)$request)->answers[$i])) {
-                        array_push(
-                            $newanswers,
-                            ((object)$request)->answers[$i]
-                        );
-                        $option = Option::where(['id' => $answers[$i]->id])->first();
-                        $option->update([
-                            'value' => ((object)$request)->answers[$i]
-                        ]);
-                        if (isset(((object)$request)->correctAnswer)) {
+                    for ($i = 0; $i < $answers->count(); $i++) {
+                        $correctAnswerid = 0;
+                        $op = Option::where(['id' => (int)($answers[$i]->id)])->first();
 
-                            $answers[$i]->update([
-                                'isCorrect' => (int)($option->id == $correctAnswerid)
+                        if ($op->value == $request['correctAnswer'])
+                            $correctAnswerid = $op->id;
+
+                        if (isset(((object)$request)->answers[$i])) {
+                            array_push(
+                                $newanswers,
+                                ((object)$request)->answers[$i]
+                            );
+                            $option = Option::where(['id' => $answers[$i]->id])->first();
+                            $option->update([
+                                'value' => ((object)$request)->answers[$i]
                             ]);
+                            if (isset(((object)$request)->correctAnswer)) {
+
+                                $answers[$i]->QuestionOption->update([
+                                    'isCorrect' => (int)($option->id == $correctAnswerid)
+                                ]);
+                            }
+                        } else {
+                            array_push(
+                                $newanswers,
+                                Option::where(['id' => $answers[$i]->id])->first()->value
+                            );
+                            $option = Option::where(['id' => $answers[$i]->id])->first();
+                            if (isset(((object)$request)->correctAnswer)) {
+                                $answers[$i]->QuestionOption->update([
+                                    'isCorrect' => (int)($option->id == Option::where(['value' => $request['correctAnswer']])->first()->id)
+                                ]);
+                            }
                         }
-                    } else {
-                        array_push(
-                            $newanswers,
-                            Option::where(['id' => $answers[$i]->id])->first()->value
-                        );
-                        $option = Option::where(['id' => $answers[$i]->id])->first();
-                        if (isset(((object)$request)->correctAnswer)) {
-                            $answers[$i]->update([
-                                'isCorrect' => (int)($option->id == Option::where(['value' => $request['correctAnswer']])->first()->id)
+                    }
+                } else if ($questionn->type == 'essay') {
+
+                    for ($i = 0; $i < $answers->count(); $i++) {
+
+                        if (isset(((object)$request)->answers[$i])) {
+                            array_push(
+                                $newanswers,
+                                ((object)$request)->answers[$i]
+                            );
+                            $option = Option::where(['id' => $answers[$i]->id])->first();
+
+                            $option->update([
+                                'value' => ((object)$request)->answers[$i]
+                            ]);
+
+                            $answers[$i]->QuestionOption->update([
+                                'isCorrect' => 1
+                            ]);
+                        } else {
+                            array_push(
+                                $newanswers,
+                                Option::where(['id' => $answers[$i]->id])->first()->value
+                            );
+                            $option = Option::where(['id' => $answers[$i]->id])->first();
+                            $answers[$i]->QuestionOption->update([
+                                'isCorrect' => 1
                             ]);
                         }
                     }
@@ -410,16 +449,13 @@ class QuestionController extends Controller
 
 
                 $questionn->update([
-                    'questionText' => $request['questionText'] ? $request['questionText'] : $questionn->questionText,
-                    'type' => isset($request['type']) ? $request['type'] : $questionn->type
+                    'questionText' => $request['questionText'] ? $request['questionText'] : $questionn->questionText
                 ]);
-
-                $question->McqAnswers->each(function ($e) {
-                    $e->option;
+                $questionn->QuestionOption->each(function ($m) {
+                    $m->option;
                 });
 
-
-                return response(['question' => $question], 200);
+                return response(['question' => $questionn], 200);
             } else {
                 return response()->json(['message' => 'There is no logged in Instructor'], 400);
             }
@@ -487,13 +523,17 @@ class QuestionController extends Controller
         if (count($exams) > 0)
             $start_time = $exams[0]->startAt;
         else $start_time = 0;
-        return response([$now, $start_time]);
+
         if ($start_time != 0 && $now >= $start_time) {
             //We cannot delete only set is hidden to true
             if ($user->type == 'instructor') {
                 $question = Question::where(['id' => $id])->first();
+                if ($question == null) {
+                    return response()->json(['message' => 'There is no Question with this id'], 200);
+                }
                 $question->update(['isHidden' => true]);
                 $question->save();
+                return response()->json(['message' => 'Question is Hidden'], 200);
             } else {
                 return response()->json(['message' => 'There is no logged in Instructor'], 400);
             }
@@ -501,7 +541,11 @@ class QuestionController extends Controller
 
             if ($user->type == 'instructor') {
                 $question = Question::where(['id' => $id])->first();
+                if ($question == null) {
+                    return response()->json(['message' => 'There is no Question with this id'], 200);
+                }
                 $question->delete();
+                return response()->json(['message' => 'Question Deleted'], 200);
             } else {
                 return response()->json(['message' => 'There is no logged in Instructor'], 400);
             }

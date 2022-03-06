@@ -19,6 +19,6 @@ class Option extends Model
     }
     public function QuestionOption()
     {
-        return $this->hasOne(QuestionOption::class);
+        return $this->hasOne(QuestionOption::class, "id");
     }
 }
