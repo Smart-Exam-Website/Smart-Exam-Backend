@@ -28,6 +28,6 @@ class Student extends Model
     }
 
     public function sessions() {
-        return $this->belongsToMany(examSession::class ,'examsession','student_id')->withTimestamps()->withPivot(['numberOfFaces', 'isVerified', 'startTime']);
+        return $this->belongsToMany(examSession::class ,'examSession','student_id')->withTimestamps()->withPivot(['numberOfFaces', 'isVerified', 'startTime']);
     }
 }

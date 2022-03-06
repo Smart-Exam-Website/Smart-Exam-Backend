@@ -1006,7 +1006,7 @@ class ExamController extends Controller
             return response()->json(['message' => 'You cannot submit yet!, you haven\'t answered all questions'], 400);
         }
 
-        $status = DB::table('examsession')->update(['exam_id' => $exam->id, 'student_id' => $student->id, 'isSubmitted' => true, 'submittedAt' => now()]);
+        $status = DB::table('examSession')->update(['exam_id' => $exam->id, 'student_id' => $student->id, 'isSubmitted' => true, 'submittedAt' => now()]);
 
         if ($status) {
             return response()->json(['message' => 'Submitted exam successfully!']);

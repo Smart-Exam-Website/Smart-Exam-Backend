@@ -13,10 +13,10 @@ class examSession extends Model
     public $timestamps = true;
 
     public function exams() {
-        return $this->belongsToMany(Exam::class, 'examsession','exam_id')->withTimestamps()->withPivot(['numberOfFaces', 'isVerified', 'startTime']);
+        return $this->belongsToMany(Exam::class, 'examSession','exam_id')->withTimestamps()->withPivot(['numberOfFaces', 'isVerified', 'startTime']);
     }
 
     public function students() {
-        return $this->belongsToMany(Exam::class, 'examsession','student_id')->withTimestamps()->withPivot(['numberOfFaces', 'isVerified', 'startTime']);
+        return $this->belongsToMany(Exam::class, 'examSession','student_id')->withTimestamps()->withPivot(['numberOfFaces', 'isVerified', 'startTime']);
     }
 }
