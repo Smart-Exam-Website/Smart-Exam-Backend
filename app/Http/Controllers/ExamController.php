@@ -1087,7 +1087,7 @@ class ExamController extends Controller
             return response()->json(['message' => 'Unauthorized!'], 403);
         }
         // get list of all students who solved the exam
-        $solvedExams = DB::table('examsession')->where(['exam_id' => $exam->id, 'isSubmitted' => true])->get();
+        $solvedExams = DB::table('examSession')->where(['exam_id' => $exam->id, 'isSubmitted' => true])->get();
         if (!$solvedExams) {
             return response()->json(['message' => 'No solutions found for this exam!'], 400);
         }
@@ -1125,7 +1125,7 @@ class ExamController extends Controller
         $studentName = $user->firstName . ' ' . $user->lastName;
         // $studentCode = $user->student->studentCode;
 
-        $session = DB::table('examsession')->where(['exam_id' => $exam->id, 'student_id' => $studentId, 'isSubmitted' => true])->get()->first();
+        $session = DB::table('examSession')->where(['exam_id' => $exam->id, 'student_id' => $studentId, 'isSubmitted' => true])->get()->first();
         if (!$session) {
             return response()->json(['message' => 'No session found for this student!'], 400);
         }
