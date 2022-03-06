@@ -23,13 +23,13 @@ class QuestionSeeder extends Seeder
                     QuestionOption::factory()->create([
                         'question_id' => $q->id,
                         'isCorrect' => true,
-                        'option_id' => Option::all()->random()->id
+                        'id' => Option::all()->random()->id
                     ]);
                 } else {
                     QuestionOption::factory()->create([
                         'question_id' => $q->id,
                         'isCorrect' => false,
-                        'option_id' => Option::all()->random()->id
+                        'id' => Option::all()->random()->id
                     ]);
                 }
             }

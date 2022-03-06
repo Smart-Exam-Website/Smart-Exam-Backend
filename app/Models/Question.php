@@ -13,9 +13,9 @@ class Question extends Model
     use HasFactory;
     protected $guarded = [];
 
-    public function options()
+    public function options(): BelongsToMany
     {
-        return $this->hasMany(Option::class);
+        return $this->belongsToMany(Option::class, $table = "question_option", "question_id", "id");
     }
     public function tags(): BelongsToMany
     {
@@ -42,8 +42,8 @@ class Question extends Model
     {
         return $this->belongsTo(Instructor::class);
     }
-    public function mcqAnswer()
+    public function QuestionOption()
     {
-        return $this->hasMany(McqAnswer::class);
+        return $this->hasMany(QuestionOption::class);
     }
 }

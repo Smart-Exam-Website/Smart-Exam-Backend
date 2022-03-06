@@ -9,9 +9,10 @@ use Illuminate\Http\Request;
 use App\Models\Question;
 use App\Models\Mcq;
 use App\Models\Exam;
+use App\Models\QuestionOption;
 use App\Models\Tag;
 
-class McqController extends Controller
+class QuestionController extends Controller
 {
     /**
      * @OA\Get(
@@ -41,8 +42,8 @@ class McqController extends Controller
     public function index()
     {
         $queryTag = request('tag');
-        if($queryTag) {
-            $tag = Tag::where('name' , 'LIKE' , $queryTag . '%')->get()->first();
+        if ($queryTag) {
+            $tag = Tag::where('name', 'LIKE', $queryTag . '%')->get()->first();
             $questions = $tag->questions;
         } else {
 
@@ -50,7 +51,10 @@ class McqController extends Controller
         }
         foreach ($questions as $q) {
             $q->instructor->user;
+            $q->options;
+            $q->QuestionOption;
         }
+
         return $questions;
     }
 
@@ -128,12 +132,6 @@ class McqController extends Controller
                 'instructor_id' => $user->id
             ]);
 
-            if ($question->type == 'mcq') {
-                Mcq::create([
-                    'id' => $question->id
-                ]);
-            }
-
             $answers = $fields['answers'];
 
             foreach ($answers as $a) {
@@ -143,13 +141,13 @@ class McqController extends Controller
                 ]);
 
                 if ($fields['correctAnswer'] == $answerss->value) {
-                    $mcqanswers = McqAnswer::create([
+                    $mcqanswers = QuestionOption::create([
                         'question_id' => $question->id,
                         'id' => $answerss->id,
                         'isCorrect' => true
                     ]);
                 } else {
-                    $mcqanswers = McqAnswer::create([
+                    $mcqanswers = QuestionOption::create([
                         'question_id' => $question->id,
                         'id' => $answerss->id,
                         'isCorrect' => false
@@ -157,9 +155,8 @@ class McqController extends Controller
                 }
             }
 
-            $question->mcq->McqAnswers->each(function ($e) {
-                $e->option;
-            });
+            $question->options;
+            $question->QuestionOption;
 
             return response($question, 201);
         } else {

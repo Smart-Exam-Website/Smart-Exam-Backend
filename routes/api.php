@@ -5,7 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\McqController;
+use App\Http\Controllers\QuestionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -143,12 +143,12 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 //---------------------------QUESTION ROUTES----------------------------
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
-    Route::get('/questions', 'App\Http\Controllers\McqController@index');
-    Route::post('/questions/create', 'App\Http\Controllers\McqController@store');
-    Route::get('/questions/{question}', 'App\Http\Controllers\McqController@show');
-    Route::post('/questions', [McqController::class, 'store']);
-    Route::put('/questions/{id}', [McqController::class, 'update']);
-    Route::delete('/questions/{id}', [McqController::class, 'destroy']);
+    Route::get('/questions', 'App\Http\Controllers\QuestionController@index');
+    Route::post('/questions/create', 'App\Http\Controllers\QuestionController@store');
+    Route::get('/questions/{question}', 'App\Http\Controllers\QuestionController@show');
+    Route::post('/questions', [QuestionController::class, 'store']);
+    Route::put('/questions/{id}', [QuestionController::class, 'update']);
+    Route::delete('/questions/{id}', [QuestionController::class, 'destroy']);
 });
 
 // ------------------- TAG ROUTES ----------------------
