@@ -108,7 +108,7 @@ class McqController extends Controller
                 'questionText' => 'required|string|max:255',
                 'type' => 'required|string',
                 'answers'    => 'required|array|min:2',
-                'answers.*'  => 'required|string|distinct|min:2',
+                'answers.*'  => 'required|string|distinct',
                 'correctAnswer' => 'required|string',
             ]);
 
