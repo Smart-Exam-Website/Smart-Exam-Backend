@@ -1128,6 +1128,7 @@ class ExamController extends Controller
         }
         $user = DB::table('users')->where(['id' => $studentId])->get()->first();
         $studentName = $user->firstName . ' ' . $user->lastName;
+        $studentImage = $user->image;
         // $studentCode = $user->student->studentCode;
 
         $session = DB::table('examSession')->where(['exam_id' => $exam->id, 'student_id' => $studentId, 'isSubmitted' => true])->get()->first();
@@ -1160,6 +1161,6 @@ class ExamController extends Controller
         $numberOfFaces = ($examConfig->faceDetection) ? $session->numberOfFaces : null;
         $isVerified = ($examConfig->faceDetection) ? $session->isVerified : null;
 
-        return response()->json(['message' => 'Fetched solution successfully', 'studentName' => $studentName, 'solution' => $solutions, 'numberOfFaces' => $numberOfFaces, 'isVerified' => $isVerified]);
+        return response()->json(['message' => 'Fetched solution successfully', 'studentName' => $studentName, 'image' => $studentImage, 'solution' => $solutions, 'numberOfFaces' => $numberOfFaces, 'isVerified' => $isVerified]);
     }
 }
