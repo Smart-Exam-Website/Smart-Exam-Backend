@@ -1010,7 +1010,7 @@ class ExamController extends Controller
             return response()->json(['message' => 'You cannot submit yet!, you haven\'t answered all questions'], 400);
         }
 
-        $status = DB::table('examSession')->update(['exam_id' => $exam->id, 'student_id' => $student->id, 'isSubmitted' => true, 'submittedAt' => now()]);
+        $status = $examSession->update(['exam_id' => $exam->id, 'student_id' => $student->id, 'isSubmitted' => true, 'submittedAt' => now()]);
 
         if ($status) {
             return response()->json(['message' => 'Submitted exam successfully!']);
@@ -1096,10 +1096,11 @@ class ExamController extends Controller
             return response()->json(['message' => 'No solutions found for this exam!'], 400);
         }
         foreach ($solvedExams as $solvedExam) {
+            $user = DB::table('users')->where('id', $solvedExam->student_id)->get()->first();
             $student = DB::table('students')->where(['id' => $solvedExam->student_id])->get()->first();
-            $solvedExam->name = $student->user->firstName . ' ' . $student->user->lastName;
+            $solvedExam->name = $user->firstName . ' ' . $user->lastName;
             $solvedExam->studentCode = $student->studentCode;
-            $solvedExam->image = $student->user->image;
+            $solvedExam->image = $user->image;
             // if exam is marked, get mark and send it with the request.
             $foundExam = DB::table('exam_students')->where(['exam_id' => $exam->id, 'student_id' => $solvedExam->student_id])->get()->first();
             if ($foundExam) {
