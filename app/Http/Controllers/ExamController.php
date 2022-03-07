@@ -1096,10 +1096,10 @@ class ExamController extends Controller
             return response()->json(['message' => 'No solutions found for this exam!'], 400);
         }
         foreach ($solvedExams as $solvedExam) {
-            $user = DB::table('users')->where(['id' => $solvedExam->student_id])->get()->first();
-            $solvedExam->name = $user->firstName . ' ' . $user->lastName;
-            $solvedExam->studentCode = $user->student->studentCode;
-            $solvedExam->image = $user->image;
+            $student = DB::table('students')->where(['id' => $solvedExam->student_id])->get()->first();
+            $solvedExam->name = $student->user->firstName . ' ' . $student->user->lastName;
+            $solvedExam->studentCode = $student->studentCode;
+            $solvedExam->image = $student->user->image;
             // if exam is marked, get mark and send it with the request.
             $foundExam = DB::table('exam_students')->where(['exam_id' => $exam->id, 'student_id' => $solvedExam->student_id])->get()->first();
             if ($foundExam) {
