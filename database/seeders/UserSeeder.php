@@ -117,7 +117,7 @@ class UserSeeder extends Seeder
             ]);
             $users = User::all();
             foreach($users as $user) {
-                if($user->id % 2) {
+                if($user->type == 'instructor') {
                     DB::table('instructors')->insert([
                         [
                             'degree' => 'Phd',
@@ -128,7 +128,7 @@ class UserSeeder extends Seeder
                             'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
                         ]
                     ]);
-                } else {
+                } else if ($user->type == 'student') {
                     DB::table('students')->insert([
                         [
                             'studentCode' => '1122',

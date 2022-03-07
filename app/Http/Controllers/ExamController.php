@@ -988,7 +988,7 @@ class ExamController extends Controller
 
         $student = auth()->user();
 
-        $examSession = examSession::where(['exam_id' => $exam->id, 'student_id' => $student->id])->latest()->get()->first();
+        $examSession = examSession::where(['exam_id' => $exam->id, 'student_id' => $student->id])->orderBy('attempt','DESC')->get()->first();
         if (!$examSession) {
             return response()->json(['message' => 'No exam session for this student!'], 400);
         }
