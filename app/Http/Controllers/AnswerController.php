@@ -85,12 +85,14 @@ class AnswerController extends Controller
 
         $answer = Answer::where(['exam_id' => $request->exam_id, 'student_id' => auth()->user()->id, 'question_id' => $request->question_id])->get()->first();
 
-        if($answer && $answer->option_id != $answerDetails['option_id'] && $answer->studentAnswer != $answerDetails['studentAnswer']) {
-            DB::table('answers')->update($answerDetails);
+        if($answer) {
+            if( $answer->option_id != $answerDetails['option_id'] && $answer->studentAnswer != $answerDetails['studentAnswer']) {
+                DB::table('answers')->update($answerDetails);
+            } else {
+                return response()->json(['message' => 'data stored successfully!']);
+            }
             // $answer->update($answerDetails);
-        } else if ($answer->option_id == $answerDetails['option_id'] && $answer->studentAnswer == $answerDetails['studentAnswer']) {
-            return response()->json(['message' => 'data stored successfully!']);
-        }  else {
+        } else {
             $answer = Answer::create($answerDetails);
             if(!$answer) {
                 return response()->json(['message' => 'failed to add answer'], 400);
