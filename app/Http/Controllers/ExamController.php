@@ -537,18 +537,22 @@ class ExamController extends Controller
 
         $examSession = examSession::where(['exam_id' => $exam->id, 'student_id' => auth()->user()->id])->latest()->get()->first();
         if ($examSession) {
-            $attempt = $examSession->attempt + 1;
-            if ($attempt <= $exam->numberOfTrials) {
-                $examSession = examSession::create([
-                    'exam_id' => $exam->id,
-                    'student_id' => auth()->user()->id,
-                    'startTime' => $request->startTime,
-                    'attempt' => $attempt,
-                    'isVerified' => $request->isVerified,
-                    'numberOfFaces' => $request->numberOfFaces
-                ]);
+            if(!$examSession->isSubmitted) {
+                return response()->json(['message' => 'You must submit the previous attempt first before starting a new attempt!'], 400);
             } else {
-                return response()->json(['message' => 'Exceeded number of attempts!']);
+                $attempt = $examSession->attempt + 1;
+                if ($attempt <= $exam->numberOfTrials) {
+                    $examSession = examSession::create([
+                        'exam_id' => $exam->id,
+                        'student_id' => auth()->user()->id,
+                        'startTime' => $request->startTime,
+                        'attempt' => $attempt,
+                        'isVerified' => $request->isVerified,
+                        'numberOfFaces' => $request->numberOfFaces
+                    ]);
+                } else {
+                    return response()->json(['message' => 'Exceeded number of attempts!']);
+                }
             }
         } else {
             $examSession = examSession::create([
