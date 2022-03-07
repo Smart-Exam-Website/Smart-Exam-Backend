@@ -19,9 +19,9 @@ class MarkMCQController extends Controller
         if ($user->type == 'instructor') {
 
             $fields = $request->validate([
-                'student_id' => 'required',
-                'exam_id' => 'required',
-                'question_id' => 'required',
+                'studentId' => 'required',
+                'examId' => 'required',
+                'questionId' => 'required',
                 'questionMark' => 'required'
             ]);
 
