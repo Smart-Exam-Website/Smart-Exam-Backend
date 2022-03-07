@@ -44,13 +44,13 @@ class MarkMCQController extends Controller
         return response()->json(['message' => 'The Mark is Saved Successfully', 'answer' => $a], 200);
     }
 
-    public function MarkOneStudentExam(Exam $exam, Student $s)
+    public function MarkOneStudentExam(Exam $exam, Student $student)
     {
         if (date('Y-m-d H:i:s') <= $exam->endAt) {
             return response()->json(['message' => 'Cannot mark exam yet!'], 400);
         }
 
-        $answers = Answer::where(['exam_id' => $exam->id, 'student_id' => $s->id])->get();
+        $answers = Answer::where(['exam_id' => $exam->id, 'student_id' => $student->id])->get();
 
         $totalMark = 0;
 
@@ -61,7 +61,7 @@ class MarkMCQController extends Controller
 
                 $ex = ExamQuestion::where('exam_id', '=', $exam->id)->where('question_id', '=', $a->question_id)->first();
 
-                Answer::where(['exam_id' => $exam->id, 'student_id' => $s->id, 'option_id' => $a['option_id'], 'question_id' => $a->question_id])->update(['questionMark' => $ex->mark]);
+                Answer::where(['exam_id' => $exam->id, 'student_id' => $student->id, 'option_id' => $a['option_id'], 'question_id' => $a->question_id])->update(['questionMark' => $ex->mark]);
 
                 $totalMark += $ex->mark;
             }
@@ -69,21 +69,21 @@ class MarkMCQController extends Controller
 
         if ($answers->count() != 0) {
 
-            if (ExamStudent::where(['student_id' => $s->id, 'exam_id' => $exam->id])->first() == NULL) {
+            if (ExamStudent::where(['student_id' => $student->id, 'exam_id' => $exam->id])->first() == NULL) {
 
                 $exst = ExamStudent::create([
-                    'student_id' => $s->id,
+                    'student_id' => $student->id,
                     'exam_id' => $exam->id,
                     'totalMark' => $totalMark
                 ]);
             } else {
 
-                $exst = ExamStudent::where(['student_id' => $s->id, 'exam_id' => $exam->id])->first();
+                $exst = ExamStudent::where(['student_id' => $student->id, 'exam_id' => $exam->id])->first();
                 $exst->update(['totalMark' => $totalMark]);
             }
         }
 
-        $res = ExamStudent::where(['exam_id' => $exam->id, 'student_id' => $s->id])->first();
+        $res = ExamStudent::where(['exam_id' => $exam->id, 'student_id' => $student->id])->first();
 
         return response()->json(['studentMark' => $res->totalMark, 'message' => 'successfully Calculated Exam Total Marks for This Student']);
     }
