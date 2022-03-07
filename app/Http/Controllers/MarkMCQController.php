@@ -46,7 +46,7 @@ class MarkMCQController extends Controller
 
     public function MarkOneStudentExam(Exam $exam, Student $s)
     {
-        if (now() <= $exam->endAt) {
+        if (date('Y-m-d H:i:s') <= $exam->endAt) {
             return response()->json(['message' => 'Cannot mark exam yet!'], 400);
         }
 
@@ -90,7 +90,7 @@ class MarkMCQController extends Controller
 
     public function MarkAllStudentsExam(Exam $exam)
     {
-        if (now() <= $exam->endAt) {
+        if (date('Y-m-d H:i:s') <= $exam->endAt) {
             return response()->json(['message' => 'Cannot mark exam yet!'], 400);
         }
         $students = Student::all();
