@@ -1146,6 +1146,7 @@ class ExamController extends Controller
 
         foreach ($solutions as $solution) {
             $solution->question = DB::table('questions')->where(['id' => $solution->question_id])->get()->first();
+            $solution->totalQuestionMark = DB::table('exam_question')->where(['exam_id' => $exam->id, 'question_id' => $solution->question_id])->get()->first()->mark;
             if($solution->question->type == 'mcq') {
                 $answers = DB::table('mcq_answers')->where(['question_id' => $solution->question->id])->join('options', 'options.id','mcq_answers.id')->get();
                 // $questions = DB::table('exam_question')->where('exam_id', $exam->id)->join('questions', 'question_id', 'questions.id')->select(['questions.id', 'questions.questionText', 'exam_question.mark', 'questions.type'])->get();
