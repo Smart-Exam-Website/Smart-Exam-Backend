@@ -27,6 +27,7 @@ class CreateAnswersTable extends Migration
             $table->foreign('option_id')->references('id')->on('options')->onDelete('cascade');
             $table->string('studentAnswer')->nullable();
             $table->float('questionMark')->default(0);
+            $table->boolean('isMarked')->default(false);
             $table->primary(['exam_id', 'student_id', 'question_id'], 'id');
             $table->timestamps();
         });

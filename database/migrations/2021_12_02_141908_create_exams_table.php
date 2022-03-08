@@ -49,7 +49,6 @@ class CreateExamsTable extends Migration
             $table->boolean('isSubmitted')->default(false);
             $table->dateTime('submittedAt')->nullable();
             $table->primary(['exam_id', 'student_id', 'attempt'], 'id');
-            $table->boolean('isMarked')->default(false);
             $table->timestamps();
         });
     }

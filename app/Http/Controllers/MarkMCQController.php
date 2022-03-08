@@ -9,6 +9,7 @@ use App\Models\McqAnswer;
 use App\Models\ExamQuestion;
 use App\Models\ExamStudent;
 use App\Models\Student;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
 class MarkMCQController extends Controller
@@ -26,7 +27,15 @@ class MarkMCQController extends Controller
                 'questionMark' => 'required'
             ]);
 
+            if (ExamStudent::where(['student_id' => $fields['studentId'], 'exam_id' => $fields['examId']])->first() != NULL) {
+                $exst = ExamStudent::where(['student_id' => $fields['studentId'], 'exam_id' => $fields['examId']])->first();
+                $totalMark = $exst->totalMark;
+            } else {
+                $totalMark = 0;
+            }
+
             $answer = Answer::where(['student_id' => $fields['studentId'], 'exam_id' => $fields['examId'], 'question_id' => $fields['questionId']])->get();
+
             $cnt = $answer->count();
             if ($cnt == 0) {
                 $a = Answer::create([
@@ -37,14 +46,16 @@ class MarkMCQController extends Controller
                     'isMarked' => true
                 ]);
             } else {
-                $a = $answer->first();
-                $a['questionMark'] = $fields['questionMark'];
-                $a['isMarked'] = true;
+                $ans = $answer->first();
+                $qMark = $ans->questionMark;
+                $totalMark = $totalMark - $qMark;
+                DB::table('answers')->where(['student_id' => $fields['studentId'], 'exam_id' => $fields['examId'], 'question_id' => $fields['questionId']])->update(['questionMark' => $fields['questionMark'], 'isMarked' => true]);
+                $a = Answer::where(['student_id' => $fields['studentId'], 'exam_id' => $fields['examId'], 'question_id' => $fields['questionId']])->first();
             }
         } else {
             return response()->json(['message' => 'There is no logged in Instructor'], 400);
         }
-        $totalMark = 0;
+
         if (ExamStudent::where(['student_id' => $fields['studentId'], 'exam_id' => $fields['examId']])->first() == NULL) {
 
             $exst = ExamStudent::create([
@@ -55,7 +66,7 @@ class MarkMCQController extends Controller
             $totalMark = $fields['questionMark'];
         } else {
             $exst = ExamStudent::where(['student_id' => $fields['studentId'], 'exam_id' => $fields['examId']])->first();
-            $totalMark = $exst->totalMark + $fields['questionMark'];
+            $totalMark = $totalMark + $fields['questionMark'];
             $exst->update(['totalMark' => $totalMark]);
         }
 

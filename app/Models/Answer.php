@@ -11,6 +11,7 @@ class Answer extends Model
 
     protected $guarded = [];
     protected $table = 'answers';
+    public $timestamps = true;
 
     public function students()
     {
