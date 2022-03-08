@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Exam;
 use App\Models\Answer;
+use App\Models\Configuration;
 use App\Models\McqAnswer;
 use App\Models\ExamQuestion;
 use App\Models\ExamStudent;
@@ -33,10 +34,12 @@ class MarkMCQController extends Controller
                     'exam_id' => $fields['examId'],
                     'question_id' => $fields['questionId'],
                     'questionMark' => $fields['questionMark'],
+                    'isMarked' => true
                 ]);
             } else {
                 $a = $answer->first();
                 $a['questionMark'] = $fields['questionMark'];
+                $a['isMarked'] = true;
             }
         } else {
             return response()->json(['message' => 'There is no logged in Instructor'], 400);
@@ -61,6 +64,12 @@ class MarkMCQController extends Controller
 
     public function MarkOneStudentExam(Exam $exam, Student $student)
     {
+        //Automatic
+        $gradMethod = Configuration::where(['exam_id' => $exam->id])->first()->gradingMethod;
+        if ($gradMethod == "manual") {
+            return response()->json(['message' => 'This Exam Can Only Be Marked Manually!'], 400);
+        }
+
         if (date('Y-m-d H:i:s') <= $exam->endAt) {
             return response()->json(['message' => 'Cannot mark exam yet!'], 400);
         }
@@ -105,6 +114,11 @@ class MarkMCQController extends Controller
 
     public function MarkAllStudentsExam(Exam $exam)
     {
+        //Automatic
+        $gradMethod = Configuration::where(['exam_id' => $exam->id])->first()->gradingMethod;
+        if ($gradMethod == "manual") {
+            return response()->json(['message' => 'This Exam Can Only Be Marked Manually!'], 400);
+        }
         if (date('Y-m-d H:i:s') <= $exam->endAt) {
             return response()->json(['message' => 'Cannot mark exam yet!'], 400);
         }
