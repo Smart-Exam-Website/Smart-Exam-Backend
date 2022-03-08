@@ -41,7 +41,22 @@ class MarkMCQController extends Controller
         } else {
             return response()->json(['message' => 'There is no logged in Instructor'], 400);
         }
-        return response()->json(['message' => 'The Mark is Saved Successfully', 'answer' => $a], 200);
+        $totalMark = 0;
+        if (ExamStudent::where(['student_id' => $fields['studentId'], 'exam_id' => $fields['examId']])->first() == NULL) {
+
+            $exst = ExamStudent::create([
+                'student_id' => $fields['studentId'],
+                'exam_id' => $fields['examId'],
+                'totalMark' => $fields['questionMark']
+            ]);
+            $totalMark = $fields['questionMark'];
+        } else {
+            $exst = ExamStudent::where(['student_id' => $fields['studentId'], 'exam_id' => $fields['examId']])->first();
+            $totalMark = $exst->totalMark + $fields['questionMark'];
+            $exst->update(['totalMark' => $totalMark]);
+        }
+
+        return response()->json(['message' => 'The Mark is Saved Successfully', 'answer' => $a, 'totalStudentMark' => $totalMark], 200);
     }
 
     public function MarkOneStudentExam(Exam $exam, Student $student)
