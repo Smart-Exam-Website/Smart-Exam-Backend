@@ -19,19 +19,19 @@ class MarkMCQController extends Controller
         if ($user->type == 'instructor') {
 
             $fields = $request->validate([
-                'student_id' => 'required',
-                'exam_id' => 'required',
-                'question_id' => 'required',
+                'studentId' => 'required',
+                'examId' => 'required',
+                'questionId' => 'required',
                 'questionMark' => 'required'
             ]);
 
-            $answer = Answer::where(['student_id' => $fields['student_id'], 'exam_id' => $fields['exam_id'], 'question_id' => $fields['question_id']])->get();
+            $answer = Answer::where(['student_id' => $fields['studentId'], 'exam_id' => $fields['examId'], 'question_id' => $fields['questionId']])->get();
             $cnt = $answer->count();
             if ($cnt == 0) {
                 $a = Answer::create([
-                    'student_id' => $fields['student_id'],
-                    'exam_id' => $fields['exam_id'],
-                    'question_id' => $fields['question_id'],
+                    'student_id' => $fields['studentId'],
+                    'exam_id' => $fields['examId'],
+                    'question_id' => $fields['questionId'],
                     'questionMark' => $fields['questionMark'],
                 ]);
             } else {
@@ -41,16 +41,31 @@ class MarkMCQController extends Controller
         } else {
             return response()->json(['message' => 'There is no logged in Instructor'], 400);
         }
-        return response()->json(['message' => 'The Mark is Saved Successfully', 'answer' => $a], 200);
+        $totalMark = 0;
+        if (ExamStudent::where(['student_id' => $fields['studentId'], 'exam_id' => $fields['examId']])->first() == NULL) {
+
+            $exst = ExamStudent::create([
+                'student_id' => $fields['studentId'],
+                'exam_id' => $fields['examId'],
+                'totalMark' => $fields['questionMark']
+            ]);
+            $totalMark = $fields['questionMark'];
+        } else {
+            $exst = ExamStudent::where(['student_id' => $fields['studentId'], 'exam_id' => $fields['examId']])->first();
+            $totalMark = $exst->totalMark + $fields['questionMark'];
+            $exst->update(['totalMark' => $totalMark]);
+        }
+
+        return response()->json(['message' => 'The Mark is Saved Successfully', 'answer' => $a, 'totalStudentMark' => $totalMark], 200);
     }
 
-    public function MarkOneStudentExam(Exam $exam, Student $s)
+    public function MarkOneStudentExam(Exam $exam, Student $student)
     {
-        if (now() <= $exam->endAt) {
+        if (date('Y-m-d H:i:s') <= $exam->endAt) {
             return response()->json(['message' => 'Cannot mark exam yet!'], 400);
         }
 
-        $answers = Answer::where(['exam_id' => $exam->id, 'student_id' => $s->id])->get();
+        $answers = Answer::where(['exam_id' => $exam->id, 'student_id' => $student->id])->get();
 
         $totalMark = 0;
 
@@ -61,7 +76,7 @@ class MarkMCQController extends Controller
 
                 $ex = ExamQuestion::where('exam_id', '=', $exam->id)->where('question_id', '=', $a->question_id)->first();
 
-                Answer::where(['exam_id' => $exam->id, 'student_id' => $s->id, 'option_id' => $a['option_id'], 'question_id' => $a->question_id])->update(['questionMark' => $ex->mark]);
+                Answer::where(['exam_id' => $exam->id, 'student_id' => $student->id, 'option_id' => $a['option_id'], 'question_id' => $a->question_id])->update(['questionMark' => $ex->mark]);
 
                 $totalMark += $ex->mark;
             }
@@ -69,28 +84,28 @@ class MarkMCQController extends Controller
 
         if ($answers->count() != 0) {
 
-            if (ExamStudent::where(['student_id' => $s->id, 'exam_id' => $exam->id])->first() == NULL) {
+            if (ExamStudent::where(['student_id' => $student->id, 'exam_id' => $exam->id])->first() == NULL) {
 
                 $exst = ExamStudent::create([
-                    'student_id' => $s->id,
+                    'student_id' => $student->id,
                     'exam_id' => $exam->id,
                     'totalMark' => $totalMark
                 ]);
             } else {
 
-                $exst = ExamStudent::where(['student_id' => $s->id, 'exam_id' => $exam->id])->first();
+                $exst = ExamStudent::where(['student_id' => $student->id, 'exam_id' => $exam->id])->first();
                 $exst->update(['totalMark' => $totalMark]);
             }
         }
 
-        $res = ExamStudent::where(['exam_id' => $exam->id, 'student_id' => $s->id])->first();
+        $res = ExamStudent::where(['exam_id' => $exam->id, 'student_id' => $student->id])->first();
 
         return response()->json(['studentMark' => $res->totalMark, 'message' => 'successfully Calculated Exam Total Marks for This Student']);
     }
 
     public function MarkAllStudentsExam(Exam $exam)
     {
-        if (now() <= $exam->endAt) {
+        if (date('Y-m-d H:i:s') <= $exam->endAt) {
             return response()->json(['message' => 'Cannot mark exam yet!'], 400);
         }
         $students = Student::all();

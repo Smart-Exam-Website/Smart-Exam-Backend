@@ -245,7 +245,7 @@ paths:
   "/exams/{exam}":
     get:
       tags:
-      - Exam
+        - Exam
       parameters:
         - in: path
           name: exam
@@ -289,7 +289,7 @@ paths:
   "/exams/{exam}/questions":
     get:
       tags:
-      - Exam
+        - Exam
       parameters:
         - in: path
           name: exam
@@ -320,7 +320,7 @@ paths:
   "/exams/{exam}/start":
     post:
       tags:
-      - "Take Exam"
+        - "Take Exam"
       parameters:
         - in: path
           name: exam
@@ -368,7 +368,7 @@ paths:
   "/exams/{exam}/configs":
     get:
       tags:
-      - Exam
+        - Exam
       parameters:
         - in: path
           name: exam
@@ -397,7 +397,7 @@ paths:
   "/exams/{exam}/step1":
     put:
       tags:
-      - Exam
+        - Exam
       parameters:
         - in: path
           name: exam
@@ -427,7 +427,7 @@ paths:
   "/exams/{exam}/step2":
     put:
       tags:
-      - Exam
+        - Exam
       parameters:
         - in: path
           name: exam
@@ -457,7 +457,7 @@ paths:
   "/exams/{exam}/step3":
     put:
       tags:
-      - Exam
+        - Exam
       parameters:
         - in: path
           name: exam
@@ -487,7 +487,7 @@ paths:
   "/exams/{exam}/step4":
     put:
       tags:
-      - Exam
+        - Exam
       parameters:
         - in: path
           name: exam
@@ -517,7 +517,7 @@ paths:
   "/exams/{exam}/my-answers":
     get:
       tags:
-      - "Take Exam"
+        - "Take Exam"
       parameters:
         - in: path
           name: exam
@@ -546,7 +546,7 @@ paths:
   "/exams/{exam}/submit":
     post:
       tags:
-      - "Take Exam"
+        - "Take Exam"
       parameters:
         - in: path
           name: exam
@@ -578,7 +578,7 @@ paths:
   "/exams/{exam}/publish":
     post:
       tags:
-      - Exam
+        - Exam
       parameters:
         - in: path
           name: exam
@@ -849,8 +849,8 @@ paths:
   "/questions/{question}":
     get:
       tags:
-      - Questions
-      - Exam
+        - Questions
+        - Exam
       parameters:
         - in: path
           name: question
@@ -1474,7 +1474,7 @@ paths:
   "/exams/{exam}/all-answers":
     get:
       tags:
-      - Mark Exam
+        - Mark Exam
       parameters:
         - in: path
           name: exam
@@ -1534,11 +1534,11 @@ paths:
         "403":
           description: Forbidden
       security:
-      - bearer: []
+        - bearer: []
   "/exams/{exam}/all-answers/answer":
     get:
       tags:
-      - Mark Exam
+        - Mark Exam
       parameters:
         - in: path
           name: exam
@@ -1554,7 +1554,7 @@ paths:
       description: Returns question solutions for certain student
       operationId: getExamSolutions
       responses:
-        '200':
+        "200":
           description: Successful operation
           content:
             application/json:
@@ -1587,7 +1587,7 @@ paths:
                           example: 1
                         studentAnswer:
                           type: String
-                          example: 'Answer'
+                          example: "Answer"
                         questionMark:
                           type: float
                           example: 40.33
@@ -1618,12 +1618,12 @@ paths:
                                     example: "Answer 1"
 
                 type: object
-        '401':
+        "401":
           description: Unauthenticated
-        '403':
+        "403":
           description: Forbidden
       security:
-      - bearer: []
+        - bearer: []
 components:
   schemas:
     StoreManualRequest:

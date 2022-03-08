@@ -30,7 +30,7 @@ class AnswerController extends Controller
         //
     }
 
-        /**
+    /**
      * @OA\Post(
      *      path="/answers",
      *      operationId="storeAnswer",
@@ -45,7 +45,7 @@ class AnswerController extends Controller
      *      @OA\Response(
      *          response=201,
      *          description="Successful operation",
-     *        
+     *
      *       ),
      *      @OA\Response(
      *          response=400,
@@ -67,26 +67,27 @@ class AnswerController extends Controller
             'option_id' => 'numeric',
             'question_id' => 'required|numeric',
             'exam_id' => 'required|numeric',
+            'studentAnswer' => 'string'
         ];
 
         // check if question was already answered before..
 
         $validator = Validator::make($request->all(), $rules);
 
-        if($validator->fails()) {
+        if ($validator->fails()) {
             return response()->json(['message' => 'failed to add answer'], 400);
         }
 
         $answerDetails = $request->only(['option_id', 'question_id', 'exam_id', 'studentAnswer']);
 
-        
+
 
         $answerDetails['student_id'] = auth()->user()->id;
 
         $answer = Answer::where(['exam_id' => $request->exam_id, 'student_id' => auth()->user()->id, 'question_id' => $request->question_id])->get()->first();
 
-        if($answer) {
-            if($answer->option_id != $answerDetails['option_id'] || $answer->studentAnswer != $answerDetails['studentAnswer']) {
+        if ($answer) {
+            if ($answer->option_id != $answerDetails['option_id'] || $answer->studentAnswer != $answerDetails['studentAnswer']) {
                 DB::table('answers')->where(['exam_id' => $request->exam_id, 'student_id' => auth()->user()->id, 'question_id' => $request->question_id])->update(['option_id' => $answerDetails['option_id'], 'studentAnswer' => $answerDetails['studentAnswer']]);
             } else {
                 return response()->json(['message' => 'data stored successfully!']);
@@ -94,9 +95,9 @@ class AnswerController extends Controller
             // $answer->update($answerDetails);
         } else {
             $answer = Answer::create($answerDetails);
-            if(!$answer) {
+            if (!$answer) {
                 return response()->json(['message' => 'failed to add answer'], 400);
-            }  
+            }
         }
 
 
