@@ -25,13 +25,13 @@ class MarkMCQController extends Controller
                 'questionMark' => 'required'
             ]);
 
-            $answer = Answer::where(['student_id' => $fields['student_id'], 'exam_id' => $fields['exam_id'], 'question_id' => $fields['question_id']])->get();
+            $answer = Answer::where(['student_id' => $fields['studentId'], 'exam_id' => $fields['examId'], 'question_id' => $fields['questionId']])->get();
             $cnt = $answer->count();
             if ($cnt == 0) {
                 $a = Answer::create([
-                    'student_id' => $fields['student_id'],
-                    'exam_id' => $fields['exam_id'],
-                    'question_id' => $fields['question_id'],
+                    'student_id' => $fields['studentId'],
+                    'exam_id' => $fields['examId'],
+                    'question_id' => $fields['questionId'],
                     'questionMark' => $fields['questionMark'],
                 ]);
             } else {
