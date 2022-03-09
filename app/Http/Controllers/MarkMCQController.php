@@ -185,14 +185,24 @@ class MarkMCQController extends Controller
     {
         $user = auth()->user();
         if ($user->type == 'student') {
-            $report = Answer::where(['student_id' => $user->id, 'exam_id' => $exam->id])->select('question_id', 'option_id', 'questionMark')->get();
+            $session = DB::table('examSession')->where(['exam_id' => $exam->id, 'student_id' => $user->id, 'isSubmitted' => true])->get()->first();
+            if (!$session) {
+                return response()->json(['message' => 'You Must Take Exam First!'], 400);
+            }
 
-            $report->each(function ($e) {
-                $e->option;
-                $e->question->mcqAnswer;
-            });
+            $solutions = DB::table('answers')->where(['exam_id' => $exam->id, 'student_id' => $user->id])->get();
+            if (!$solutions) {
+                return response()->json(['message' => 'Failed to fetch your solutions!'], 400);
+            }
 
-            return response()->json(['report' => $report]);
+            foreach ($solutions as $s) {
+                $s->question = DB::table('questions')->where(['id' => $s->question_id])->get()->first();
+                $s->totalQuestionMark = DB::table('exam_question')->where(['exam_id' => $exam->id, 'question_id' => $s->question_id])->get()->first()->mark;
+                $answers = DB::table('mcq_answers')->where(['question_id' => $s->question->id])->join('options', 'options.id', 'mcq_answers.id')->get();
+                $s->question->answers = $answers;
+            }
+
+            return response()->json(['message' => 'Report Generated successfully', 'solution' => $solutions]);
         } else {
             return response()->json(['message' => 'There is no logged in Student'], 400);
         }

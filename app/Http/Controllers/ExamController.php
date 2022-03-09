@@ -537,7 +537,7 @@ class ExamController extends Controller
 
         $examSession = examSession::where(['exam_id' => $exam->id, 'student_id' => auth()->user()->id])->latest()->get()->first();
         if ($examSession) {
-            if(!$examSession->isSubmitted) {
+            if (!$examSession->isSubmitted) {
                 return response()->json(['message' => 'You must submit the previous attempt first before starting a new attempt!'], 400);
             } else {
                 $attempt = $examSession->attempt + 1;
@@ -992,7 +992,7 @@ class ExamController extends Controller
 
         $student = auth()->user();
 
-        $examSession = examSession::where(['exam_id' => $exam->id, 'student_id' => $student->id])->orderBy('attempt','DESC')->get()->first();
+        $examSession = examSession::where(['exam_id' => $exam->id, 'student_id' => $student->id])->orderBy('attempt', 'DESC')->get()->first();
         if (!$examSession) {
             return response()->json(['message' => 'No exam session for this student!'], 400);
         }
@@ -1123,7 +1123,7 @@ class ExamController extends Controller
         }
 
         $studentId = request('student_id');
-        if(!$studentId) {
+        if (!$studentId) {
             return response()->json(['message' => 'No student ID specified!']);
         }
         $user = DB::table('users')->where(['id' => $studentId])->get()->first();
@@ -1147,13 +1147,12 @@ class ExamController extends Controller
         foreach ($solutions as $solution) {
             $solution->question = DB::table('questions')->where(['id' => $solution->question_id])->get()->first();
             $solution->totalQuestionMark = DB::table('exam_question')->where(['exam_id' => $exam->id, 'question_id' => $solution->question_id])->get()->first()->mark;
-            if($solution->question->type == 'mcq') {
-                $answers = DB::table('mcq_answers')->where(['question_id' => $solution->question->id])->join('options', 'options.id','mcq_answers.id')->get();
+            if ($solution->question->type == 'mcq') {
+                $answers = DB::table('mcq_answers')->where(['question_id' => $solution->question->id])->join('options', 'options.id', 'mcq_answers.id')->get();
                 // $questions = DB::table('exam_question')->where('exam_id', $exam->id)->join('questions', 'question_id', 'questions.id')->select(['questions.id', 'questions.questionText', 'exam_question.mark', 'questions.type'])->get();
 
                 $solution->question->answers = $answers;
             }
-
         }
 
         $examConfig = DB::table('configs')->where(['exam_id' => $exam->id])->get()->first();

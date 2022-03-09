@@ -23,11 +23,13 @@ class Student extends Model
         return $this->belongsTo(Department::class, 'department_id');
     }
 
-    public function answers() {
+    public function answers()
+    {
         return $this->belongsToMany(Answer::class);
     }
 
-    public function sessions() {
-        return $this->belongsToMany(examSession::class ,'examSession','student_id')->withTimestamps()->withPivot(['numberOfFaces', 'isVerified', 'startTime']);
+    public function sessions()
+    {
+        return $this->belongsToMany(examSession::class, 'examSession', 'student_id')->withTimestamps()->withPivot(['numberOfFaces', 'isVerified', 'startTime']);
     }
 }
