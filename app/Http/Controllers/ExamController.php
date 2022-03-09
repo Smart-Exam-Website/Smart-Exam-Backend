@@ -68,7 +68,6 @@ class ExamController extends Controller
                 $exam['isSubmitted'] = $isSubmitted;
             }
             foreach ($finalExams as $exam) {
-                $isMarked = false;
                 $examMark = DB::table('exam_students')->where(['exam_id' => $exam->id, 'student_id' => auth()->user()->id])->get()->first();
                 if ($examMark) {
                     $exam['isMarked'] = true;
@@ -76,6 +75,13 @@ class ExamController extends Controller
                 } else {
                     $exam['isMarked'] = false;
                 }
+            }
+            $isMarked = request('isMarked');
+            if($isMarked) {
+                $filteredArray = array_filter($finalExams, function($exam) use ($isMarked) {
+                    return $exam['isMarked'] == $isMarked;
+                });
+                $finalExams = $filteredArray;
             }
         }
         return $finalExams;
