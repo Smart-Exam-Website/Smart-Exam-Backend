@@ -4,10 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\ExamQuestion;
 use App\Models\Option;
-use App\Models\McqAnswer;
 use Illuminate\Http\Request;
 use App\Models\Question;
-use App\Models\Mcq;
 use App\Models\Exam;
 use App\Models\QuestionOption;
 use App\Models\QuestionTag;

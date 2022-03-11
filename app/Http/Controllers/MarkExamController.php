@@ -5,9 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Exam;
 use App\Models\Answer;
 use App\Models\Configuration;
-use App\Models\McqAnswer;
 use App\Models\ExamQuestion;
 use App\Models\ExamStudent;
+use App\Models\QuestionOption;
 use App\Models\Student;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
@@ -91,7 +91,7 @@ class MarkExamController extends Controller
 
         foreach ($answers as $a) {
 
-            $m = McqAnswer::where(['id' => $a['option_id'], 'question_id' => $a['question_id']])->first();
+            $m = QuestionOption::where(['id' => $a['option_id'], 'question_id' => $a['question_id']])->first();
             if ($m != NULL && $m->isCorrect == 1) {
 
                 $ex = ExamQuestion::where('exam_id', '=', $exam->id)->where('question_id', '=', $a->question_id)->first();
@@ -143,7 +143,7 @@ class MarkExamController extends Controller
 
             foreach ($answers as $a) {
 
-                $m = McqAnswer::where(['id' => $a['option_id'], 'question_id' => $a['question_id']])->first();
+                $m = QuestionOption::where(['id' => $a['option_id'], 'question_id' => $a['question_id']])->first();
                 if ($m != NULL && $m->isCorrect == 1) {
 
                     $ex = ExamQuestion::where('exam_id', '=', $exam->id)->where('question_id', '=', $a->question_id)->first();
