@@ -64,9 +64,13 @@ class faceDetectionController extends Controller
 
         $exam = Exam::where(['id' => $request->examId])->get()->first();
 
+        if (!$exam) {
+            return response()->json(['message' => 'This exam does not Exist!'], 400);
+        }
+
         $config = $exam->config;
 
-        if(!$config->faceDetection) {
+        if (!$config->faceDetection) {
             return response()->json(['message' => 'This exam does not support face detection!'], 400);
         }
 
