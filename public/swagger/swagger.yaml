@@ -1338,9 +1338,9 @@ paths:
     post:
       tags:
         - Mark Exam
-      summary: Mark MCQ Exam Manually
-      description: "Mark MCQ Exam Manually with this API"
-      operationId: markMCQExamManually
+      summary: Mark Question Manually
+      description: "Mark Question Manually with this API"
+      operationId: markQuestionManually
       consumes:
         - application/json
       produces:
@@ -1939,42 +1939,9 @@ components:
       type: object
       xml:
         name: Instructor
-    Mcq:
-      title: Mcq
-      description: Mcq model
-      properties:
-        id:
-          title: ID
-          description: ID
-          type: integer
-          format: int64
-          example: 1
-        created_at:
-          title: Created at
-          description: Created at
-          type: string
-          format: datetime
-          example: "2020-01-27 17:50:45"
-        updated_at:
-          title: Updated at
-          description: Updated at
-          type: string
-          format: datetime
-          example: "2020-01-27 17:50:45"
-        mcqanswer_id:
-          title: McqAnswer ID
-          description: McqAnswer id
-          type: integer
-          format: int64
-          example: 8
-        mcqanswer:
-          "$ref": "#/components/schemas/McqAnswer"
-      type: object
-      xml:
-        name: Mcq
-    McqAnswer:
-      title: Mcq Answer
-      description: McqAnswer model
+    QuestionOption:
+      title: Question Option
+      description: QuestionOption model
       properties:
         id:
           title: ID
@@ -2010,7 +1977,7 @@ components:
           example: "2020-01-27 17:50:45"
       type: object
       xml:
-        name: McqAnswer
+        name: QuestionOption
     Option:
       title: Option
       description: Option model
@@ -2092,14 +2059,6 @@ components:
           example: 4
         instructor:
           "$ref": "#/components/schemas/Instructor"
-        mcq_id:
-          title: Mcq ID
-          description: Mcq id
-          type: integer
-          format: int64
-          example: 8
-        mcq:
-          "$ref": "#/components/schemas/Mcq"
         tag_id:
           title: Tag ID
           description: Tag id
