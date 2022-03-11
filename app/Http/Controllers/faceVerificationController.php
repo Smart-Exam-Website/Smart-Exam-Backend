@@ -58,6 +58,10 @@ class faceVerificationController extends Controller
 
         $exam = Exam::where(['id' => $request->examId])->get()->first();
 
+        if (!$exam) {
+            return response()->json(['message' => 'This exam does not Exist!'], 400);
+        }
+
         $config = $exam->config;
 
         if (!$config->faceRecognition) {
@@ -71,10 +75,10 @@ class faceVerificationController extends Controller
         }
         $imagePath = auth()->user()->image;
 
-        $image2 = Storage::disk('s3')->get('uploads/'.$imagePath);
+        $image2 = Storage::disk('s3')->get('uploads/' . $imagePath);
         $image2Enc = base64_encode($image2);
 
-        $image2Encoded = 'data:image/jpeg;base64,'.$image2Enc;
+        $image2Encoded = 'data:image/jpeg;base64,' . $image2Enc;
 
 
 
