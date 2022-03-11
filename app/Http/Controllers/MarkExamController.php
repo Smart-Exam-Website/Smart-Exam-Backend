@@ -12,7 +12,7 @@ use App\Models\Student;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
-class MarkMCQController extends Controller
+class MarkExamController extends Controller
 {
     public function MarkExamManual(Request $request)
     {
