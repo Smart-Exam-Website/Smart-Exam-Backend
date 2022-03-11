@@ -198,7 +198,7 @@ class MarkExamController extends Controller
             foreach ($solutions as $s) {
                 $s->question = DB::table('questions')->where(['id' => $s->question_id])->get()->first();
                 $s->totalQuestionMark = DB::table('exam_question')->where(['exam_id' => $exam->id, 'question_id' => $s->question_id])->get()->first()->mark;
-                $answers = DB::table('mcq_answers')->where(['question_id' => $s->question->id])->join('options', 'options.id', 'mcq_answers.id')->get();
+                $answers = DB::table('question_option')->where(['question_id' => $s->question->id])->join('options', 'options.id', 'question_option.id')->get();
                 $s->question->answers = $answers;
             }
 

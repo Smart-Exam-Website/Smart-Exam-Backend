@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\McqAnswer;
+use App\Models\QuestionOption;
 
 class QuestionOptionSeeder extends Seeder
 {
