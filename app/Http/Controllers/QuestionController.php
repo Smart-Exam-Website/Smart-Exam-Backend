@@ -135,7 +135,12 @@ class QuestionController extends Controller
             ]);
 
             $answers = $fields['answers'];
-            $tags = $fields['tags'];
+            if ($request->has('tags')) {
+                $tags = $fields['tags'];
+            } else {
+                $tags = [];
+            }
+
 
             foreach ($tags as $a) {
                 $taggs = Tag::where(['name' => $a])->first();
