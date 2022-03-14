@@ -794,6 +794,17 @@ paths:
     get:
       tags:
         - Questions
+      parameters:
+        - in: path
+          name: tag
+          schema:
+            type: string
+          required: false
+        - in: path
+          name: myQuestions
+          schema:
+            type: boolean
+          required: false
       summary: Get list of Questions
       description: Returns list of Questions
       operationId: getQuestionsList
