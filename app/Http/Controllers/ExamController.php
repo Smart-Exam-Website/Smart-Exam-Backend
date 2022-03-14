@@ -676,8 +676,11 @@ class ExamController extends Controller
         if (!$exam) {
             return response()->json(['message' => 'Exam not found!']);
         }
-        if (auth()->user()->type != 'instructor') {
+        if (auth()->user()->type != 'instructor' || auth()->user()->id != $exam->instructor_id) {
             return response()->json(['message' => 'Unauthorized to update exam!'], 403);
+        }
+        if($exam->startAt < now()) {
+            return response()->json(['message' => 'Cannot edit exam after it has started!'], 400);
         }
         // create exam
         $rules = [
