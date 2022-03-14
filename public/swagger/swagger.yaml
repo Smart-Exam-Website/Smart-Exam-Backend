@@ -895,7 +895,7 @@ paths:
         content:
           application/json:
             schema:
-              "$ref": "#/components/schemas/StoreQuestionRequest"
+              "$ref": "#/components/schemas/StoreEditQuestionRequest"
       responses:
         "201":
           description: Successful operation
@@ -2067,6 +2067,10 @@ components:
           example: 2
         tag:
           "$ref": "#/components/schemas/Tag"
+        options:
+          "$ref": "#/components/schemas/Option"
+        question_option:
+          "$ref": "#/components/schemas/QuestionOption"
       type: object
       xml:
         name: Question
@@ -2600,7 +2604,6 @@ components:
       required:
         - questionText
         - type
-        - tags
         - answers
         - correctAnswer
       properties:
@@ -2623,6 +2626,36 @@ components:
             example:
               - math
               - exponential
+        answers:
+          title: answers
+          description: answers
+          type: array
+          items:
+            type: string
+            example:
+              - seven
+              - four
+              - two
+              - ten
+        correctAnswer:
+          title: correctAnswer
+          description: correct Answer
+          type: string
+          example: seven
+      type: object
+    StoreEditQuestionRequest:
+      title: StoreEditQuestionRequest
+      description: Store Edit Question request body data
+      required:
+        - questionText
+        - answers
+        - correctAnswer
+      properties:
+        questionText:
+          title: Question Text
+          description: question text
+          type: string
+          example: How many days are in the week?
         answers:
           title: answers
           description: answers
