@@ -10,6 +10,7 @@ use App\Models\Exam;
 use App\Models\QuestionOption;
 use App\Models\QuestionTag;
 use App\Models\Tag;
+use phpDocumentor\Reflection\PseudoTypes\True_;
 
 class QuestionController extends Controller
 {
@@ -40,14 +41,48 @@ class QuestionController extends Controller
      */
     public function index()
     {
+        $user = auth()->user();
         $queryTag = request('tag');
+        $myQuestions = request('myQuestions');
+        $questions = [];
+        $qs = [];
         if ($queryTag) {
             $tag = Tag::where('name', 'LIKE', $queryTag . '%')->get()->first();
             $questions = $tag->questions;
+            if ($myQuestions != NULL) {
+                if ($myQuestions == "true") {
+                    foreach ($questions as $q) {
+                        if (($q->instructor_id == $user->id) && ($q->isHidden == false)) {
+                            array_push($qs, $q);
+                        }
+                    };
+                } else if ($myQuestions == "false") {
+                    foreach ($questions as $q) {
+                        if (($q->instructor_id != $user->id) && ($q->isHidden == false)) {
+                            array_push($qs, $q);
+                        }
+                    };
+                }
+            } else {
+                foreach ($questions as $q) {
+                    if ($q->isHidden == false) {
+                        array_push($qs, $q);
+                    }
+                };
+            }
         } else {
-
-            $questions = Question::latest('created_at')->where(['isHidden' => false])->get();
+            if ($myQuestions != NULL) {
+                if ($myQuestions == "true") {
+                    $questions = Question::latest('created_at')->where(['instructor_id' => $user->id, 'isHidden' => false])->get();
+                } else if ($myQuestions == "false") {
+                    $questions = Question::latest('created_at')->where('instructor_id', '<>', $user->id)->where(['isHidden' => false])->get();
+                }
+            } else {
+                $questions = Question::latest('created_at')->where(['isHidden' => false])->get();
+            }
+            $qs = $questions;
         }
+
         foreach ($questions as $q) {
             $q->tags;
             $options = $q->QuestionOption;
@@ -62,7 +97,7 @@ class QuestionController extends Controller
             $question['options'] = $options;
         }
 
-        return $questions;
+        return $qs;
     }
 
     /**
