@@ -84,11 +84,17 @@ class QuestionController extends Controller
         }
 
         foreach ($questions as $q) {
-            $q->instructor->user;
             $q->tags;
-            $q->QuestionOption->each(function ($m) {
-                $m->option;
-            });
+            $options = $q->QuestionOption;
+            foreach ($options as $opt) {
+                $optionDetails = $opt->option;
+                $opt['value'] = $optionDetails->value;
+                $opt['type'] = $optionDetails->type;
+            }
+            $instructor = DB::table('users')->where(['id' => $q->instructor_id])->get()->first();
+            $instructorName = $instructor->firstName . ' ' . $instructor->lastName;
+            $question['instructorName'] = $instructorName;
+            $question['options'] = $options;
         }
 
         return $qs;
