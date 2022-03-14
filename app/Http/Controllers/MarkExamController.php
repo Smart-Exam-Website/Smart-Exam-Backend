@@ -5,14 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\Exam;
 use App\Models\Answer;
 use App\Models\Configuration;
-use App\Models\McqAnswer;
 use App\Models\ExamQuestion;
 use App\Models\ExamStudent;
+use App\Models\QuestionOption;
 use App\Models\Student;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
-class MarkMCQController extends Controller
+class MarkExamController extends Controller
 {
     public function MarkExamManual(Request $request)
     {
@@ -91,7 +91,7 @@ class MarkMCQController extends Controller
 
         foreach ($answers as $a) {
 
-            $m = McqAnswer::where(['id' => $a['option_id'], 'question_id' => $a['question_id']])->first();
+            $m = QuestionOption::where(['id' => $a['option_id'], 'question_id' => $a['question_id']])->first();
             if ($m != NULL && $m->isCorrect == 1) {
 
                 $ex = ExamQuestion::where('exam_id', '=', $exam->id)->where('question_id', '=', $a->question_id)->first();
@@ -143,7 +143,7 @@ class MarkMCQController extends Controller
 
             foreach ($answers as $a) {
 
-                $m = McqAnswer::where(['id' => $a['option_id'], 'question_id' => $a['question_id']])->first();
+                $m = QuestionOption::where(['id' => $a['option_id'], 'question_id' => $a['question_id']])->first();
                 if ($m != NULL && $m->isCorrect == 1) {
 
                     $ex = ExamQuestion::where('exam_id', '=', $exam->id)->where('question_id', '=', $a->question_id)->first();
@@ -198,7 +198,7 @@ class MarkMCQController extends Controller
             foreach ($solutions as $s) {
                 $s->question = DB::table('questions')->where(['id' => $s->question_id])->get()->first();
                 $s->totalQuestionMark = DB::table('exam_question')->where(['exam_id' => $exam->id, 'question_id' => $s->question_id])->get()->first()->mark;
-                $answers = DB::table('mcq_answers')->where(['question_id' => $s->question->id])->join('options', 'options.id', 'mcq_answers.id')->get();
+                $answers = DB::table('question_option')->where(['question_id' => $s->question->id])->join('options', 'options.id', 'question_option.id')->get();
                 $s->question->answers = $answers;
             }
 

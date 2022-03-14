@@ -77,8 +77,8 @@ class ExamController extends Controller
                 }
             }
             $isMarked = request('isMarked');
-            if($isMarked) {
-                $filteredArray = array_filter($finalExams, function($exam) use ($isMarked) {
+            if ($isMarked) {
+                $filteredArray = array_filter($finalExams, function ($exam) use ($isMarked) {
                     return $exam['isMarked'] == $isMarked;
                 });
                 $finalExams = $filteredArray;
@@ -468,7 +468,7 @@ class ExamController extends Controller
             $type = $question->type;
 
             if ($type == 'mcq') {
-                $answers = DB::table('mcq_answers')->where('question_id', $question->id)->join('options', 'options.id', 'mcq_answers.id')->select(['options.id', 'mcq_answers.isCorrect', 'options.value'])->get();
+                $answers = DB::table('question_option')->where('question_id', $question->id)->join('options', 'options.id', 'question_option.id')->select(['options.id', 'question_option.isCorrect', 'options.value'])->get();
             }
             $question->answers = $answers;
         }
@@ -584,7 +584,7 @@ class ExamController extends Controller
             $type = $question->type;
 
             if ($type == 'mcq') {
-                $answers = DB::table('mcq_answers')->where('question_id', $question->id)->join('options', 'options.id', 'mcq_answers.id')->select(['options.id', 'mcq_answers.isCorrect', 'options.value'])->get();
+                $answers = DB::table('question_option')->where('question_id', $question->id)->join('options', 'options.id', 'question_option.id')->select(['options.id', 'question_option.isCorrect', 'options.value'])->get();
             }
             $question->answers = $answers;
         }
@@ -1157,7 +1157,7 @@ class ExamController extends Controller
             $solution->question = DB::table('questions')->where(['id' => $solution->question_id])->get()->first();
             $solution->totalQuestionMark = DB::table('exam_question')->where(['exam_id' => $exam->id, 'question_id' => $solution->question_id])->get()->first()->mark;
             if ($solution->question->type == 'mcq') {
-                $answers = DB::table('mcq_answers')->where(['question_id' => $solution->question->id])->join('options', 'options.id', 'mcq_answers.id')->get();
+                $answers = DB::table('question_option')->where(['question_id' => $solution->question->id])->join('options', 'options.id', 'question_option.id')->get();
                 // $questions = DB::table('exam_question')->where('exam_id', $exam->id)->join('questions', 'question_id', 'questions.id')->select(['questions.id', 'questions.questionText', 'exam_question.mark', 'questions.type'])->get();
 
                 $solution->question->answers = $answers;
