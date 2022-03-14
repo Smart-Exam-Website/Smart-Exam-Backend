@@ -863,6 +863,13 @@ paths:
     get:
       tags:
         - Questions
+      parameters:
+        - in: query
+          name: tag
+          schema:
+            type: integer
+          required: false
+
       summary: Get list of Questions
       description: Returns list of Questions
       operationId: getQuestionsList
