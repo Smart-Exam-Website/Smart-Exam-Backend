@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Tag;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class TagController extends Controller
 {
@@ -14,7 +15,7 @@ class TagController extends Controller
      */
     public function index()
     {
-        return Tag::all();
+        return response()->json(['message' => 'Success!', 'tags' => Tag::all()]);
     }
 
     /**
@@ -47,6 +48,11 @@ class TagController extends Controller
     public function show(Tag $tag)
     {
         $questions = $tag->questions;
+        foreach($questions as $question) {
+            $instructor = DB::table('users')->where(['id' => $question->instructor_id])->get()->first();
+            $instructorName = $instructor->firstName . ' ' . $instructor->lastName;
+            $question['instructorName'] = $instructorName;
+        }
 
         return response()->json(['message' => 'Successfully fetched questions!', 'questions' => $questions]);
     }
