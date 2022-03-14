@@ -2600,6 +2600,7 @@ components:
       required:
         - questionText
         - type
+        - tags
         - answers
         - correctAnswer
       properties:
@@ -2613,6 +2614,15 @@ components:
           description: the type of the question
           type: string
           example: mcq
+        tags:
+          title: tags
+          description: tags
+          type: array
+          items:
+            type: string
+            example:
+              - math
+              - exponential
         answers:
           title: answers
           description: answers
