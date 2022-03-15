@@ -465,11 +465,8 @@ class ExamController extends Controller
         $questions = DB::table('exam_question')->where('exam_id', $exam->id)->join('questions', 'question_id', 'questions.id')->select(['questions.id', 'questions.questionText', 'exam_question.mark', 'questions.type'])->get();
 
         foreach ($questions as $question) {
-            $type = $question->type;
 
-            if ($type == 'mcq') {
-                $answers = DB::table('question_option')->where('question_id', $question->id)->join('options', 'options.id', 'question_option.id')->select(['options.id', 'question_option.isCorrect', 'options.value'])->get();
-            }
+            $answers = DB::table('question_option')->where('question_id', $question->id)->join('options', 'options.id', 'question_option.id')->select(['options.id', 'question_option.isCorrect', 'options.value'])->get();
             $question->answers = $answers;
         }
         return response()->json(['questions' => $questions]);
@@ -679,7 +676,7 @@ class ExamController extends Controller
         if (auth()->user()->type != 'instructor' || auth()->user()->id != $exam->instructor_id) {
             return response()->json(['message' => 'Unauthorized to update exam!'], 403);
         }
-        if($exam->startAt < now()) {
+        if ($exam->startAt < now()) {
             return response()->json(['message' => 'Cannot edit exam after it has started!'], 400);
         }
         // create exam
