@@ -45,6 +45,7 @@ class CreateExamsTable extends Migration
             $table->dateTime('startTime');
             $table->integer('numberOfFaces')->default(0);
             $table->boolean('isVerified')->default(false);
+            $table->boolean('isCheater')->default(false);
             $table->integer('attempt')->default(1);
             $table->boolean('isSubmitted')->default(false);
             $table->dateTime('submittedAt')->nullable();

@@ -10,7 +10,6 @@ use App\Models\Exam;
 use App\Models\QuestionOption;
 use App\Models\QuestionTag;
 use App\Models\Tag;
-use phpDocumentor\Reflection\PseudoTypes\True_;
 
 class QuestionController extends Controller
 {
@@ -84,17 +83,11 @@ class QuestionController extends Controller
         }
 
         foreach ($questions as $q) {
+            $q->instructor->user;
             $q->tags;
-            $options = $q->QuestionOption;
-            foreach ($options as $opt) {
-                $optionDetails = $opt->option;
-                $opt['value'] = $optionDetails->value;
-                $opt['type'] = $optionDetails->type;
-            }
-            $instructor = DB::table('users')->where(['id' => $q->instructor_id])->get()->first();
-            $instructorName = $instructor->firstName . ' ' . $instructor->lastName;
-            $question['instructorName'] = $instructorName;
-            $question['options'] = $options;
+            $q->QuestionOption->each(function ($m) {
+                $m->option;
+            });
         }
 
         return $qs;

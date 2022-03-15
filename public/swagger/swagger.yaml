@@ -935,7 +935,7 @@ paths:
       tags:
         - Questions
       summary: create question
-      description: Returns Question data
+      description: if mcq request body contain all fields else if essay request body need only questionText-type-answers and optional tags
       operationId: storeQuestion
       requestBody:
         required: true

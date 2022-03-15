@@ -29,5 +29,6 @@ class DatabaseSeeder extends Seeder
         $this->call(TagSeeder::class);
         $this->call(ExamSeeder::class);
         $this->call(QuestionTagSeeder::class);
+        $this->call(CheatingActionSeeder::class);
     }
 }
