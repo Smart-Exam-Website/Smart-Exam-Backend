@@ -1,7 +1,7 @@
 <html>
 
 <head>
-    <title>Smart Exam API's Swagger</title>
+    <title>Smart Exam APIs</title>
     <link href="{{ asset('swagger/style.css') }}" rel="stylesheet">
 </head>
 

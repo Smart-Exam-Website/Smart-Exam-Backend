@@ -13,31 +13,7 @@ use App\Models\Tag;
 
 class QuestionController extends Controller
 {
-    /**
-     * @OA\Get(
-     *      path="/questions",
-     *      operationId="getQuestionsList",
-     *      tags={"Questions"},
-     *      summary="Get list of Questions",
-     *      description="Returns list of Questions",
-     *      security={ {"bearer": {} }},
-     *      @OA\Response(
-     *          response=200,
-     *          description="Successful operation",
-     *          @OA\JsonContent(
-     * @OA\Property(property="Questions", type="array", @OA\Items(ref="#/components/schemas/Question"))
-     * ),
-     *       ),
-     *      @OA\Response(
-     *          response=401,
-     *          description="Unauthenticated",
-     *      ),
-     *      @OA\Response(
-     *          response=403,
-     *          description="Forbidden"
-     *      )
-     *     )
-     */
+    // get all questions
     public function index()
     {
         $user = auth()->user();
@@ -93,58 +69,7 @@ class QuestionController extends Controller
         return $qs;
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-
-    /**
-     * @OA\Post(
-     *      path="/questions/create",
-     *      operationId="storeQuestion",
-     *      tags={"Questions"},
-     *      summary="create question",
-     *      description="Returns Question data",
-     *      security={ {"bearer": {} }},
-     *      @OA\RequestBody(
-     *          required=true,
-     *          @OA\JsonContent(ref="#/components/schemas/StoreQuestionRequest")
-     *      ),
-     *      @OA\Response(
-     *          response=201,
-     *          description="Successful operation",
-     *          @OA\JsonContent(
-     * @OA\Property(property="question", type="object", ref="#/components/schemas/Question")
-     * ),
-     *       ),
-     *      @OA\Response(
-     *          response=400,
-     *          description="Bad Request"
-     *      ),
-     *      @OA\Response(
-     *          response=401,
-     *          description="Unauthenticated",
-     *      ),
-     *      @OA\Response(
-     *          response=403,
-     *          description="Forbidden"
-     *      )
-     * )
-     */
-
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+    // Create new question
     public function store(Request $request)
     {
 
@@ -245,31 +170,7 @@ class QuestionController extends Controller
         }
     }
 
-    /**
-     * @OA\Get(
-     *      path="/questions/{question}",
-     *      operationId="getquestionDetails",
-     *      tags={"Questions", "Exam"},
-     *      summary="Get question details",
-     *      description="Returns question details",
-     * security={ {"bearer": {} }},
-     *      @OA\Response(
-     *          response=200,
-     *          description="Successful operation",
-     *          @OA\JsonContent(
-     * @OA\Property(property="question", type="object", ref="#/components/schemas/Question")
-     * ),
-     *       ),
-     *      @OA\Response(
-     *          response=401,
-     *          description="Unauthenticated",
-     *      ),
-     *      @OA\Response(
-     *          response=403,
-     *          description="Forbidden"
-     *      )
-     *     )
-     */
+    // Get question details
     public function show($id)
     {
         $question = Question::where('id', $id)->get()->first();
@@ -281,70 +182,7 @@ class QuestionController extends Controller
         return response()->json(['question' => $question]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-    }
-
-
-    /**
-     * @OA\Put(
-     *      path="/questions/{id}",
-     *      operationId="editQuestion",
-     *      tags={"Questions"},
-     *      summary="Edit question",
-     *      description="Returns Question data",
-     *      security={ {"bearer": {} }},
-     *      @OA\Parameter(
-     *          name="id",
-     *          description="Question id",
-     *          required=true,
-     *          in="path",
-     *          @OA\Schema(
-     *              type="integer"
-     *          )
-     *      ),
-     *      @OA\RequestBody(
-     *          required=false,
-     *          @OA\JsonContent(ref="#/components/schemas/StoreQuestionRequest")
-     *      ),
-     *      @OA\Response(
-     *          response=201,
-     *          description="Successful operation",
-     *          @OA\JsonContent(
-     * @OA\Property(property="question", type="object", ref="#/components/schemas/Question"),),
-     *       ),
-     *      @OA\Response(
-     *          response=400,
-     *          description="Bad Request",
-     * @OA\Property(property="message", type="string", example="Failed to update question"),
-     *      ),
-     *      @OA\Response(
-     *          response=401,
-     *          description="Unauthenticated",
-     * @OA\Property(property="message", type="string", example="Unauthenticated"),
-     *      ),
-     *      @OA\Response(
-     *          response=403,
-     *          description="Forbidden"
-     *      )
-     * )
-     */
-
-
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    // Edit Question
     public function update(Request $request, $id)
     {
         $user = auth()->user();
@@ -527,48 +365,7 @@ class QuestionController extends Controller
     }
 
 
-    /**
-     * @OA\Delete(
-     *      path="/questions/{id}",
-     *      operationId="deleteQuestion",
-     *      tags={"Questions"},
-     *      summary="Delete existing question",
-     *      description="Deletes a record and returns no content",
-     *      @OA\Parameter(
-     *          name="id",
-     *          description="Question id",
-     *          required=true,
-     *          in="path",
-     *          @OA\Schema(
-     *              type="integer"
-     *          )
-     *      ),
-     *      @OA\Response(
-     *          response=204,
-     *          description="Successful operation"
-     *       ),
-     *      @OA\Response(
-     *          response=401,
-     *          description="Unauthenticated",
-     *      ),
-     *      @OA\Response(
-     *          response=403,
-     *          description="Forbidden"
-     *      ),
-     *      @OA\Response(
-     *          response=404,
-     *          description="Resource Not Found"
-     *      )
-     * )
-     */
-
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    // Delete Question
     public function destroy($id)
     {
 

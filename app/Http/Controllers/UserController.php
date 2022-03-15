@@ -9,48 +9,11 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
-
-
-    /**
-     * @OA\Post(
-     *      path="/auth/login",
-     *      operationId="login",
-     *      tags={"Auth"},
-     *      summary="Sign in as Student or as Instructor",
-     *      description="login to your account",
-     *      @OA\RequestBody(
-     *          required=true,
-     *          @OA\JsonContent(ref="#/components/schemas/StoreLoginRequest")
-     *      ),
-     *      @OA\Response(
-     *          response=201,
-     *          description="Successfull operation",
-     *          @OA\JsonContent(
-     * @OA\Property(property="message", type="string", example="LoggedIn successfully"),
-     * @OA\Property(property="auth", type="object", ref="#/components/schemas/User"),
-     * ),
-     *       ),
-     *      @OA\Response(
-     *          response=400,
-     *          description="Bad Request"
-     *      ),
-     *      @OA\Response(
-     *          response=401,
-     *          description="Email Or Password is incorrect",
-     *      ),
-     *      @OA\Response(
-     *          response=403,
-     *          description="Forbidden"
-     *      )
-     * )
-     */
-
-
+    // Login
     public function login(Request $request)
     {
 
@@ -79,38 +42,9 @@ class UserController extends Controller
         return response($response, 200);
     }
 
+    // Log-out
 
-    /**
-     * @OA\Post(
-     *      path="/auth/logout",
-     *      operationId="logout",
-     *      tags={"Auth"},
-     *      summary="Log out From your Account",
-     *      description="logout from your account",
-     *      @OA\Response(
-     *          response=201,
-     *          description="Successfully Logged Out",
-     *          @OA\JsonContent(
-     * @OA\Property(property="message", type="string", example="You Have Successfully Logged Out"),
-     * ),
-     *       ),
-     *      @OA\Response(
-     *          response=400,
-     *          description="Bad Request"
-     *      ),
-     *      @OA\Response(
-     *          response=401,
-     *          description="Unauthenticated",
-     *      ),
-     *      @OA\Response(
-     *          response=403,
-     *          description="Forbidden"
-     *      )
-     * )
-     */
-
-
-    public function logout(Request $request)
+    public function logout()
     {
         auth()->user()->tokens()->delete();
         return [
@@ -118,40 +52,7 @@ class UserController extends Controller
         ];
     }
 
-
-
-    /**
-     * @OA\Put(
-     *      path="/auth/changePassword",
-     *      operationId="changePassword",
-     *      tags={"Auth"},
-     *      summary="changing password",
-     *      @OA\RequestBody(
-     *          required=true,
-     *          @OA\JsonContent(ref="#/components/schemas/ChangePasswordRequest")
-     *      ),
-     *      @OA\Response(
-     *          response=201,
-     *          description="Successful operation",
-     *          @OA\JsonContent(
-     * @OA\Property(property="message", type="string", example="Password Updated Successfully"),
-     * ),
-     *       ),
-     *      @OA\Response(
-     *          response=400,
-     *          description="Bad Request"
-     *      ),
-     *      @OA\Response(
-     *          response=401,
-     *          description="Unauthenticated",
-     *      ),
-     *      @OA\Response(
-     *          response=403,
-     *          description="Forbidden"
-     *      )
-     * )
-     */
-
+    // Change Password
 
 
     public function changePassword(Request $request)
@@ -175,37 +76,7 @@ class UserController extends Controller
         }
     }
 
-    /**
-     * @OA\Post(
-     *      path="/auth/forgotPassword",
-     *      operationId="forgotPassword",
-     *      tags={"Auth"},
-     *      summary="Request to reset password",
-     *      @OA\RequestBody(
-     *          required=true,
-     *          @OA\JsonContent(ref="#/components/schemas/ForgotPasswordRequest")
-     *      ),
-     *      @OA\Response(
-     *          response=200,
-     *          description="Successful operation",
-     *          @OA\JsonContent(
-     * @OA\Property(property="message", type="string", example="Reset link sent!"),
-     * ),
-     *       ),
-     *      @OA\Response(
-     *          response=400,
-     *          description="Bad Request"
-     *      ),
-     *      @OA\Response(
-     *          response=401,
-     *          description="Unauthenticated",
-     *      ),
-     *      @OA\Response(
-     *          response=403,
-     *          description="Forbidden"
-     *      )
-     * )
-     */
+    // Forgot password
 
     public function forgotPassword(Request $request)
     {
@@ -230,38 +101,7 @@ class UserController extends Controller
         return response()->json(['status' => 'Reset link sent!'], 200);
     }
 
-    /**
-     * @OA\Put(
-     *      path="/auth/forgotPassword",
-     *      operationId="resetPassword",
-     *      tags={"Auth"},
-     *      summary="Resetting password",
-     *      @OA\RequestBody(
-     *          required=true,
-     *          @OA\JsonContent(ref="#/components/schemas/ResetPasswordRequest")
-     *      ),
-     *      @OA\Response(
-     *          response=200,
-     *          description="Successful operation",
-     *          @OA\JsonContent(
-     * @OA\Property(property="message", type="string", example="Password has been successfully changed!"),
-     * ),
-     *       ),
-     *      @OA\Response(
-     *          response=400,
-     *          description="Bad Request"
-     *      ),
-     *      @OA\Response(
-     *          response=401,
-     *          description="Unauthenticated",
-     *      ),
-     *      @OA\Response(
-     *          response=403,
-     *          description="Forbidden"
-     *      )
-     * )
-     */
-
+    // Reset password
 
 
     public function resetPassword(Request $request)
@@ -290,37 +130,8 @@ class UserController extends Controller
         return response()->json(["msg" => "Password has been successfully changed"], 200);
     }
 
-    /**
-     * @OA\Post(
-     *      path="/verifyEmail",
-     *      operationId="verifyEmail",
-     *      tags={"Auth"},
-     *      summary="Request to verify email",
-     *      @OA\RequestBody(
-     *          required=true,
-     *          @OA\JsonContent(ref="#/components/schemas/VerifyEmailRequest")
-     *      ),
-     *      @OA\Response(
-     *          response=200,
-     *          description="Successful operation",
-     *          @OA\JsonContent(
-     * @OA\Property(property="message", type="string", example="Account verified!"),
-     * ),
-     *       ),
-     *      @OA\Response(
-     *          response=400,
-     *          description="Bad Request"
-     *      ),
-     *      @OA\Response(
-     *          response=401,
-     *          description="Unauthenticated",
-     *      ),
-     *      @OA\Response(
-     *          response=403,
-     *          description="Forbidden"
-     *      )
-     * )
-     */
+
+    // Verify email
     public function verifyEmail(Request $request)
     {
         $credentials = $request->validate([
@@ -351,6 +162,8 @@ class UserController extends Controller
             return response()->json(['message' => 'Account verified!'], 200);
         }
     }
+
+    // retrieve user image
 
     public function getImage() {
 

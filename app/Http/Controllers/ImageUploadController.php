@@ -7,42 +7,7 @@ use Illuminate\Support\Facades\Storage;
 
 class ImageUploadController extends Controller
 {
-
-
-
-    /**
-     * @OA\Post(
-     *      path="/image-upload",
-     *      operationId="imageUpload",
-     *      tags={"Image"},
-     *      summary="Upload image",
-     *      description="Returns success message and image name",
-     *      security={ {"bearer": {} }},
-     *      @OA\RequestBody(
-     *          required=true,
-     *      ),
-     *      @OA\Response(
-     *          response=200,
-     *          description="Successful operation",
-     *  @OA\JsonContent(
-     *              @OA\Property(property="image", type="string", example="image.jpg")
-     *          ),
-     *       ),
-     *      @OA\Response(
-     *          response=400,
-     *          description="Bad Request"
-     *      ),
-     *      @OA\Response(
-     *          response=401,
-     *          description="Unauthenticated",
-     *      ),
-     *      @OA\Response(
-     *          response=403,
-     *          description="Forbidden"
-     *      )
-     * )
-     */
-
+    // Upload image
     public function imageUploadPost(Request $request)
     {
         $request->validate([

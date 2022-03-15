@@ -14,6 +14,92 @@ use Illuminate\Http\Request;
 
 class MarkExamController extends Controller
 {
+
+    
+    // Get all Exam Answers
+
+
+    public function showExamAnswers(Exam $exam)
+    {
+        if (auth()->user()->type != 'instructor') {
+            return response()->json(['message' => 'Unauthorized!'], 403);
+        }
+        // get list of all students who solved the exam
+        $solvedExams = DB::table('examSession')->where(['exam_id' => $exam->id, 'isSubmitted' => true])->get();
+        if (!$solvedExams) {
+            return response()->json(['message' => 'No solutions found for this exam!'], 400);
+        }
+        foreach ($solvedExams as $solvedExam) {
+            $user = DB::table('users')->where('id', $solvedExam->student_id)->get()->first();
+            $student = DB::table('students')->where(['id' => $solvedExam->student_id])->get()->first();
+            $solvedExam->name = $user->firstName . ' ' . $user->lastName;
+            $solvedExam->studentCode = $student->studentCode;
+            $solvedExam->image = $user->image;
+            // if exam is marked, get mark and send it with the request.
+            $foundExam = DB::table('exam_students')->where(['exam_id' => $exam->id, 'student_id' => $solvedExam->student_id])->get()->first();
+            if ($foundExam) {
+                $solvedExam->isMarked = true;
+                $solvedExam->mark = $foundExam->totalMark;
+            } else {
+                $solvedExam->isMarked = false;
+                $solvedExam->mark = 0;
+            }
+        }
+
+        return response()->json(['message' => 'Successfully fetched solutions!', 'solvedExams' => $solvedExams]);
+    }
+
+
+    // get Detailed Exam Answer
+
+
+    public function showDetailedExamAnswer(Exam $exam)
+    {
+        if (auth()->user()->type != 'instructor') {
+            return response()->json(['message' => 'Unauthorized!'], 403);
+        }
+
+        $studentId = request('student_id');
+        if (!$studentId) {
+            return response()->json(['message' => 'No student ID specified!']);
+        }
+        $user = DB::table('users')->where(['id' => $studentId])->get()->first();
+        $studentName = $user->firstName . ' ' . $user->lastName;
+        $studentImage = $user->image;
+        // $studentCode = $user->student->studentCode;
+
+        $session = DB::table('examSession')->where(['exam_id' => $exam->id, 'student_id' => $studentId, 'isSubmitted' => true])->get()->first();
+        if (!$session) {
+            return response()->json(['message' => 'No session found for this student!'], 400);
+        }
+
+        $solutions = DB::table('answers')->where(['exam_id' => $exam->id, 'student_id' => $studentId])->get();
+
+        if (!$solutions) {
+            return response()->json(['message' => 'Failed to fetch student solutions!'], 400);
+        }
+
+
+
+        foreach ($solutions as $solution) {
+            $solution->question = DB::table('questions')->where(['id' => $solution->question_id])->get()->first();
+            $solution->totalQuestionMark = DB::table('exam_question')->where(['exam_id' => $exam->id, 'question_id' => $solution->question_id])->get()->first()->mark;
+            if ($solution->question->type == 'mcq') {
+                $answers = DB::table('question_option')->where(['question_id' => $solution->question->id])->join('options', 'options.id', 'question_option.id')->get();
+                // $questions = DB::table('exam_question')->where('exam_id', $exam->id)->join('questions', 'question_id', 'questions.id')->select(['questions.id', 'questions.questionText', 'exam_question.mark', 'questions.type'])->get();
+
+                $solution->question->answers = $answers;
+            }
+        }
+
+        $examConfig = DB::table('configs')->where(['exam_id' => $exam->id])->get()->first();
+
+
+        $numberOfFaces = ($examConfig->faceDetection) ? $session->numberOfFaces : null;
+        $isVerified = ($examConfig->faceDetection) ? $session->isVerified : null;
+
+        return response()->json(['message' => 'Fetched solution successfully', 'studentName' => $studentName, 'image' => $studentImage, 'solution' => $solutions, 'numberOfFaces' => $numberOfFaces, 'isVerified' => $isVerified]);
+    }
     public function MarkExamManual(Request $request)
     {
         $user = auth()->user();

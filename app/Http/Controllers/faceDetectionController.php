@@ -3,49 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Exam;
-use App\Models\examSession;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
 
 class faceDetectionController extends Controller
 {
 
-
-    /**
-     * @OA\Post(
-     *      path="/faceDetection",
-     *      operationId="faceDetectionAPI",
-     *      tags={"ML Models"},
-     *      summary="face detection",
-     *      description="Returns number of faces",
-     *      @OA\RequestBody(
-     *          required=true,
-     *          @OA\JsonContent(ref="#/components/schemas/FaceDetectionRequest")
-     *      ),
-     *      @OA\Response(
-     *          response=200,
-     *          description="Successful operation",
-     *          @OA\JsonContent(
-     * @OA\Property(property="message", type="string", example="Success!"),
-     * @OA\Property(property="numberOfFaces", type="integer", example=6),)
-     *       ),
-     *      @OA\Response(
-     *          response=400,
-     *          description="Bad Request"
-     *      ),
-     *      @OA\Response(
-     *          response=401,
-     *          description="Unauthenticated",
-     *      ),
-     *      @OA\Response(
-     *          response=403,
-     *          description="Forbidden"
-     *      )
-     * )
-     */
-
+    // Face Detection
 
     public function faceDetection(Request $request)
     {

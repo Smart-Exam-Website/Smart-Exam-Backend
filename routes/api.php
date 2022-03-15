@@ -69,7 +69,7 @@ Route::post('/instructors/register', 'App\Http\Controllers\InstructorController@
 Route::group(['middleware' => ['auth:sanctum']], function () {
     // Get instructor's profile
     Route::get('/instructors/me', 'App\Http\Controllers\InstructorController@showProfile');
-    Route::get('/instructors/myExams', 'App\Http\Controllers\ExamController@indexInstructor');
+    Route::get('/instructors/myExams', 'App\Http\Controllers\InstructorController@showMyExams');
     // Edit instructor's profile
     Route::put('/instructors/me', 'App\Http\Controllers\InstructorController@editProfile');
     // Instructor routes.
@@ -86,11 +86,11 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     // Delete an exam
     Route::delete('/exams/{exam}', 'App\Http\Controllers\ExamController@destroy');
     // Get all exam questions
-    Route::get('/exams/{exam}/questions', 'App\Http\Controllers\ExamController@getExamQuestions');
+    Route::get('/exams/{exam}/questions', 'App\Http\Controllers\ExamController@showExamQuestions');
     // Publish an exam
     Route::post('/exams/{exam}/publish', 'App\Http\Controllers\ExamController@publishExam');
     // Get exam configurations
-    Route::get('/exams/{exam}/configs', 'App\Http\Controllers\ExamController@getExamConfigurations');
+    Route::get('/exams/{exam}/configs', 'App\Http\Controllers\ExamController@showExamConfigurations');
     // Update exam
     Route::put('/exams/{exam}/step1', 'App\Http\Controllers\ExamController@updateStepOne');
     Route::put('/exams/{exam}/step2', 'App\Http\Controllers\ExamController@updateStepTwo');
@@ -98,17 +98,18 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::put('/exams/{exam}/step4', 'App\Http\Controllers\ExamController@updateStepFour');
     // ------------------------- Take exam apis ---------------------------------
     // Start an exam
-    Route::post('/exams/{exam}/start', 'App\Http\Controllers\ExamController@startExam');
+    Route::post('/exams/{exam}/start', 'App\Http\Controllers\TakeExamController@startExam');
     // Submit an exam
-    Route::post('/exams/{exam}/submit', 'App\Http\Controllers\ExamController@submitExam');
+    Route::post('/exams/{exam}/submit', 'App\Http\Controllers\TakeExamController@submitExam');
     // Store student answer
     Route::post('/answers', 'App\Http\Controllers\AnswerController@store');
     // Get student answers
-    Route::get('/exams/{exam}/my-answers', 'App\Http\Controllers\ExamController@getStudentAnswers');
+    Route::get('/exams/{exam}/my-answers', 'App\Http\Controllers\TakeExamController@showStudentAnswers');
+    // ----------------------- Mark Exam APIs ------------------------
     // Get all student solutions
-    Route::get('/exams/{exam}/all-answers', 'App\Http\Controllers\ExamController@getExamAnswers');
+    Route::get('/exams/{exam}/all-answers', 'App\Http\Controllers\MarkExamController@showExamAnswers');
     // get detailed student report
-    Route::get('/exams/{exam}/all-answers/answer', 'App\Http\Controllers\ExamController@getDetailedExamAnswer');
+    Route::get('/exams/{exam}/all-answers/answer', 'App\Http\Controllers\MarkExamController@showDetailedExamAnswer');
     // ----------------------------------------------------------------------------------------
     // Get exam details
     Route::get('/exams/{exam}', 'App\Http\Controllers\ExamController@show');
