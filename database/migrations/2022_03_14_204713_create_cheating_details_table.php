@@ -22,6 +22,7 @@ class CreateCheatingDetailsTable extends Migration
             $table->foreign('action_id')->references('id')->on('cheating_actions')->onDelete('cascade');
             $table->float('minusDegree');
             $table->string('cheatingType');
+            $table->string('image');
             $table->primary(['exam_id', 'student_id'], 'id');
             $table->timestamps();
         });
