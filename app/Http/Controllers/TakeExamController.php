@@ -100,6 +100,10 @@ class TakeExamController extends Controller
             return response()->json(['message' => 'No exam session for this student!'], 400);
         }
 
+        if($examSession->isCheater) {
+            return response()->json(['message' => 'Cheater! You cannot submit the exam!'], 400);
+        }
+
         if ($examSession->isSubmitted) {
             return response()->json(['message' => 'Exam already submitted!'], 400);
         }

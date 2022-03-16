@@ -42,7 +42,7 @@ class UserSeeder extends Seeder
                     'email' => 'adminRole2@gmail.com',
                     'email_verified_at' => now(),
                     'gender' => 'female',
-                    'image' => 'https://southernplasticsurgery.com.au/wp-content/uploads/2013/10/user-placeholder.png',
+                    'image' => '119963860_3178906825568575_2952121444913761005_o.jpg',
                     'phone' => '01002382678',
                     'type' => 'admin',
                     'password' => Hash::make('secret'), // password
@@ -68,7 +68,7 @@ class UserSeeder extends Seeder
                     'email' => 'haidyelnahass@hotmail.com',
                     'email_verified_at' => now(),
                     'gender' => 'female',
-                    'image' => 'https://southernplasticsurgery.com.au/wp-content/uploads/2013/10/user-placeholder.png',
+                    'image' => '119963860_3178906825568575_2952121444913761005_o.jpg',
                     'phone' => '01069682678',
                     'type' => 'instructor',
                     'password' => Hash::make('secret'), // password

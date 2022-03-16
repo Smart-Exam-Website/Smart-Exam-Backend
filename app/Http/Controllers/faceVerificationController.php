@@ -13,7 +13,7 @@ class faceVerificationController extends Controller
     public function faceVerification(Request $request)
     {
         if (auth()->user()->type != 'student') {
-            return response()->json(['message' => 'Unauthorized!'], 400);
+            return response()->json(['message' => 'Unauthorized!'], 403);
         }
         $rules = [
             'image1' => 'required',
@@ -23,7 +23,7 @@ class faceVerificationController extends Controller
         $exam = Exam::where(['id' => $request->examId])->get()->first();
 
         if (!$exam) {
-            return response()->json(['message' => 'This exam does not Exist!'], 400);
+            return response()->json(['message' => 'This exam does not exist!'], 400);
         }
 
         $config = $exam->config;
@@ -46,7 +46,7 @@ class faceVerificationController extends Controller
 
 
 
-        $response = Http::post('http://3.142.238.250:5000/verify', [
+        $response = Http::post('http://13.59.36.254:5000/verify', [
             'img' => [[
                 'img1' => $request->image1,
                 'img2' => $image2Encoded,
@@ -63,7 +63,7 @@ class faceVerificationController extends Controller
                 return response()->json(['message' => 'Success!', 'verified' => $verified]);
             }
         } else {
-            return response()->json(['message' => 'An error occurred!'], 400);
+            return response()->json(['message' => $response->object()], 400);
         }
     }
 }

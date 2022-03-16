@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Exam;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class faceDetectionController extends Controller
 {
@@ -14,6 +16,7 @@ class faceDetectionController extends Controller
 
     public function faceDetection(Request $request)
     {
+
         if (auth()->user()->type != 'student') {
             return response()->json(['message' => 'Unauthorized!'], 400);
         }
@@ -42,7 +45,7 @@ class faceDetectionController extends Controller
 
 
 
-        $response = Http::post('http://3.142.238.250/m1/detect', [
+        $response = Http::post('http://13.59.36.254/m1/detect', [
             'image_encode' => $request->image,
         ]);
 
@@ -53,6 +56,18 @@ class faceDetectionController extends Controller
                 return response()->json(['message' => 'Failed to send image!'], 400);
             } else {
                 $numberOfFaces = $response->object()->number_of_faces;
+                if ($numberOfFaces > 1) {
+                    $image = $response->object()->image_encode;
+                    // list($baseType, $image) = explode(';', $imageEncoded);
+                    // list(, $image) = explode(',', $image);
+                    $imageDecoded = base64_decode($image);
+                    $imageName = Str::random(30).'.jpg';
+                    $path = Storage::disk('s3')->put('uploads/'.$imageName, $imageDecoded);
+                    $path = Storage::disk('s3')->url($path);
+
+                    return response()->json(['message' => 'Success!', 'numberOfFaces' => $numberOfFaces, 'image' => $imageName]);
+
+                }
 
                 return response()->json(['message' => 'Success!', 'numberOfFaces' => $numberOfFaces]);
             }

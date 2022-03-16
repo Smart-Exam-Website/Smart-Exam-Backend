@@ -111,6 +111,10 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     // get detailed student report
     Route::get('/exams/{exam}/all-answers/answer', 'App\Http\Controllers\MarkExamController@showDetailedExamAnswer');
     // ----------------------------------------------------------------------------------------
+    // Cheater Reports
+    Route::get('/exams/{exam}/cheaters', 'App\Http\Controllers\CheatingDetailsController@index');
+    // Exam Report
+    Route::get('/exams/{exam}/report', 'App\Http\Controllers\MarkExamController@ExamReportForStudent');
     // Get exam details
     Route::get('/exams/{exam}', 'App\Http\Controllers\ExamController@show');
     // ----------------------------------------------------------------------------------------
@@ -119,8 +123,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/exams/mark/{exam}/{student}', 'App\Http\Controllers\MarkExamController@MarkOneStudentExam');
     // Mark Exam Manual
     Route::post('/exams/manual', 'App\Http\Controllers\MarkExamController@MarkExamManual');
-    // Exam Report
-    Route::get('/exams/{exam}/report', 'App\Http\Controllers\MarkExamController@ExamReportForStudent');
+
 });
 
 
@@ -163,4 +166,10 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/faceDetection', 'App\Http\Controllers\faceDetectionController@faceDetection');
     Route::post('/faceVerification', 'App\Http\Controllers\faceVerificationController@faceVerification');
+});
+
+// ---------------------- Anti Cheating ---------------------------
+Route::group(['middleware' => ['auth:sanctum']], function () {
+    Route::post('/cheater', 'App\Http\Controllers\CheatingDetailsController@store');
+    Route::post('/cheater/action', 'App\Http\Controllers\CheatingDetailsController@takeAction');
 });
