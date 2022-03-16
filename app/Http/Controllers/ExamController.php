@@ -54,8 +54,10 @@ class ExamController extends Controller
             $isMarked = request('isMarked');
             if ($isMarked) {
                 $filteredArray = array_filter($finalExams, function ($exam) use ($isMarked) {
-                    return $exam['isMarked'] == $isMarked;
+                    $val = $exam['isMarked']? 'true': 'false';
+                    return $val == $isMarked;
                 });
+
                 $finalExams = $filteredArray;
             }
         }
