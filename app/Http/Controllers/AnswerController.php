@@ -36,8 +36,7 @@ class AnswerController extends Controller
         $answer = Answer::where(['exam_id' => $request->exam_id, 'student_id' => auth()->user()->id, 'question_id' => $request->question_id])->get()->first();
         $question = DB::table('questions')->where(['id' => $request->question_id])->get()->first();
         if(!$request->option_id) {
-            $options = $question->QuestionOption;
-            $option = $options[0]->option;
+            $option = DB::table('question_option')->where('question_id', $question->id)->join('options', 'options.id', 'question_option.id')->select(['options.id', 'question_option.isCorrect', 'options.value'])->get()->first();
             $answerDetails['option_id'] = $option->id;
         }
         if ($answer) {
