@@ -123,7 +123,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/exams/mark/{exam}/{student}', 'App\Http\Controllers\MarkExamController@MarkOneStudentExam');
     // Mark Exam Manual
     Route::post('/exams/manual', 'App\Http\Controllers\MarkExamController@MarkExamManual');
-
 });
 
 
