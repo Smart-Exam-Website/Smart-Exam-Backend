@@ -24,7 +24,6 @@ class DatabaseSeeder extends Seeder
         $this->call(UserSeeder::class);
         $this->call(AdminSeeder::class);
         $this->call(DepartmentInstructorSeeder::class);
-        $this->call(OptionSeeder::class);
         $this->call(QuestionSeeder::class);
         $this->call(TagSeeder::class);
         $this->call(ExamSeeder::class);
