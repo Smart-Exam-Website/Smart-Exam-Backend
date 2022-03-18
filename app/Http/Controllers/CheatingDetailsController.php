@@ -137,8 +137,7 @@ class CheatingDetailsController extends Controller
     public function takeAction(Request $request)
     {
         $rules = [
-            'examId' => 'required',
-            'studentId' => 'required',
+            'id' => 'required',
             'type' => 'required',
             'action' => 'required',
             'minusMarks' => 'numeric',
@@ -148,19 +147,18 @@ class CheatingDetailsController extends Controller
         if ($validator->fails()) {
             return response()->json(['message' => 'The given data is invalid!'], 400);
         }
-        $examSession = DB::table('examSession')->where(['exam_id' => $request->examId, 'student_id' => $request->studentId])->orderBy('attempt', 'DESC')->get()->first();;
+        $cheatingDetails = DB::table('cheating_details')->where(['id' => $request->id])->get()->first();
+
+        if (!$cheatingDetails) {
+            return response()->json(['message' => 'No cheating details found with this id'], 404);
+        }
+        $examSession = DB::table('examSession')->where(['exam_id' => $cheatingDetails->exam_id, 'student_id' => $cheatingDetails->student_id])->orderBy('attempt', 'DESC')->get()->first();;
 
         if (!$examSession) {
             return response()->json(['message' => 'No exam session with this id!'], 404);
         }
 
-
-        $cheatingDetails = DB::table('cheating_details')->where(['exam_id' => $request->examId, 'student_id' => $request->studentId, 'type' => $request->type])->get()->first();
-
-        if (!$cheatingDetails) {
-            return response()->json(['message' => 'No cheating details found with this id'], 404);
-        }
-
+        
         if ($cheatingDetails->action_id) {
             return response()->json(['message' => 'Action already taken!'], 400);
         } else {
@@ -175,9 +173,9 @@ class CheatingDetailsController extends Controller
                 'type' => $request->type,
             ])->update([
                 'action_id' => $action->id,
-                'minusMarks' => $action->id == 1? $exam->totalMark: ($action->id == 2? $request->minusMarks: 0),
+                'minusMarks' => $action->id == 1 ? $exam->totalMark : ($action->id == 2 ? $request->minusMarks : 0),
             ]);
-            if($request->action != 'dismiss') {
+            if ($request->action != 'dismiss') {
                 if (!$examSession->isCheater) {
                     DB::table('examSession')->where([
                         'exam_id' => $examSession->exam_id,

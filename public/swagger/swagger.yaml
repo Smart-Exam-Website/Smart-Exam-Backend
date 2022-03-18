@@ -1752,11 +1752,7 @@ paths:
           application/json:
             schema:
               properties:
-                examId:
-                  type: int
-                  example: 1
-                  required: true 
-                studentId:
+                id:
                   type: int
                   example: 1
                   required: true 

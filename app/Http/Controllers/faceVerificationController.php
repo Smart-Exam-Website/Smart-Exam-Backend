@@ -59,6 +59,17 @@ class faceVerificationController extends Controller
                 return response()->json(['message' => 'Failed to send images!'], 400);
             } else {
                 $verified = $response->object()->pair_1->verified;
+                if (!$verified) {
+                    $image = $request->image1;
+                    // list($baseType, $image) = explode(';', $imageEncoded);
+                    // list(, $image) = explode(',', $image);
+                    $imageDecoded = base64_decode($image);
+                    $imageName = Str::random(30) . '.jpg';
+                    $path = Storage::disk('s3')->put('uploads/' . $imageName, $imageDecoded);
+                    $path = Storage::disk('s3')->url($path);
+
+                    return response()->json(['message' => 'Success!', 'verified' => $verified, 'image' => $imageName]);
+                }
 
                 return response()->json(['message' => 'Success!', 'verified' => $verified]);
             }
