@@ -15,7 +15,8 @@ class OptionFactory extends Factory
     {
         return [
             'value' => $this->faker->word(),
-            'type' => $this->faker->randomElement(['mcq'])
+            'type' => $this->faker->randomElement(['mcq']),
+            //'isCorrect' => $this->faker->boolean
         ];
     }
 }
