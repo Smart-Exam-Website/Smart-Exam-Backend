@@ -7,7 +7,6 @@ use App\Models\Option;
 use Illuminate\Http\Request;
 use App\Models\Question;
 use App\Models\Exam;
-use App\Models\QuestionOption;
 use App\Models\QuestionTag;
 use App\Models\Tag;
 
@@ -61,9 +60,7 @@ class QuestionController extends Controller
         foreach ($questions as $q) {
             $q->instructor->user;
             $q->tags;
-            $q->QuestionOption->each(function ($m) {
-                $m->option;
-            });
+            $q->options;
         }
 
         return $qs;
@@ -125,21 +122,18 @@ class QuestionController extends Controller
 
             if ($fields['type'] == 'mcq') {
                 foreach ($answers as $a) {
-                    $answerss = Option::create([
-                        'value' => $a,
-                        'type' => $fields['type']
-                    ]);
-
-                    if ($fields['correctAnswer'] == $answerss->value) {
-                        $mcqanswers = QuestionOption::create([
+                    if ($fields['correctAnswer'] == $a) {
+                        Option::create([
+                            'value' => $a,
+                            'type' => $fields['type'],
                             'question_id' => $question->id,
-                            'id' => $answerss->id,
                             'isCorrect' => true
                         ]);
                     } else {
-                        $mcqanswers = QuestionOption::create([
+                        Option::create([
+                            'value' => $a,
+                            'type' => $fields['type'],
                             'question_id' => $question->id,
-                            'id' => $answerss->id,
                             'isCorrect' => false
                         ]);
                     }
@@ -147,21 +141,15 @@ class QuestionController extends Controller
             } else if ($fields['type'] == 'essay') {
                 foreach ($answers as $a) {
                     $answerss = Option::create([
-                        'value' => $a,
-                        'type' => $fields['type']
-                    ]);
-
-                    $mcqanswers = QuestionOption::create([
                         'question_id' => $question->id,
-                        'id' => $answerss->id,
+                        'value' => $a,
+                        'type' => $fields['type'],
                         'isCorrect' => true
                     ]);
                 }
             }
 
-            $question->QuestionOption->each(function ($m) {
-                $m->option;
-            });
+            $question->options;
             $question->tags;
 
             return response($question, 201);
@@ -176,9 +164,7 @@ class QuestionController extends Controller
         $question = Question::where('id', $id)->get()->first();
         $question->instructor->user;
         $question->tags;
-        $question->QuestionOption->each(function ($m) {
-            $m->option;
-        });
+        $question->options;
         return response()->json(['question' => $question]);
     }
 

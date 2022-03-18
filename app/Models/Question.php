@@ -13,19 +13,14 @@ class Question extends Model
     use HasFactory;
     protected $guarded = [];
 
-    public function options(): BelongsToMany
+    public function options()
     {
-        return $this->belongsToMany(Option::class, $table = "question_option", "question_id", "id");
+        return $this->hasMany(Option::class);
     }
     public function tags(): BelongsToMany
     {
         return $this->belongsToMany(Tag::class, $table = "question_tag", "question_id")->withTimestamps();
     }
-    public function Mcq()
-    {
-        return $this->hasOne(Mcq::class, 'id');
-    }
-
     public function exams()
     {
         return $this->belongsToMany(Question::class, 'exam_question', 'question_id')->withTimestamps()->withPivot(['time', 'mark']);;
@@ -41,9 +36,5 @@ class Question extends Model
     public function instructor()
     {
         return $this->belongsTo(Instructor::class);
-    }
-    public function QuestionOption()
-    {
-        return $this->hasMany(QuestionOption::class);
     }
 }
