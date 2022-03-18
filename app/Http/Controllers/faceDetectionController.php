@@ -61,12 +61,11 @@ class faceDetectionController extends Controller
                     // list($baseType, $image) = explode(';', $imageEncoded);
                     // list(, $image) = explode(',', $image);
                     $imageDecoded = base64_decode($image);
-                    $imageName = Str::random(30).'.jpg';
-                    $path = Storage::disk('s3')->put('uploads/'.$imageName, $imageDecoded);
+                    $imageName = Str::random(30) . '.jpg';
+                    $path = Storage::disk('s3')->put('uploads/' . $imageName, $imageDecoded);
                     $path = Storage::disk('s3')->url($path);
 
                     return response()->json(['message' => 'Success!', 'numberOfFaces' => $numberOfFaces, 'image' => $imageName]);
-
                 }
 
                 return response()->json(['message' => 'Success!', 'numberOfFaces' => $numberOfFaces]);
