@@ -10,4 +10,9 @@ class ExamQuestion extends Model
     use HasFactory;
 
     protected $table = 'exam_question';
+
+    public function question()
+    {
+        return $this->belongsTo(Question::class);
+    }
 }
