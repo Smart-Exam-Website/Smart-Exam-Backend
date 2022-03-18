@@ -8,7 +8,6 @@ use App\Models\Option;
 use App\Models\Configuration;
 use App\Models\ExamQuestion;
 use App\Models\ExamStudent;
-use App\Models\QuestionOption;
 use App\Models\Student;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
@@ -87,9 +86,7 @@ class MarkExamController extends Controller
             $solution->question = DB::table('questions')->where(['id' => $solution->question_id])->get()->first();
             $solution->totalQuestionMark = DB::table('exam_question')->where(['exam_id' => $exam->id, 'question_id' => $solution->question_id])->get()->first()->mark;
             if ($solution->question->type == 'mcq') {
-                $answers = DB::table('question_option')->where(['question_id' => $solution->question->id])->join('options', 'options.id', 'question_option.id')->get();
-                // $questions = DB::table('exam_question')->where('exam_id', $exam->id)->join('questions', 'question_id', 'questions.id')->select(['questions.id', 'questions.questionText', 'exam_question.mark', 'questions.type'])->get();
-
+                $answers = Option::where(['question_id' => $solution->question->id])->get();
                 $solution->question->answers = $answers;
             }
         }
@@ -196,8 +193,7 @@ class MarkExamController extends Controller
         //for mcq Automatic Marking
 
         foreach ($mcqs as $a) {
-
-            $m = QuestionOption::where(['id' => $a['option_id'], 'question_id' => $a['question_id']])->first();
+            $m = Option::where(['id' => $a['option_id'], 'question_id' => $a['question_id']])->first();
             if ($m != NULL && $m->isCorrect == 1) {
 
                 $ex = ExamQuestion::where('exam_id', '=', $exam->id)->where('question_id', '=', $a->question_id)->first();
@@ -211,7 +207,7 @@ class MarkExamController extends Controller
         //for essay Automatic Marking
 
         foreach ($essays as $essay) {
-            $correctAnswer = $essay->question->questionoption[0]->option->value;
+            $correctAnswer = $essay->question->options[0]->value;
             $studentAnswer = $essay->studentAnswer;
             $response = Http::post('http://13.59.36.254/m1/automatic', [
                 'correctAnswer' => $correctAnswer,
@@ -289,14 +285,13 @@ class MarkExamController extends Controller
                     array_push($essays, $ans);
                 }
             }
-
             $totalMark = 0;
 
             //for mcq Automatic Marking
 
             foreach ($mcqs as $a) {
 
-                $m = QuestionOption::where(['id' => $a['option_id'], 'question_id' => $a['question_id']])->first();
+                $m = Option::where(['id' => $a['option_id'], 'question_id' => $a['question_id']])->first();
                 if ($m != NULL && $m->isCorrect == 1) {
 
                     $ex = ExamQuestion::where('exam_id', '=', $exam->id)->where('question_id', '=', $a->question_id)->first();
@@ -310,7 +305,7 @@ class MarkExamController extends Controller
             //for essay Automatic Marking
 
             foreach ($essays as $essay) {
-                $correctAnswer = $essay->question->questionoption[0]->option->value;
+                $correctAnswer = $essay->question->options[0]->value;
                 $studentAnswer = $essay->studentAnswer;
                 $response = Http::post('http://13.59.36.254/m1/automatic', [
                     'correctAnswer' => $correctAnswer,
@@ -379,7 +374,7 @@ class MarkExamController extends Controller
             foreach ($solutions as $s) {
                 $s->question = DB::table('questions')->where(['id' => $s->question_id])->get()->first();
                 $s->totalQuestionMark = DB::table('exam_question')->where(['exam_id' => $exam->id, 'question_id' => $s->question_id])->get()->first()->mark;
-                $answers = DB::table('question_option')->where(['question_id' => $s->question->id])->join('options', 'options.id', 'question_option.id')->get();
+                $answers = Option::where(['question_id' => $s->question->id])->get();
                 $s->question->answers = $answers;
             }
 
