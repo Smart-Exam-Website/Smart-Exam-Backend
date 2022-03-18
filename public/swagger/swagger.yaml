@@ -396,6 +396,56 @@ paths:
           description: Forbidden
       security:
         - bearer: []
+  "/exams/{exam}/cheaters":
+    get:
+      tags:
+        - Take Exam
+        - Mark Exam
+      parameters:
+        - in: path
+          name: exam
+          schema:
+            type: integer
+          required: true
+      summary: Get exam cheaters
+      description: Returns cheater details
+      operationId: getExamCheaters
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                properties:
+                  details:
+                    type: array
+                    items:
+                      properties:
+                        id:
+                          type: int
+                          example: 2
+                        exam_id:
+                          type: int
+                          example: 1
+                        student_id:
+                          type: int
+                          example: 2
+                        action_id:
+                          type: int
+                          example: 3
+                        minusMarks:
+                          type: float
+                          example: 3
+                        image:
+                          type: string
+                          example: akjdkfjgkj.jpg
+                type: object
+        "401":
+          description: Unauthenticated
+        "403":
+          description: Forbidden
+      security:
+        - bearer: []
   "/exams/{exam}/start":
     post:
       tags:
@@ -1650,6 +1700,92 @@ paths:
           description: Forbidden
       security:
         - bearer: []
+  "/cheater":
+    post:
+      tags:
+        - Take Exam
+      summary: store cheater
+      description: Returns success
+      operationId: postExamCheaters
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                examId:
+                  type: int
+                  example: 1
+                  required: true 
+                image:
+                  type: string
+                "type":
+                  type: string
+                  required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    example: "Stored cheating details successfully!"
+                type: object
+        "401":
+          description: Unauthenticated
+        "403":
+          description: Forbidden
+      security:
+        - bearer: []
+  "/cheater/takeAction":
+    post:
+      tags:
+        - Take Exam
+      summary: Take action against cheater
+      description: Returns success message
+      operationId: postAction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                examId:
+                  type: int
+                  example: 1
+                  required: true 
+                studentId:
+                  type: int
+                  example: 1
+                  required: true 
+                action:
+                  type: string
+                  required: true 
+                minusMarks:
+                  type: float
+                  example: 3.5
+                "type":
+                  type: string
+                  required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    example: "Stored cheating details successfully!"
+                type: object
+        "401":
+          description: Unauthenticated
+        "403":
+          description: Forbidden
+      security:
+        - bearer: []
   "/exams/{exam}/all-answers/answer":
     get:
       tags:
@@ -1739,6 +1875,7 @@ paths:
           description: Forbidden
       security:
         - bearer: []
+      
 
 components:
   schemas:
