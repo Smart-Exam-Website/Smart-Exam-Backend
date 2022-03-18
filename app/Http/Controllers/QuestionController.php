@@ -140,7 +140,7 @@ class QuestionController extends Controller
                 }
             } else if ($fields['type'] == 'essay') {
                 foreach ($answers as $a) {
-                    $answerss = Option::create([
+                    Option::create([
                         'question_id' => $question->id,
                         'value' => $a,
                         'type' => $fields['type'],
@@ -209,43 +209,32 @@ class QuestionController extends Controller
                 $answers = $fields['answers'];
                 if ($fields['type'] == 'mcq') {
                     foreach ($answers as $a) {
-                        $answerss = Option::create([
-                            'value' => $a,
-                            'type' => $fields['type']
-                        ]);
-
-                        if ($fields['correctAnswer'] == $answerss->value) {
-                            $mcqanswers = QuestionOption::create([
+                        if ($fields['correctAnswer'] == $a) {
+                            Option::create([
+                                'value' => $a,
+                                'type' => $fields['type'],
                                 'question_id' => $question->id,
-                                'id' => $answerss->id,
                                 'isCorrect' => true
                             ]);
                         } else {
-                            $mcqanswers = QuestionOption::create([
+                            Option::create([
+                                'value' => $a,
+                                'type' => $fields['type'],
                                 'question_id' => $question->id,
-                                'id' => $answerss->id,
                                 'isCorrect' => false
                             ]);
                         }
                     }
                 } else if ($fields['type'] == 'essay') {
                     foreach ($answers as $a) {
-                        $answerss = Option::create([
+                        Option::create([
                             'value' => $a,
-                            'type' => $fields['type']
-                        ]);
-
-                        $mcqanswers = QuestionOption::create([
+                            'type' => $fields['type'],
                             'question_id' => $question->id,
-                            'id' => $answerss->id,
                             'isCorrect' => true
                         ]);
                     }
                 }
-
-                $question->QuestionOption->each(function ($m) {
-                    $m->option;
-                });
 
                 return response($question, 201);
             } else {
@@ -287,7 +276,7 @@ class QuestionController extends Controller
                             ]);
                             if (isset(((object)$request)->correctAnswer)) {
 
-                                $answers[$i]->QuestionOption->update([
+                                $answers[$i]->update([
                                     'isCorrect' => (int)($option->id == $correctAnswerid)
                                 ]);
                             }
@@ -298,7 +287,7 @@ class QuestionController extends Controller
                             );
                             $option = Option::where(['id' => $answers[$i]->id])->first();
                             if (isset(((object)$request)->correctAnswer)) {
-                                $answers[$i]->QuestionOption->update([
+                                $answers[$i]->update([
                                     'isCorrect' => (int)($option->id == Option::where(['value' => $request['correctAnswer']])->first()->id)
                                 ]);
                             }
@@ -319,7 +308,7 @@ class QuestionController extends Controller
                                 'value' => ((object)$request)->answers[$i]
                             ]);
 
-                            $answers[$i]->QuestionOption->update([
+                            $answers[$i]->update([
                                 'isCorrect' => 1
                             ]);
                         } else {
@@ -328,20 +317,16 @@ class QuestionController extends Controller
                                 Option::where(['id' => $answers[$i]->id])->first()->value
                             );
                             $option = Option::where(['id' => $answers[$i]->id])->first();
-                            $answers[$i]->QuestionOption->update([
+                            $answers[$i]->update([
                                 'isCorrect' => 1
                             ]);
                         }
                     }
                 }
 
-
                 $questionn->update([
                     'questionText' => $request['questionText'] ? $request['questionText'] : $questionn->questionText
                 ]);
-                $questionn->QuestionOption->each(function ($m) {
-                    $m->option;
-                });
 
                 return response(['question' => $questionn], 200);
             } else {
