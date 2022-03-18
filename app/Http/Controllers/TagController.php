@@ -48,11 +48,11 @@ class TagController extends Controller
     public function show(Tag $tag)
     {
         $questions = $tag->questions;
-        foreach($questions as $question) {
+        foreach ($questions as $question) {
             $question->tags;
-            
+
             $options = $question->QuestionOption;
-            foreach($options as $opt) {
+            foreach ($options as $opt) {
                 $optionDetails = $opt->option;
                 $opt['value'] = $optionDetails->value;
                 $opt['type'] = $optionDetails->type;
