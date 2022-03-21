@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\Question;
 use App\Models\Option;
-use App\Models\QuestionOption;
 
 class QuestionSeeder extends Seeder
 {
