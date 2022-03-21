@@ -60,11 +60,11 @@ class PlagiarismController extends Controller
 
             $allanswers = Answer::where(['question_id' => $qid, 'exam_id' => $request->examId])->get();
 
-            $list = ['correctAnswer' => $allanswers[0]->question->questionoption[0]->option->value];
+            $list = ['correctAnswer' => $allanswers[0]->question->options[0]->value];
             foreach ($allanswers as $a) {
                 array_push($list, [$a->student_id => $a->studentAnswer]);
             }
-            return $list;
+            //return $list;
             $response = Http::post('http://13.59.36.254/m1/plagiarism', [
                 'list' => $list,
             ]);
