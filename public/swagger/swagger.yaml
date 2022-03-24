@@ -713,7 +713,7 @@ paths:
                 properties:
                   answers:
                     "$ref": "#/components/schemas/StudentAnswer"
-                  timeLeft:
+                  endTime:
                     type: String
                     example: "1:22:00"
                 type: object

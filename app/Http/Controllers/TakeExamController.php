@@ -150,7 +150,7 @@ class TakeExamController extends Controller
             return response()->json(['message' => 'No answers found!'], 400);
         }
 
-        return response()->json(['message' => 'Success!', 'answers' => $answers, 'timeLeft' => $startTime]);
+        return response()->json(['message' => 'Success!', 'answers' => $answers, 'endTime' => $startTime->format('Y-m-d H:i:s')]);
     }
 
 
