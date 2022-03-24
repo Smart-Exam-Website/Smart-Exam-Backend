@@ -10,7 +10,7 @@ info:
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   version: 1.0.0
 servers:
-  - url: http://localhost:8000/api/
+  - url: http://44.201.124.239/api/
     description: Smart Exam API Server
 paths:
   "/tags":
@@ -388,7 +388,29 @@ paths:
                   questions:
                     type: array
                     items:
-                      "$ref": "#/components/schemas/Question"
+                      properties:
+                        id:
+                          type: integer
+                          example: 1
+                        questionText:
+                          type: string
+                          example: "What are you?"
+                        "type":
+                          type: string
+                          example: "mcq"
+                        options:
+                          type: array
+                          items:
+                            properties:
+                              id:
+                                type: integer
+                                example: 1
+                              value:
+                                type: string
+                                example: "hello"
+                              "type":
+                                type: string
+                                example: "mcq"
                 type: object
         "401":
           description: Unauthenticated

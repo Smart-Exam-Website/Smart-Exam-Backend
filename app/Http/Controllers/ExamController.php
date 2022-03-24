@@ -215,8 +215,7 @@ class ExamController extends Controller
 
         foreach ($questions as $question) {
 
-            $answers = DB::table('question_option')->where('question_id', $question->id)->join('options', 'options.id', 'question_option.id')->select(['options.id', 'question_option.isCorrect', 'options.value'])->get();
-            $question->answers = $answers;
+            $question->options;
         }
         return response()->json(['questions' => $questions]);
     }
