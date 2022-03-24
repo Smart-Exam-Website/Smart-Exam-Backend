@@ -137,7 +137,7 @@ class CheatingDetailsController extends Controller
     public function takeAction(Request $request)
     {
         $rules = [
-            'id' => 'required',
+            'cheatingDetailId' => 'required',
             'type' => 'required',
             'action' => 'required',
             'minusMarks' => 'numeric',
@@ -168,8 +168,7 @@ class CheatingDetailsController extends Controller
                 return response()->json(['message' => 'Wrong action name specified!'], 400);
             }
             DB::table('cheating_details')->where([
-                'exam_id' => $request->examId,
-                'student_id' => $request->studentId,
+                'id' => $request->cheatingDetailId,
                 'type' => $request->type,
             ])->update([
                 'action_id' => $action->id,

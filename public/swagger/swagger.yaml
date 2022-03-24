@@ -1752,7 +1752,7 @@ paths:
           application/json:
             schema:
               properties:
-                id:
+                cheatingDetailId:
                   type: int
                   example: 1
                   required: true 
