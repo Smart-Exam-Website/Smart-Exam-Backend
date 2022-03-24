@@ -211,7 +211,7 @@ class ExamController extends Controller
     public function showExamQuestions(Exam $exam)
     {
 
-        $questions = DB::table('exam_question')->where('exam_id', $exam->id)->join('questions', 'question_id', 'questions.id')->select(['questions.id', 'questions.questionText', 'exam_question.mark', 'questions.type'])->get();
+        $questions = $exam->questions;
 
         foreach ($questions as $question) {
 
