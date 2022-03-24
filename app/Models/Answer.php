@@ -26,17 +26,9 @@ class Answer extends Model
     {
         return $this->belongsToMany(Option::class);
     }
-    public function option()
-    {
-        return $this->belongsTo(Option::class);
-    }
     public function questions()
     {
         return $this->belongsToMany(Question::class);
-    }
-    public function question()
-    {
-        return $this->belongsTo(Question::class);
     }
 
     // public function classes() {
