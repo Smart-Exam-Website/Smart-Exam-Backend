@@ -1765,7 +1765,7 @@ paths:
           description: Forbidden
       security:
         - bearer: []
-  "/cheater/takeAction":
+  "/cheater/action":
     post:
       tags:
         - Take Exam
