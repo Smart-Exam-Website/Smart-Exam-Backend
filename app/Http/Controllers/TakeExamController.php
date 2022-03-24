@@ -147,7 +147,6 @@ class TakeExamController extends Controller
         $duration = strtotime($duration);
         $difference = $duration - $difference;
         $timeLeft = date('H:i:s', $difference);
-        dd($timeLeft);
         $answers = Answer::where(['student_id' => $studentId, 'exam_id' => $exam->id])->get();
 
         if (!$answers) {
