@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Answer;
 use App\Models\Exam;
 use App\Models\examSession;
+use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -140,21 +141,16 @@ class TakeExamController extends Controller
         if(!$examSession) {
             return response()->json(['message' => 'No exam session for this student!'], 400);
         }
-        $startTime = $examSession->startTime;
-        $currentTime = now();
-        $startTime = strtotime($startTime);
-        $currentTime = strtotime($currentTime);
-        $difference = $currentTime - $startTime;
-        $duration = strtotime($duration);
-        $difference = $duration - $difference;
-        $timeLeft = date('H:i:s', $difference);
+        $startTime = new DateTime($examSession->startTime);
+        [$hours, $minutes, $seconds] = explode(":", $duration);
+        $startTime->modify('+'.$hours.' hours '.$minutes. ' minutes '.$seconds.' seconds');
         $answers = Answer::where(['student_id' => $studentId, 'exam_id' => $exam->id])->get();
 
         if (!$answers) {
             return response()->json(['message' => 'No answers found!'], 400);
         }
 
-        return response()->json(['message' => 'Success!', 'answers' => $answers, 'timeLeft' => $timeLeft]);
+        return response()->json(['message' => 'Success!', 'answers' => $answers, 'timeLeft' => $startTime]);
     }
 
 
