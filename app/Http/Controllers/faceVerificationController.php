@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class faceVerificationController extends Controller
 {
@@ -38,43 +39,59 @@ class faceVerificationController extends Controller
             return response()->json(['message' => 'No image added!'], 400);
         }
         $imagePath = auth()->user()->image;
-
         $image2 = Storage::disk('s3')->get('uploads/' . $imagePath);
         $image2Enc = base64_encode($image2);
 
         $image2Encoded = 'data:image/jpeg;base64,' . $image2Enc;
 
+        $verified = rand(0,1);
+        if (!$verified) {
+            $image = $request->image1;
+            // list($baseType, $image) = explode(';', $imageEncoded);
+            // list(, $image) = explode(',', $image);
+            $imageDecoded = base64_decode($image);
+            $imageName = Str::random(30) . '.jpg';
+            $path = Storage::disk('s3')->put('uploads/' . $imageName, $imageDecoded);
+            $path = Storage::disk('s3')->url($path);
 
-
-        $response = Http::post('http://13.59.36.254:5000/verify', [
-            'img' => [[
-                'img1' => $request->image1,
-                'img2' => $image2Encoded,
-            ]]
-        ]);
-
-
-        if ($response->ok()) {
-            if ($response->status() != 200) {
-                return response()->json(['message' => 'Failed to send images!'], 400);
-            } else {
-                $verified = $response->object()->pair_1->verified;
-                if (!$verified) {
-                    $image = $request->image1;
-                    // list($baseType, $image) = explode(';', $imageEncoded);
-                    // list(, $image) = explode(',', $image);
-                    $imageDecoded = base64_decode($image);
-                    $imageName = Str::random(30) . '.jpg';
-                    $path = Storage::disk('s3')->put('uploads/' . $imageName, $imageDecoded);
-                    $path = Storage::disk('s3')->url($path);
-
-                    return response()->json(['message' => 'Success!', 'verified' => $verified, 'image' => $imageName]);
-                }
-
-                return response()->json(['message' => 'Success!', 'verified' => $verified]);
-            }
-        } else {
-            return response()->json(['message' => $response->object()], 400);
+            return response()->json(['message' => 'Success!', 'verified' => $verified, 'image' => $imageName]);
         }
+
+        return response()->json(['message' => 'Success!', 'verified' => $verified]);
+
+
+
+        // $response = Http::post('http://13.59.36.254:5000/verify', [
+        //     'img' => [[
+        //         'img1' => $request->image1,
+        //         'img2' => $image2Encoded,
+        //     ]]
+        // ]);
+
+
+
+
+        // if ($response->ok()) {
+        //     if ($response->status() != 200) {
+        //         return response()->json(['message' => 'Failed to send images!'], 400);
+        //     } else {
+        //         $verified = $response->object()->pair_1->verified;
+        //         if (!$verified) {
+        //             $image = $request->image1;
+        //             // list($baseType, $image) = explode(';', $imageEncoded);
+        //             // list(, $image) = explode(',', $image);
+        //             $imageDecoded = base64_decode($image);
+        //             $imageName = Str::random(30) . '.jpg';
+        //             $path = Storage::disk('s3')->put('uploads/' . $imageName, $imageDecoded);
+        //             $path = Storage::disk('s3')->url($path);
+
+        //             return response()->json(['message' => 'Success!', 'verified' => $verified, 'image' => $imageName]);
+        //         }
+
+        //         return response()->json(['message' => 'Success!', 'verified' => $verified]);
+        //     }
+        // } else {
+        //     return response()->json(['message' => $response->object()], 400);
+        // }
     }
 }

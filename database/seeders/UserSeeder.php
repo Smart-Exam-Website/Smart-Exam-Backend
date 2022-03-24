@@ -29,7 +29,7 @@ class UserSeeder extends Seeder
                     'email' => 'adminRole1@gmail.com',
                     'email_verified_at' => now(),
                     'gender' => 'female',
-                    'image' => 'https://southernplasticsurgery.com.au/wp-content/uploads/2013/10/user-placeholder.png',
+                    'image' => 'Y4FtEuEiB67G1MrRcG1h6DmqCD9njs.jpg',
                     'phone' => '01002345678',
                     'type' => 'admin',
                     'password' => Hash::make('secret'), // password
@@ -55,7 +55,7 @@ class UserSeeder extends Seeder
                     'email' => 'adminRole3@gmail.com',
                     'email_verified_at' => now(),
                     'gender' => 'female',
-                    'image' => 'https://southernplasticsurgery.com.au/wp-content/uploads/2013/10/user-placeholder.png',
+                    'image' => 'Y4FtEuEiB67G1MrRcG1h6DmqCD9njs.jpg',
                     'phone' => '01045682678',
                     'type' => 'admin',
                     'password' => Hash::make('secret'), // password
@@ -81,7 +81,7 @@ class UserSeeder extends Seeder
                     'email' => 'nouran@gmail.com',
                     'email_verified_at' => now(),
                     'gender' => 'female',
-                    'image' => 'https://southernplasticsurgery.com.au/wp-content/uploads/2013/10/user-placeholder.png',
+                    'image' => 'Y4FtEuEiB67G1MrRcG1h6DmqCD9njs.jpg',
                     'phone' => '01045634578',
                     'type' => 'student',
                     'password' => Hash::make('secret'), // password
@@ -94,7 +94,7 @@ class UserSeeder extends Seeder
                     'email' => 'husam287@hotmail.com',
                     'email_verified_at' => now(),
                     'gender' => 'male',
-                    'image' => 'https://southernplasticsurgery.com.au/wp-content/uploads/2013/10/user-placeholder.png',
+                    'image' => 'Y4FtEuEiB67G1MrRcG1h6DmqCD9njs.jpg',
                     'phone' => '01045634578',
                     'type' => 'student',
                     'password' => Hash::make('secret'), // password
@@ -107,7 +107,7 @@ class UserSeeder extends Seeder
                     'email' => 'hazemali100@outlook.com',
                     'email_verified_at' => now(),
                     'gender' => 'male',
-                    'image' => 'https://southernplasticsurgery.com.au/wp-content/uploads/2013/10/user-placeholder.png',
+                    'image' => 'Y4FtEuEiB67G1MrRcG1h6DmqCD9njs.jpg',
                     'phone' => '01045634578',
                     'type' => 'student',
                     'password' => Hash::make('secret'), // password

@@ -485,6 +485,32 @@ paths:
                   message:
                     type: string
                     example: successfully started exam!
+                  questions:
+                    type: array
+                    items:
+                      properties:
+                        id:
+                          type: integer
+                          example: 1
+                        questionText:
+                          type: string
+                          example: "What are you?"
+                        "type":
+                          type: string
+                          example: "mcq"
+                        options:
+                          type: array
+                          items:
+                            properties:
+                              id:
+                                type: integer
+                                example: 1
+                              value:
+                                type: string
+                                example: "hello"
+                              "type":
+                                type: string
+                                example: "mcq"
                 type: object
         "400":
           description: Bad Request
@@ -1820,49 +1846,44 @@ paths:
                     type: array
                     items:
                       properties:
-                        exam_id:
-                          type: integer
-                          example: 1
-                        student_id:
-                          type: integer
-                          example: 1
-                        question_id:
-                          type: integer
-                          example: 1
-                        option_id:
-                          type: integer
-                          example: 1
-                        studentAnswer:
-                          type: String
-                          example: "Answer"
-                        questionMark:
-                          type: float
-                          example: 40.33
-                        question:
-                          type: object
-                          properties:
-                            id:
-                              type: integer
-                              example: 1
-                            questionText:
-                              type: String
-                              example: "How old are you?"
-                            type:
-                              type: String
-                              example: "MCQ"
-                            answers:
-                              type: array
-                              items:
-                                properties:
-                                  id:
-                                    type: integer
-                                    example: 2
-                                  isCorrect:
-                                    type: boolean
-                                    example: true
-                                  value:
-                                    type: String
-                                    example: "Answer 1"
+                          id:
+                            type: integer
+                            example: 1
+                          questionText:
+                            type: String
+                            example: "How old are you?"
+                          type:
+                            type: String
+                            example: "MCQ"
+                          options:
+                            type: array
+                            items:
+                              properties:
+                                id:
+                                  type: integer
+                                  example: 1
+                                value:
+                                  type: string
+                                  example: "hello"
+                                "type":
+                                  type: string
+                                  example: "mcq"
+                          answer:
+                            type: array
+                            items:
+                              properties:
+                                option_id:
+                                  type: integer
+                                  example: 5
+                                studentAnswer:
+                                  type: String
+                                  example: "this"
+                                questionMark:
+                                  type: float
+                                  example: 30.55
+                                isMarked: 
+                                  type: boolean
+                                  example: true
 
                 type: object
         "401":

@@ -35,6 +35,9 @@ class TakeExamController extends Controller
         if ($exam->endAt < $request->startTime) {
             return response()->json(['message' => 'Exam is closed now!'], 400);
         }
+        if(!$exam->isPublished) {
+            return response()->json(['message' => 'Exam not published yet!'], 400);
+        }
 
         $examSession = examSession::where(['exam_id' => $exam->id, 'student_id' => auth()->user()->id])->latest()->get()->first();
         if ($examSession) {
@@ -73,15 +76,10 @@ class TakeExamController extends Controller
 
 
         //return all questions.
-        $questions = DB::table('exam_question')->where('exam_id', $exam->id)->join('questions', 'question_id', 'questions.id')->select(['questions.id', 'questions.questionText', 'exam_question.mark', 'questions.type'])->get();
+        $questions = $exam->questions;
 
         foreach ($questions as $question) {
-            $type = $question->type;
-
-            if ($type == 'mcq') {
-                $answers = DB::table('question_option')->where('question_id', $question->id)->join('options', 'options.id', 'question_option.id')->select(['options.id', 'question_option.isCorrect', 'options.value'])->get();
-            }
-            $question->answers = $answers;
+            $question->options;
         }
         return response()->json(['questions' => $questions]);
     }
@@ -113,9 +111,9 @@ class TakeExamController extends Controller
         // check how many questions the student answered!
         $answers = DB::table('answers')->where(['exam_id' => $exam->id, 'student_id' => $student->id])->get();
         // cannot submit until they are all answered!
-        if ($answers->count() < $questions->count()) {
-            return response()->json(['message' => 'You cannot submit yet!, you haven\'t answered all questions'], 400);
-        }
+        // if ($answers->count() < $questions->count()) {
+        //     return response()->json(['message' => 'You cannot submit yet!, you haven\'t answered all questions'], 400);
+        // }
 
         $status = DB::table('examSession')->where(['exam_id' => $exam->id, 'student_id' => $student->id, 'attempt' => $examSession->attempt])->update(['isSubmitted' => true, 'submittedAt' => now()]);
 
