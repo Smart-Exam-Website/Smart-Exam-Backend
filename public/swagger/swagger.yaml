@@ -166,7 +166,7 @@ paths:
           description: Forbidden
       security:
         - bearer: []
-  "/instructors/myExams":
+  "/instructors/my-exams":
     get:
       tags:
         - Instructor
@@ -1459,7 +1459,7 @@ paths:
           description: Unauthenticated
         "403":
           description: Forbidden
-  "/faceDetection":
+  "/face-detection":
     post:
       tags:
         - ML Models
@@ -1492,7 +1492,7 @@ paths:
           description: Unauthenticated
         "403":
           description: Forbidden
-  "/faceVerification":
+  "/face-verification":
     post:
       tags:
         - ML Models

@@ -69,7 +69,7 @@ Route::post('/instructors/register', 'App\Http\Controllers\InstructorController@
 Route::group(['middleware' => ['auth:sanctum']], function () {
     // Get instructor's profile
     Route::get('/instructors/me', 'App\Http\Controllers\InstructorController@showProfile');
-    Route::get('/instructors/myExams', 'App\Http\Controllers\InstructorController@showMyExams');
+    Route::get('/instructors/my-exams', 'App\Http\Controllers\InstructorController@showMyExams');
     // Edit instructor's profile
     Route::put('/instructors/me', 'App\Http\Controllers\InstructorController@editProfile');
     // Instructor routes.
@@ -163,8 +163,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 //---------------------------ML ROUTES----------------------------
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
-    Route::post('/faceDetection', 'App\Http\Controllers\faceDetectionController@faceDetection');
-    Route::post('/faceVerification', 'App\Http\Controllers\faceVerificationController@faceVerification');
+    Route::post('/face-detection', 'App\Http\Controllers\faceDetectionController@faceDetection');
+    Route::post('/face-verification', 'App\Http\Controllers\faceVerificationController@faceVerification');
     Route::post('/plagiarism', 'App\Http\Controllers\PlagiarismController@plagiarism');
 });
 
