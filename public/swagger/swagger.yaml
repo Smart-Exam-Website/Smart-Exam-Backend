@@ -711,8 +711,11 @@ paths:
             application/json:
               schema:
                 properties:
-                  studentAnswer:
+                  answers:
                     "$ref": "#/components/schemas/StudentAnswer"
+                  timeLeft:
+                    type: String
+                    example: "1:22:00"
                 type: object
         "401":
           description: Unauthenticated

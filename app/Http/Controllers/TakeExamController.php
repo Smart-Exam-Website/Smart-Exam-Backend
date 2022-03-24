@@ -130,20 +130,31 @@ class TakeExamController extends Controller
 
     public function showStudentAnswers(Exam $exam)
     {
-
+        $duration = $exam->duration;
         $student = auth()->user();
         if ($student->type != 'student') {
             return response()->json(['message' => 'Not a student!'], 400);
         }
         $studentId = $student->id;
-
+        $examSession = examSession::where(['student_id' => $studentId, 'exam_id' => $exam->id])->orderBy('attempt', 'DESC')->get()->first();
+        if(!$examSession) {
+            return response()->json(['message' => 'No exam session for this student!'], 400);
+        }
+        $startTime = $examSession->startTime;
+        $currentTime = time();
+        $startTime = strtotime($startTime);
+        $difference = $currentTime - $startTime;
+        $duration = strtotime($duration);
+        $difference = $duration - $difference;
+        $timeLeft = date('H:i:s', $difference);
+        dd($timeLeft);
         $answers = Answer::where(['student_id' => $studentId, 'exam_id' => $exam->id])->get();
 
         if (!$answers) {
             return response()->json(['message' => 'No answers found!'], 400);
         }
 
-        return response()->json(['message' => 'Success!', 'answers' => $answers]);
+        return response()->json(['message' => 'Success!', 'answers' => $answers, 'timeLeft' => $timeLeft]);
     }
 
 
