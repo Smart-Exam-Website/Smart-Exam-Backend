@@ -141,8 +141,9 @@ class TakeExamController extends Controller
             return response()->json(['message' => 'No exam session for this student!'], 400);
         }
         $startTime = $examSession->startTime;
-        $currentTime = time();
+        $currentTime = now();
         $startTime = strtotime($startTime);
+        $currentTime = strtotime($currentTime);
         $difference = $currentTime - $startTime;
         $duration = strtotime($duration);
         $difference = $duration - $difference;
