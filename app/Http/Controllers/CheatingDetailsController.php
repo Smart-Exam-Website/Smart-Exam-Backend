@@ -157,7 +157,7 @@ class CheatingDetailsController extends Controller
         if ($validator->fails()) {
             return response()->json(['message' => 'The given data is invalid!'], 400);
         }
-        $cheatingDetails = DB::table('cheating_details')->where(['id' => $request->id])->get()->first();
+        $cheatingDetails = DB::table('cheating_details')->where(['id' => $request->cheatingDetailId])->get()->first();
 
         if (!$cheatingDetails) {
             return response()->json(['message' => 'No cheating details found with this id'], 404);
