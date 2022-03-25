@@ -248,7 +248,7 @@ class MarkExamController extends Controller
 
         //Cheating Actions
         $ch_details = CheatingDetails::where(['student_id' => $student->id, 'exam_id' => $exam->id])->where('action_id', '!=', 3)->get();
-        if (examSession::where(['student_id' => $student->id, 'exam_id' => $exam->id])->first()->isCheater && count($ch_details) != 0) {
+        if (count($ch_details) != 0 &&  examSession::where(['student_id' => $student->id, 'exam_id' => $exam->id])->first()->isCheater) {
             $cheatingDetails = CheatingDetails::where(['student_id' => $student->id, 'exam_id' => $exam->id])->whereNotNull('action_id')->get();
             foreach ($cheatingDetails as $c) {
                 $action = CheatingAction::where(['id' => $c->action_id])->first();
@@ -362,7 +362,7 @@ class MarkExamController extends Controller
 
             //Cheating Actions
             $ch_details = CheatingDetails::where(['student_id' => $s->id, 'exam_id' => $exam->id])->where('action_id', '!=', 3)->get();
-            if (examSession::where(['student_id' => $s->id, 'exam_id' => $exam->id])->first()->isCheater && count($ch_details) != 0) {
+            if (count($ch_details) != 0 && examSession::where(['student_id' => $s->id, 'exam_id' => $exam->id])->first()->isCheater) {
                 $cheatingDetails = CheatingDetails::where(['student_id' => $s->id, 'exam_id' => $exam->id])->whereNotNull('action_id')->get();
                 foreach ($cheatingDetails as $c) {
                     $action = CheatingAction::where(['id' => $c->action_id])->first();
