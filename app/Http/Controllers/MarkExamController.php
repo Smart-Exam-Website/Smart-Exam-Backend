@@ -6,6 +6,9 @@ use App\Models\Exam;
 use App\Models\Answer;
 use App\Models\Option;
 use App\Models\Configuration;
+use App\Models\CheatingDetails;
+use App\Models\CheatingAction;
+use App\Models\examSession;
 use App\Models\ExamQuestion;
 use App\Models\ExamStudent;
 use App\Models\Student;
@@ -75,10 +78,10 @@ class MarkExamController extends Controller
         }
 
         $questions = $exam->questions;
-        
-        foreach($questions as $question) {
+
+        foreach ($questions as $question) {
             $question->options;
-            $answer = DB::table('answers')->where(['student_id' => $studentId, 'question_id' => $question->id , 'exam_id' => $exam->id])->get()->first();
+            $answer = DB::table('answers')->where(['student_id' => $studentId, 'question_id' => $question->id, 'exam_id' => $exam->id])->get()->first();
 
             $question['answer'] = $answer;
         }
@@ -243,6 +246,22 @@ class MarkExamController extends Controller
             }
         }
 
+        //Cheating Actions
+        $ch_details = CheatingDetails::where(['student_id' => $student->id, 'exam_id' => $exam->id])->where('action_id', '!=', 3)->get();
+        if (examSession::where(['student_id' => $student->id, 'exam_id' => $exam->id])->first()->isCheater && count($ch_details) != 0) {
+            $cheatingDetails = CheatingDetails::where(['student_id' => $student->id, 'exam_id' => $exam->id])->whereNotNull('action_id')->get();
+            foreach ($cheatingDetails as $c) {
+                $action = CheatingAction::where(['id' => $c->action_id])->first();
+                if ($action->name == "zero") {
+                    $totalMark = 0;
+                    break;
+                } else if ($action->name == "minus") {
+                    $totalMark = $totalMark - $c->minusMarks;
+                    if ($totalMark < 0) $totalMark = 0;
+                }
+            }
+        }
+
         //Final Saving for the total Mark of the student
 
         if ($answers->count() != 0) {
@@ -338,6 +357,22 @@ class MarkExamController extends Controller
                     }
                 } else {
                     return response()->json(['message' => 'An error occurred!'], 400);
+                }
+            }
+
+            //Cheating Actions
+            $ch_details = CheatingDetails::where(['student_id' => $s->id, 'exam_id' => $exam->id])->where('action_id', '!=', 3)->get();
+            if (examSession::where(['student_id' => $s->id, 'exam_id' => $exam->id])->first()->isCheater && count($ch_details) != 0) {
+                $cheatingDetails = CheatingDetails::where(['student_id' => $s->id, 'exam_id' => $exam->id])->whereNotNull('action_id')->get();
+                foreach ($cheatingDetails as $c) {
+                    $action = CheatingAction::where(['id' => $c->action_id])->first();
+                    if ($action->name == "zero") {
+                        $totalMark = 0;
+                        break;
+                    } else if ($action->name == "minus") {
+                        $totalMark = $totalMark - $c->minusMarks;
+                        if ($totalMark < 0) $totalMark = 0;
+                    }
                 }
             }
 
