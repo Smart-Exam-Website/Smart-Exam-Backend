@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\CheatingDetails;
 use App\Models\Exam;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -23,9 +24,18 @@ class CheatingDetailsController extends Controller
         }
 
 
-        $cheatingDetails = DB::table('cheating_details')->where([
+        $cheatingDetails = CheatingDetails::where([
             'exam_id' => $exam->id
         ])->whereNull('action_id')->get();
+
+        foreach($cheatingDetails as $cheatingDetail) {
+            $student = User::where(['id' => $cheatingDetail->student_id])->get()->first();
+
+            $studentName = $student->firstName . ' ' . $student->lastName;
+            $profileImage = $student->image;
+            $cheatingDetail['studentName'] = $studentName;
+            $cheatingDetail['profileImage'] = $profileImage;
+        }
 
         if (!$cheatingDetails) {
             return response()->json(['message' => 'Failed to fetch cheating details!'], 400);

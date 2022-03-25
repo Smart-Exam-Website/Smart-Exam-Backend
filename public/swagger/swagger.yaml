@@ -461,6 +461,12 @@ paths:
                         image:
                           type: string
                           example: akjdkfjgkj.jpg
+                        profileImage:
+                          type: string
+                          example: akjdkfjgkj.jpg
+                        studentName:
+                          type: string
+                          example: Haidy Elnahass
                 type: object
         "401":
           description: Unauthenticated
