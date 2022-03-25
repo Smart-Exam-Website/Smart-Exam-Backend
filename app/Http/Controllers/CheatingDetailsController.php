@@ -172,7 +172,7 @@ class CheatingDetailsController extends Controller
         if ($cheatingDetails->action_id) {
             return response()->json(['message' => 'Action already taken!'], 400);
         } else {
-            $exam = DB::table('exams')->where(['id' => $request->examId])->get()->first();
+            $exam = DB::table('exams')->where(['id' => $cheatingDetails->exam_id])->get()->first();
             $action = DB::table('cheating_actions')->where(['name' => $request->action])->get()->first();
             if (!$action) {
                 return response()->json(['message' => 'Wrong action name specified!'], 400);
