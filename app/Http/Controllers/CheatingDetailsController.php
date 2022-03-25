@@ -83,6 +83,12 @@ class CheatingDetailsController extends Controller
             return response()->json(['message' => 'No exam with this id!'], 404);
         }
 
+        $cheatingDetailAction = DB::table('cheating_details')->where(['exam_id' => $exam->id, 'student_id' => auth()->user()->id])->whereNotNull('action_id')->get();
+
+        if(!$cheatingDetailAction) {
+            return response()->json(['message' => 'Action already taken against student. Cannot send more requests.']);
+        }
+
 
         $cheatingDetails = DB::table('cheating_details')->insert([
             'exam_id' => $exam->id,
