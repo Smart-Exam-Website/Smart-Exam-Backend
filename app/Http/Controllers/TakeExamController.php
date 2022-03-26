@@ -153,6 +153,26 @@ class TakeExamController extends Controller
         return response()->json(['message' => 'Success!', 'answers' => $answers, 'endTime' => $startTime->format('Y-m-d H:i:s')]);
     }
 
+    public function checkCheaterStatus(Exam $exam) {
+        $user = auth()->user();
+        if($user->type != 'student') {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $examSession = examSession::where([
+            'exam_id' => $exam->id,
+            'student_id' => $user->id
+        ])->orderBy('attempt', 'DESC')->get()->first();
+
+        if(!$examSession) {
+            return response()->json(['message' => 'No exam session found!'], 400);
+        }
+
+        $cheaterStatus = $examSession->isCheater;
+
+        return response()->json(['message' => 'Cheater status fetched successfully!', 'cheaterStatus' => $cheaterStatus]);
+    }
+
 
 
 

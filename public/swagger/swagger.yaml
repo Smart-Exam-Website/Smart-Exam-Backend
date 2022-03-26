@@ -474,6 +474,39 @@ paths:
           description: Forbidden
       security:
         - bearer: []
+  "/exams/{exam}/cheater-status":
+    get:
+      tags:
+        - Take Exam
+      parameters:
+        - in: path
+          name: exam
+          schema:
+            type: integer
+          required: true
+      summary: Get student cheater status
+      description: Returns cheater details
+      operationId: getStudentCheaterStatus
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                properties:
+                  message: 
+                    type: string
+                    example: "cheater status fetched successfully"
+                  cheaterStatus:
+                    type: boolean
+                    example: true
+                type: object
+        "401":
+          description: Unauthenticated
+        "403":
+          description: Forbidden
+      security:
+        - bearer: []
   "/exams/{exam}/start":
     post:
       tags:

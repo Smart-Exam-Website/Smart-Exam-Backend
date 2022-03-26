@@ -83,26 +83,6 @@ class MarkExamController extends Controller
             $question['answer'] = $answer;
         }
 
-
-        // $solutions = DB::table('answers')->where(['exam_id' => $exam->id, 'student_id' => $studentId])->get();
-
-        // if (!$solutions) {
-        //     return response()->json(['message' => 'Failed to fetch student solutions!'], 400);
-        // }
-
-
-
-        // foreach ($solutions as $solution) {
-        //     $solution->question = DB::table('questions')->where(['id' => $solution->question_id])->get()->first();
-        //     $solution->totalQuestionMark = DB::table('exam_question')->where(['exam_id' => $exam->id, 'question_id' => $solution->question_id])->get()->first()->mark;
-        //     if ($solution->question->type == 'mcq') {
-        //         $answers = DB::table('question_option')->where(['question_id' => $solution->question->id])->join('options', 'options.id', 'question_option.id')->get();
-        //         // $questions = DB::table('exam_question')->where('exam_id', $exam->id)->join('questions', 'question_id', 'questions.id')->select(['questions.id', 'questions.questionText', 'exam_question.mark', 'questions.type'])->get();
-
-        //         $solution->question->answers = $answers;
-        //     }
-        // }
-
         $examConfig = DB::table('configs')->where(['exam_id' => $exam->id])->get()->first();
 
 
@@ -111,6 +91,10 @@ class MarkExamController extends Controller
 
         return response()->json(['message' => 'Fetched solution successfully', 'studentName' => $studentName, 'image' => $studentImage, 'solution' => $questions, 'numberOfFaces' => $numberOfFaces, 'isVerified' => $isVerified]);
     }
+
+
+
+
     public function MarkExamManual(Request $request)
     {
         $user = auth()->user();
@@ -170,6 +154,9 @@ class MarkExamController extends Controller
         return response()->json(['message' => 'The Mark is Saved Successfully', 'answer' => $a, 'totalStudentMark' => $totalMark], 200);
     }
 
+
+
+    
     public function MarkOneStudentExam(Exam $exam, Student $student)
     {
         //Automatic
