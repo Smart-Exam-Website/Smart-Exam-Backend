@@ -1589,6 +1589,38 @@ paths:
           description: Unauthenticated
         "403":
           description: Forbidden
+  /plagiarism:
+    post:
+      tags:
+        - ML Models
+      summary: plagiarism
+      description: Returns plagiarism percentage
+      operationId: plagiarismAPI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/plagiarismRequest"
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    example: Successfully Checked!
+                  res:
+                    type: object
+                type: object
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthenticated
+        "403":
+          description: Forbidden
   /exams/manual:
     post:
       tags:
@@ -1806,7 +1838,7 @@ paths:
                 examId:
                   type: int
                   example: 1
-                  required: true 
+                  required: true
                 image:
                   type: string
                 "type":
@@ -1845,10 +1877,10 @@ paths:
                 cheatingDetailId:
                   type: int
                   example: 1
-                  required: true 
+                  required: true
                 action:
                   type: string
-                  required: true 
+                  required: true
                 minusMarks:
                   type: float
                   example: 3.5
@@ -1910,44 +1942,44 @@ paths:
                     type: array
                     items:
                       properties:
-                          id:
-                            type: integer
-                            example: 1
-                          questionText:
-                            type: String
-                            example: "How old are you?"
-                          type:
-                            type: String
-                            example: "MCQ"
-                          options:
-                            type: array
-                            items:
-                              properties:
-                                id:
-                                  type: integer
-                                  example: 1
-                                value:
-                                  type: string
-                                  example: "hello"
-                                "type":
-                                  type: string
-                                  example: "mcq"
-                          answer:
-                            type: array
-                            items:
-                              properties:
-                                option_id:
-                                  type: integer
-                                  example: 5
-                                studentAnswer:
-                                  type: String
-                                  example: "this"
-                                questionMark:
-                                  type: float
-                                  example: 30.55
-                                isMarked: 
-                                  type: boolean
-                                  example: true
+                        id:
+                          type: integer
+                          example: 1
+                        questionText:
+                          type: String
+                          example: "How old are you?"
+                        type:
+                          type: String
+                          example: "MCQ"
+                        options:
+                          type: array
+                          items:
+                            properties:
+                              id:
+                                type: integer
+                                example: 1
+                              value:
+                                type: string
+                                example: "hello"
+                              "type":
+                                type: string
+                                example: "mcq"
+                        answer:
+                          type: array
+                          items:
+                            properties:
+                              option_id:
+                                type: integer
+                                example: 5
+                              studentAnswer:
+                                type: String
+                                example: "this"
+                              questionMark:
+                                type: float
+                                example: 30.55
+                              isMarked:
+                                type: boolean
+                                example: true
 
                 type: object
         "401":
@@ -1956,7 +1988,6 @@ paths:
           description: Forbidden
       security:
         - bearer: []
-      
 
 components:
   schemas:
@@ -2038,6 +2069,18 @@ components:
           description: base64 encoded image
           type: string
           example: "data:image/jpeg;base64,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"
+        examId:
+          title: exam id
+          description: id of exam
+          type: integer
+          example: 1
+      type: object
+    plagiarismRequest:
+      title: plagiarismRequest
+      description: plagiarism
+      required:
+        - examId
+      properties:
         examId:
           title: exam id
           description: id of exam

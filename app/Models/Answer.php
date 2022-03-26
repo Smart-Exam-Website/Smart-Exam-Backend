@@ -30,6 +30,10 @@ class Answer extends Model
     {
         return $this->belongsToMany(Question::class);
     }
+    public function question()
+    {
+        return $this->belongsTo(Question::class);
+    }
 
     // public function classes() {
     //     return $this->belongsToMany(Student::class);
