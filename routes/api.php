@@ -105,7 +105,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/answers', 'App\Http\Controllers\AnswerController@store');
     // Get student answers
     Route::get('/exams/{exam}/my-answers', 'App\Http\Controllers\TakeExamController@showStudentAnswers');
-    // check if student is a cheater
+    // check if student is a cheater to ban him from continuing the exam
     Route::get('/exams/{exam}/cheater-status' , 'App\Http\Controllers\TakeExamController@checkCheaterStatus');
     // ----------------------- Mark Exam APIs ------------------------
     // Get all student solutions

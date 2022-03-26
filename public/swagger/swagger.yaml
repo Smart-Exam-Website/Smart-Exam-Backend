@@ -489,7 +489,7 @@ paths:
       operationId: getStudentCheaterStatus
       responses:
         "200":
-          description: Successful operation
+          description: Successful operation (returns true if instructor chose zero option- false otherwise)
           content:
             application/json:
               schema:

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Answer;
+use App\Models\CheatingDetails;
 use App\Models\Exam;
 use App\Models\examSession;
 use DateTime;
@@ -167,8 +168,20 @@ class TakeExamController extends Controller
         if(!$examSession) {
             return response()->json(['message' => 'No exam session found!'], 400);
         }
+        $cheaterStatus = false;
 
-        $cheaterStatus = $examSession->isCheater;
+        $cheatingDetails = CheatingDetails::where([
+            'exam_id' => $exam->id,
+            'student_id' => $user->id,
+            'action_id' => 1,
+        ])->get();
+
+        if(!$cheatingDetails) {
+            $cheaterStatus = false;
+        } else if($cheatingDetails && $examSession->isCheater) {
+            $cheaterStatus = true;
+        }
+
 
         return response()->json(['message' => 'Cheater status fetched successfully!', 'cheaterStatus' => $cheaterStatus]);
     }
