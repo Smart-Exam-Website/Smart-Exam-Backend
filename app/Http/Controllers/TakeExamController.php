@@ -41,7 +41,14 @@ class TakeExamController extends Controller
             return response()->json(['message' => 'Exam not published yet!'], 400);
         }
 
-        $examSession = examSession::where(['exam_id' => $exam->id, 'student_id' => auth()->user()->id])->latest()->get()->first();
+        $examSession = examSession::where(['exam_id' => $exam->id, 'student_id' => auth()->user()->id])->orderBy('attempt', 'DESC')->get()->first();
+
+
+        // ----------- QUESTIONS ----------
+
+        // Can we submit multiple attempts for the same exam?
+        // Should the multiple attempts be marked?
+
         if ($examSession) {
             if (!$examSession->isSubmitted) {
                 return response()->json(['message' => 'You must submit the previous attempt first before starting a new attempt!'], 400);
@@ -57,7 +64,7 @@ class TakeExamController extends Controller
                         'numberOfFaces' => $request->numberOfFaces
                     ]);
                 } else {
-                    return response()->json(['message' => 'Exceeded number of attempts!']);
+                    return response()->json(['message' => 'Exceeded number of attempts!'] ,400);
                 }
             }
         } else {

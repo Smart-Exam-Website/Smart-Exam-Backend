@@ -58,7 +58,7 @@ class ExamController extends Controller
                     return $val == $isMarked;
                 });
 
-                $finalExams = $filteredArray;
+                $finalExams = array_values($filteredArray);
             }
         }
         return $finalExams;
