@@ -31,4 +31,8 @@ class Question extends Model
     {
         return $this->belongsTo(Instructor::class);
     }
+    public function questions()
+    {
+        return $this->belongsToMany(Question::class, 'group_questions', 'group_id');
+    }
 }

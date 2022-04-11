@@ -106,7 +106,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     // Get student answers
     Route::get('/exams/{exam}/my-answers', 'App\Http\Controllers\TakeExamController@showStudentAnswers');
     // check if student is a cheater to ban him from continuing the exam
-    Route::get('/exams/{exam}/cheater-status' , 'App\Http\Controllers\TakeExamController@checkCheaterStatus');
+    Route::get('/exams/{exam}/cheater-status', 'App\Http\Controllers\TakeExamController@checkCheaterStatus');
     // ----------------------- Mark Exam APIs ------------------------
     // Get all student solutions
     Route::get('/exams/{exam}/all-answers', 'App\Http\Controllers\MarkExamController@showExamAnswers');
@@ -150,6 +150,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/questions', 'App\Http\Controllers\QuestionController@index');
     Route::post('/questions/create', 'App\Http\Controllers\QuestionController@store');
+    Route::post('/questions/questionGroup/create', 'App\Http\Controllers\GroupQuestionController@store');
     Route::get('/questions/{question}', 'App\Http\Controllers\QuestionController@show');
     Route::post('/questions', [QuestionController::class, 'store']);
     Route::put('/questions/{id}', [QuestionController::class, 'update']);
@@ -174,5 +175,4 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/cheater', 'App\Http\Controllers\CheatingDetailsController@store');
     Route::post('/cheater/action', 'App\Http\Controllers\CheatingDetailsController@takeAction');
-    
 });
