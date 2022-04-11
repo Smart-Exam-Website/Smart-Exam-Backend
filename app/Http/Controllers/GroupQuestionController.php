@@ -77,9 +77,11 @@ class GroupQuestionController extends Controller
             }
             $question = Question::where(['id' => $question->id])->first();
             $question->tags;
-            $question->questions->each(function ($e) {
-                $e->tags;
-            });;
+            if ($question->type == "group") {
+                $question->questions->each(function ($e) {
+                    $e->tags;
+                });
+            }
             return response($question, 201);
         } else {
             return response()->json(['message' => 'There is no logged in Instructor'], 400);
@@ -166,9 +168,11 @@ class GroupQuestionController extends Controller
                 }
                 $question = Question::where(['id' => $question->id])->first();
                 $question->tags;
-                $question->questions->each(function ($e) {
-                    $e->tags;
-                });;
+                if ($question->type == "group") {
+                    $question->questions->each(function ($e) {
+                        $e->tags;
+                    });
+                }
                 return response($question, 201);
             } else {
                 return response()->json(['message' => 'There is no logged in Instructor'], 400);
@@ -213,9 +217,11 @@ class GroupQuestionController extends Controller
                 ]);
 
                 $questionn->tags;
-                $questionn->questions->each(function ($e) {
-                    $e->tags;
-                });;
+                if ($questionn->type == "group") {
+                    $questionn->questions->each(function ($e) {
+                        $e->tags;
+                    });
+                }
 
                 return response(['question' => $questionn], 200);
             } else {

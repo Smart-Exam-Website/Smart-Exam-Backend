@@ -63,6 +63,9 @@ class QuestionController extends Controller
             $q->instructor->user;
             $q->tags;
             $q->options;
+            if ($q->type == "group") {
+                $q->questions;
+            }
         }
 
         return $qs;
@@ -172,7 +175,11 @@ class QuestionController extends Controller
         $question = Question::where('id', $id)->get()->first();
         $question->instructor->user;
         $question->tags;
-        $question->questions;
+        if ($question->type == "group") {
+            $question->questions->each(function ($e) {
+                $e->tags;
+            });
+        }
         $question->options;
         return response()->json(['question' => $question]);
     }

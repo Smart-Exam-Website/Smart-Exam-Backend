@@ -54,7 +54,7 @@ class ExamController extends Controller
             $isMarked = request('isMarked');
             if ($isMarked) {
                 $filteredArray = array_filter($finalExams, function ($exam) use ($isMarked) {
-                    $val = $exam['isMarked']? 'true': 'false';
+                    $val = $exam['isMarked'] ? 'true' : 'false';
                     return $val == $isMarked;
                 });
 
@@ -200,7 +200,7 @@ class ExamController extends Controller
 
     // Show exam details
 
-    
+
     public function show(Exam $exam)
     {
         return response()->json(['exam' => $exam]);
@@ -215,6 +215,12 @@ class ExamController extends Controller
 
         foreach ($questions as $question) {
 
+            if ($question->type == "group") {
+                $question->questions->each(function ($e) {
+                    $e->tags;
+                });
+            }
+
             $question->options;
         }
         return response()->json(['questions' => $questions]);
@@ -222,7 +228,7 @@ class ExamController extends Controller
 
 
 
-    
+
 
     // get exam configurations
     public function showExamConfigurations(Exam $exam)
