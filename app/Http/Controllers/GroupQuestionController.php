@@ -14,11 +14,6 @@ use Illuminate\Http\Request;
 
 class GroupQuestionController extends Controller
 {
-    public function index()
-    {
-        //
-    }
-
     public function store(Request $request)
     {
         $user = auth()->user();
@@ -220,6 +215,51 @@ class GroupQuestionController extends Controller
 
     public function destroy($id)
     {
-        //
+        $user = auth()->user();
+        $examQuestions = ExamQuestion::where(['question_id' => $id])->get();
+        $exams = [];
+        foreach ($examQuestions as $exQ) {
+            array_push($exams, Exam::find($exQ->exam_id));
+        }
+        usort($exams, function ($a, $b) {
+            return strcmp($a->startAt, $b->startAt);
+        });
+
+
+        $now = date("Y-m-d H:i:s");
+        if (count($exams) > 0)
+            $start_time = $exams[0]->startAt;
+        else $start_time = 0;
+
+        if ($start_time != 0 && $now >= $start_time) {
+            //We cannot delete only set is hidden to true
+            if ($user->type == 'instructor') {
+                $question = Question::where(['id' => $id])->first();
+                if ($question == null) {
+                    return response()->json(['message' => 'There is no Question with this id'], 200);
+                }
+                $question->update(['isHidden' => true]);
+                $question->save();
+                return response()->json(['message' => 'Question is Hidden'], 200);
+            } else {
+                return response()->json(['message' => 'There is no logged in Instructor'], 400);
+            }
+        } else {
+
+            if ($user->type == 'instructor') {
+                $question = Question::where(['id' => $id])->first();
+                if ($question == null) {
+                    return response()->json(['message' => 'There is no Question with this id'], 200);
+                }
+                if ($question->image) {
+                    $s = explode("/", $question->image);
+                    Storage::disk('s3')->delete($s[3] . "/" . $s[4]);
+                }
+                $question->delete();
+                return response()->json(['message' => 'Question Deleted'], 200);
+            } else {
+                return response()->json(['message' => 'There is no logged in Instructor'], 400);
+            }
+        }
     }
 }

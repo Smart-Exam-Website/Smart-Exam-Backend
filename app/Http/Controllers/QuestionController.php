@@ -389,8 +389,10 @@ class QuestionController extends Controller
                 if ($question == null) {
                     return response()->json(['message' => 'There is no Question with this id'], 200);
                 }
-                $s = explode("/", $question->image);
-                Storage::disk('s3')->delete($s[3] . "/" . $s[4]);
+                if ($question->image) {
+                    $s = explode("/", $question->image);
+                    Storage::disk('s3')->delete($s[3] . "/" . $s[4]);
+                }
                 $question->delete();
                 return response()->json(['message' => 'Question Deleted'], 200);
             } else {
