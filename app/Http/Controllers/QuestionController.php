@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Storage;
 use App\Models\ExamQuestion;
 use App\Models\Option;
 use Illuminate\Http\Request;
@@ -75,6 +76,7 @@ class QuestionController extends Controller
 
             $fields = $request->validate([
                 'questionText' => 'required|string|max:255',
+                'image' => 'image',
                 'type' => 'required|string',
                 'answers'    => 'required|array',
                 'answers.*'  => 'required|string|distinct',
@@ -83,8 +85,12 @@ class QuestionController extends Controller
                 'correctAnswer' => 'string',
             ]);
 
+            $path = Storage::disk('s3')->put('images', $fields['image']);
+            $path = Storage::disk('s3')->url($path);
+
             $question = Question::create([
                 'questionText' => $fields['questionText'],
+                'image' => $path,
                 'type' => $fields['type'],
                 'isHidden' => false,
                 'instructor_id' => $user->id
