@@ -181,6 +181,7 @@ class GroupQuestionController extends Controller
 
                 $fields = $request->validate([
                     'questionText' => 'string|max:255',
+                    'image' => 'image',
                     'questions'    => 'array',
                     'questions.*'  => 'string|distinct'
                 ]);
@@ -197,8 +198,18 @@ class GroupQuestionController extends Controller
                     }
                 }
 
+                if (array_key_exists("image", $fields)) {
+                    if ($questionn->image) {
+                        $s = explode("/", $questionn->image);
+                        Storage::disk('s3')->delete($s[3] . "/" . $s[4]);
+                    }
+                    $path = Storage::disk('s3')->put('questionImages', $fields['image']);
+                    $path = Storage::disk('s3')->url($path);
+                }
+
                 $questionn->update([
-                    'questionText' => $request['questionText'] ? $request['questionText'] : $questionn->questionText,
+                    'questionText' => array_key_exists("questionText", $fields) ? $request['questionText'] : $questionn->questionText,
+                    'image' => array_key_exists("image", $fields) ? $path : $questionn->image
                 ]);
 
                 $questionn->tags;
