@@ -85,12 +85,13 @@ class QuestionController extends Controller
                 'correctAnswer' => 'string',
             ]);
 
-            $path = Storage::disk('s3')->put('questionImages', $fields['image']);
-            $path = Storage::disk('s3')->url($path);
-
+            if (array_key_exists("image", $fields)) {
+                $path = Storage::disk('s3')->put('questionImages', $fields['image']);
+                $path = Storage::disk('s3')->url($path);
+            }
             $question = Question::create([
                 'questionText' => $fields['questionText'],
-                'image' => $path,
+                'image' => array_key_exists("image", $fields) ? $path : NULL,
                 'type' => $fields['type'],
                 'isHidden' => false,
                 'instructor_id' => $user->id
