@@ -200,15 +200,21 @@ class QuestionController extends Controller
 
                 $fields = $request->validate([
                     'questionText' => 'required|string|max:255',
+                    'image' => 'image',
                     'type' => 'required|string',
                     'answers'    => 'required|array|min:2',
                     'answers.*'  => 'required|string|distinct|min:2',
                     'correctAnswer' => 'required|string',
                 ]);
 
+                if (array_key_exists("image", $fields)) {
+                    $path = Storage::disk('s3')->put('questionImages', $fields['image']);
+                    $path = Storage::disk('s3')->url($path);
+                }
 
                 $question = Question::create([
                     'questionText' => $fields['questionText'],
+                    'image' => array_key_exists("image", $fields) ? $path : NULL,
                     'type' => 'mcq',
                     'instructor_id' => $user->id
                 ]);
