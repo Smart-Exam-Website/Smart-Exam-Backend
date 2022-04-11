@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\QuestionController;
+use App\Http\Controllers\GroupQuestionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -150,11 +151,12 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/questions', 'App\Http\Controllers\QuestionController@index');
     Route::post('/questions/create', 'App\Http\Controllers\QuestionController@store');
-    Route::post('/questions/questionGroup/create', 'App\Http\Controllers\GroupQuestionController@store');
     Route::get('/questions/{question}', 'App\Http\Controllers\QuestionController@show');
     Route::post('/questions', [QuestionController::class, 'store']);
     Route::put('/questions/{id}', [QuestionController::class, 'update']);
     Route::delete('/questions/{id}', [QuestionController::class, 'destroy']);
+    Route::post('/questions/questionGroup/create', 'App\Http\Controllers\GroupQuestionController@store');
+    Route::put('/questions/questionGroup/{id}', [GroupQuestionController::class, 'update']);
 });
 
 // ------------------- TAG ROUTES ----------------------
