@@ -171,6 +171,7 @@ class QuestionController extends Controller
         $question = Question::where('id', $id)->get()->first();
         $question->instructor->user;
         $question->tags;
+        $question->questions;
         $question->options;
         return response()->json(['question' => $question]);
     }
