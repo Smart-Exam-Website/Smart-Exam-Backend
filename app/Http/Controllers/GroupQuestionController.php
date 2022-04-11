@@ -81,7 +81,10 @@ class GroupQuestionController extends Controller
                 ]);
             }
             $question = Question::where(['id' => $question->id])->first();
-            $question->questions;
+            $question->tags;
+            $question->questions->each(function ($e) {
+                $e->tags;
+            });;
             return response($question, 201);
         } else {
             return response()->json(['message' => 'There is no logged in Instructor'], 400);
