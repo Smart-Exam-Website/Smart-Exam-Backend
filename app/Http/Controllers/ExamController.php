@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Configuration;
 use App\Models\Exam;
 use App\Models\examSession;
+use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -160,12 +161,24 @@ class ExamController extends Controller
         //link to questions
 
         $exam = Exam::where('id', $request->examId)->first();
+        if (!$exam) {
+            return response()->json(['message' => 'No exam found with this id!'], 400);
+        }
+
+        $tag = Tag::where('name', $exam->examSubject)->get()->first();
+
+        if (!$tag) {
+            $tag = Tag::create([
+                'name' => $exam->examSubject
+            ]);
+        }
 
         $questions = $request->questions;
         $mark = $exam->totalMark / count($questions);
         // $duration = $exam->duration / count($questions);
 
         $exam->questions()->attach($questions, ['mark' => $mark]);
+        $tag->questions()->attach($questions);
 
         return response()->json(['message' => 'successfully added questions to exam!']);
     }
@@ -323,7 +336,9 @@ class ExamController extends Controller
         if (auth()->user()->type != 'instructor') {
             return response()->json(['message' => 'Unauthorized to create exam!'], 403);
         }
-        // update exam
+        if(!$exam) {
+            return response()->json(['message' => 'Failed to find exam!'], 400);
+        }
         $rules = [
             'questions.*.question_id' => ['required', 'numeric', 'exists:questions,id'],
         ];
@@ -333,12 +348,24 @@ class ExamController extends Controller
             return response()->json(['message' => 'the given data is invalid'], 400);
         }
 
+        
+        $tag = Tag::where('name', $exam->examSubject)->get()->first();
+
+        if (!$tag) {
+            $tag = Tag::create([
+                'name' => $exam->examSubject
+            ]);
+        }
+        // update exam
+        
+
 
         $questions = $request->questions;
         $mark = $exam->totalMark / count($questions);
         // $duration = $exam->duration / count($questions);
         $exam->questions()->detach();
         $exam->questions()->attach($questions, ['mark' => $mark]);
+        $tag->questions()->attach($questions);
         // $exam->questions()->sync($questions, ['mark' => $mark]);
         return response()->json(['message' => 'successfully added questions to exam!']);
     }
