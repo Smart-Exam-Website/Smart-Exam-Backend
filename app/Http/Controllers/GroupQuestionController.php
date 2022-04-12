@@ -9,11 +9,11 @@ use App\Models\QuestionTag;
 use App\Models\Tag;
 use App\Models\ExamQuestion;
 use App\Models\Exam;
-use App\Models\Option;
 use Illuminate\Http\Request;
 
 class GroupQuestionController extends Controller
 {
+    // Create new question
     public function store(Request $request)
     {
         $user = auth()->user();
@@ -88,6 +88,22 @@ class GroupQuestionController extends Controller
         }
     }
 
+    // Get question details
+    public function show($id)
+    {
+        $question = Question::where('id', $id)->get()->first();
+        $question->instructor->user;
+        $question->tags;
+        if ($question->type == "group") {
+            $question->questions->each(function ($e) {
+                $e->tags;
+            });
+        }
+        $question->options;
+        return response()->json(['question' => $question]);
+    }
+
+    // Edit Question
     public function update(Request $request, $id)
     {
         $user = auth()->user();
@@ -230,6 +246,7 @@ class GroupQuestionController extends Controller
         }
     }
 
+    // Delete Question
     public function destroy($id)
     {
         $user = auth()->user();
