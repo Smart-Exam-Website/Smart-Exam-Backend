@@ -159,7 +159,7 @@ class MarkExamController extends Controller
 
 
 
-    
+
     public function MarkOneStudentExam(Exam $exam, Student $student)
     {
         //Automatic
@@ -209,28 +209,28 @@ class MarkExamController extends Controller
         //for essay Automatic Marking
 
         foreach ($essays as $essay) {
-            $correctAnswer = $essay->question->options[0]->value;
-            $studentAnswer = $essay->studentAnswer;
-            $response = Http::post('http://13.59.36.254/m1/automatic', [
-                'correctAnswer' => $correctAnswer,
-                'studentAnswer' => $studentAnswer
-            ]);
+            // $correctAnswer = $essay->question->options[0]->value;
+            // $studentAnswer = $essay->studentAnswer;
+            // $response = Http::post('http://13.59.36.254/m1/automatic', [
+            //     'correctAnswer' => $correctAnswer,
+            //     'studentAnswer' => $studentAnswer
+            // ]);
 
-            if ($response->ok()) {
-                if ($response->status() != 200) {
-                    return response()->json(['message' => 'Failed to send Answers!'], 400);
-                } else {
-                    $percent = $response->object()->percentage;
-                    //$percent = "70";
-                    $ex = ExamQuestion::where(['question_id' => $essay->question_id, 'exam_id' => $exam->id])->get()->first();
-                    $totalquestionMark = $ex->mark;
-                    $student_Mark = ((float)$percent / 100) * $totalquestionMark;
-                    DB::table('answers')->where(['student_id' => $student->id, 'exam_id' => $exam->id, 'question_id' => $essay->question_id])->update(['questionMark' => $student_Mark]);
-                    $totalMark += $essay->questionMark;
-                }
-            } else {
-                return response()->json(['message' => 'An error occurred!'], 400);
-            }
+            // if ($response->ok()) {
+            //     if ($response->status() != 200) {
+            //         return response()->json(['message' => 'Failed to send Answers!'], 400);
+            //     } else {
+            //         $percent = $response->object()->percentage;
+            $percent = "70";
+            $ex = ExamQuestion::where(['question_id' => $essay->question_id, 'exam_id' => $exam->id])->get()->first();
+            $totalquestionMark = $ex->mark;
+            $student_Mark = ((float)$percent / 100) * $totalquestionMark;
+            DB::table('answers')->where(['student_id' => $student->id, 'exam_id' => $exam->id, 'question_id' => $essay->question_id])->update(['questionMark' => $student_Mark]);
+            $totalMark += $student_Mark;
+            //     }
+            // } else {
+            //     return response()->json(['message' => 'An error occurred!'], 400);
+            // }
         }
 
         //Cheating Actions
@@ -323,28 +323,28 @@ class MarkExamController extends Controller
             //for essay Automatic Marking
 
             foreach ($essays as $essay) {
-                $correctAnswer = $essay->question->options[0]->value;
-                $studentAnswer = $essay->studentAnswer;
-                $response = Http::post('http://13.59.36.254/m1/automatic', [
-                    'correctAnswer' => $correctAnswer,
-                    'studentAnswer' => $studentAnswer
-                ]);
+                // $correctAnswer = $essay->question->options[0]->value;
+                // $studentAnswer = $essay->studentAnswer;
+                // $response = Http::post('http://13.59.36.254/m1/automatic', [
+                //     'correctAnswer' => $correctAnswer,
+                //     'studentAnswer' => $studentAnswer
+                // ]);
 
-                if ($response->ok()) {
-                    if ($response->status() != 200) {
-                        return response()->json(['message' => 'Failed to send Answers!'], 400);
-                    } else {
-                        $percent = $response->object()->percentage;
-                        //$percent = "70";
-                        $ex = ExamQuestion::where(['question_id' => $essay->question_id, 'exam_id' => $exam->id])->get()->first();
-                        $totalquestionMark = $ex->mark;
-                        $student_Mark = ((float)$percent / 100) * $totalquestionMark;
-                        DB::table('answers')->where(['student_id' => $s->id, 'exam_id' => $exam->id, 'question_id' => $essay->question_id])->update(['questionMark' => $student_Mark]);
-                        $totalMark += $essay->questionMark;
-                    }
-                } else {
-                    return response()->json(['message' => 'An error occurred!'], 400);
-                }
+                // if ($response->ok()) {
+                //     if ($response->status() != 200) {
+                //         return response()->json(['message' => 'Failed to send Answers!'], 400);
+                //     } else {
+                //         $percent = $response->object()->percentage;
+                $percent = "70";
+                $ex = ExamQuestion::where(['question_id' => $essay->question_id, 'exam_id' => $exam->id])->get()->first();
+                $totalquestionMark = $ex->mark;
+                $student_Mark = ((float)$percent / 100) * $totalquestionMark;
+                DB::table('answers')->where(['student_id' => $s->id, 'exam_id' => $exam->id, 'question_id' => $essay->question_id])->update(['questionMark' => $student_Mark]);
+                $totalMark += $student_Mark;
+                //    }
+                // } else {
+                //     return response()->json(['message' => 'An error occurred!'], 400);
+                // }
             }
 
             //Cheating Actions
@@ -375,6 +375,7 @@ class MarkExamController extends Controller
                         'totalMark' => $totalMark
                     ]);
                 } else {
+
                     $exst = ExamStudent::where(['student_id' => $s->id, 'exam_id' => $exam->id])->first();
                     $exst->update(['totalMark' => $totalMark]);
                 }
