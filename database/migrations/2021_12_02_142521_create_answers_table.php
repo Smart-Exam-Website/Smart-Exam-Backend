@@ -28,7 +28,8 @@ class CreateAnswersTable extends Migration
             $table->string('studentAnswer')->nullable();
             $table->float('questionMark')->default(0);
             $table->boolean('isMarked')->default(false);
-            $table->primary(['exam_id', 'student_id', 'question_id'], 'id');
+            $table->integer('attempt')->default(1);
+            $table->primary(['exam_id', 'student_id', 'question_id', 'attempt'], 'id');
             $table->timestamps();
         });
     }

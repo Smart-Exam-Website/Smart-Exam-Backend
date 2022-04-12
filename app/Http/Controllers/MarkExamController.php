@@ -11,7 +11,9 @@ use App\Models\CheatingAction;
 use App\Models\examSession;
 use App\Models\ExamQuestion;
 use App\Models\ExamStudent;
+use App\Models\Question;
 use App\Models\Student;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -29,13 +31,13 @@ class MarkExamController extends Controller
             return response()->json(['message' => 'Unauthorized!'], 403);
         }
         // get list of all students who solved the exam
-        $solvedExams = DB::table('examSession')->where(['exam_id' => $exam->id, 'isSubmitted' => true])->get();
+        $solvedExams = examSession::where(['exam_id' => $exam->id, 'isSubmitted' => true])->orderBy('attempt', 'DESC')->get()->unique('student_id');
         if (!$solvedExams) {
             return response()->json(['message' => 'No solutions found for this exam!'], 400);
         }
         foreach ($solvedExams as $solvedExam) {
-            $user = DB::table('users')->where('id', $solvedExam->student_id)->get()->first();
-            $student = DB::table('students')->where(['id' => $solvedExam->student_id])->get()->first();
+            $user = User::where('id', $solvedExam->student_id)->get()->first();
+            $student = Student::where(['id' => $solvedExam->student_id])->get()->first();
             $solvedExam->name = $user->firstName . ' ' . $user->lastName;
             $solvedExam->studentCode = $student->studentCode;
             $solvedExam->image = $user->image;
@@ -67,12 +69,12 @@ class MarkExamController extends Controller
         if (!$studentId) {
             return response()->json(['message' => 'No student ID specified!']);
         }
-        $user = DB::table('users')->where(['id' => $studentId])->get()->first();
+        $user = User::where(['id' => $studentId])->get()->first();
         $studentName = $user->firstName . ' ' . $user->lastName;
         $studentImage = $user->image;
         // $studentCode = $user->student->studentCode;
 
-        $session = DB::table('examSession')->where(['exam_id' => $exam->id, 'student_id' => $studentId, 'isSubmitted' => true])->get()->first();
+        $session = examSession::where(['exam_id' => $exam->id, 'student_id' => $studentId, 'isSubmitted' => true])->orderBy('attempt', 'DESC')->get()->first();
         if (!$session) {
             return response()->json(['message' => 'No session found for this student!'], 400);
         }
@@ -81,12 +83,12 @@ class MarkExamController extends Controller
 
         foreach ($questions as $question) {
             $question->options;
-            $answer = DB::table('answers')->where(['student_id' => $studentId, 'question_id' => $question->id, 'exam_id' => $exam->id])->get()->first();
+            $answer = Answer::where(['student_id' => $studentId, 'question_id' => $question->id, 'exam_id' => $exam->id, 'attempt' => $session->attempt])->get()->first();
 
             $question['answer'] = $answer;
         }
 
-        $examConfig = DB::table('configs')->where(['exam_id' => $exam->id])->get()->first();
+        $examConfig = Configuration::where(['exam_id' => $exam->id])->get()->first();
 
 
         $numberOfFaces = ($examConfig->faceDetection) ? $session->numberOfFaces : null;
@@ -111,6 +113,11 @@ class MarkExamController extends Controller
                 'questionMark' => 'required'
             ]);
 
+            $examSession = examSession::where(['exam_id' => $request->examId, 'student_id' => $request->studentId])->orderBy('attempt', 'DESC')->get()->first();
+            if (!$examSession) {
+                return response()->json(['message' => 'No exam session found for this student'], 422);
+            }
+
             if (ExamStudent::where(['student_id' => $fields['studentId'], 'exam_id' => $fields['examId']])->first() != NULL) {
                 $exst = ExamStudent::where(['student_id' => $fields['studentId'], 'exam_id' => $fields['examId']])->first();
                 $totalMark = $exst->totalMark;
@@ -118,7 +125,7 @@ class MarkExamController extends Controller
                 $totalMark = 0;
             }
 
-            $answer = Answer::where(['student_id' => $fields['studentId'], 'exam_id' => $fields['examId'], 'question_id' => $fields['questionId']])->get();
+            $answer = Answer::where(['student_id' => $fields['studentId'], 'exam_id' => $fields['examId'], 'question_id' => $fields['questionId'], 'attempt' => $examSession->attempt])->get();
 
             $cnt = $answer->count();
             if ($cnt == 0) {
@@ -133,11 +140,11 @@ class MarkExamController extends Controller
                 $ans = $answer->first();
                 $qMark = $ans->questionMark;
                 $totalMark = $totalMark - $qMark;
-                DB::table('answers')->where(['student_id' => $fields['studentId'], 'exam_id' => $fields['examId'], 'question_id' => $fields['questionId']])->update(['questionMark' => $fields['questionMark'], 'isMarked' => true]);
+                Answer::where(['student_id' => $fields['studentId'], 'exam_id' => $fields['examId'], 'question_id' => $fields['questionId']])->update(['questionMark' => $fields['questionMark'], 'isMarked' => true]);
                 $a = Answer::where(['student_id' => $fields['studentId'], 'exam_id' => $fields['examId'], 'question_id' => $fields['questionId']])->first();
             }
         } else {
-            return response()->json(['message' => 'There is no logged in Instructor'], 400);
+            return response()->json(['message' => 'Unauthorized'], 403);
         }
 
         if (ExamStudent::where(['student_id' => $fields['studentId'], 'exam_id' => $fields['examId']])->first() == NULL) {
@@ -154,7 +161,7 @@ class MarkExamController extends Controller
             $exst->update(['totalMark' => $totalMark]);
         }
 
-        return response()->json(['message' => 'The Mark is Saved Successfully', 'answer' => $a, 'totalStudentMark' => $totalMark], 200);
+        return response()->json(['message' => 'Student mark saved successfully!', 'answer' => $a, 'totalStudentMark' => $totalMark], 200);
     }
 
 
@@ -164,19 +171,24 @@ class MarkExamController extends Controller
     {
         //Automatic
         if (auth()->user()->type != 'instructor') {
-            return response()->json(['message' => 'There is no Logged in Instructor!'], 400);
+            return response()->json(['message' => 'Unauthorized'], 403);
         }
+        $examSession = examSession::where(['exam_id' => $exam->id, 'student_id' => $student->id])->orderBy('attempt', 'DESC')->get()->first();
+        if (!$examSession) {
+            return response()->json(['message' => 'No exam session found for this student'], 422);
+        }
+
 
         $gradMethod = Configuration::where(['exam_id' => $exam->id])->first()->gradingMethod;
         if ($gradMethod == "manual") {
-            return response()->json(['message' => 'This Exam Can Only Be Marked Manually!'], 400);
+            return response()->json(['message' => 'This exam can only be marked manually!'], 400);
         }
 
         if (date('Y-m-d H:i:s') <= $exam->endAt) {
             return response()->json(['message' => 'Cannot mark exam yet!'], 400);
         }
 
-        $answers = Answer::where(['exam_id' => $exam->id, 'student_id' => $student->id])->get();
+        $answers = Answer::where(['exam_id' => $exam->id, 'student_id' => $student->id, 'attempt' => $examSession->attempt])->get();
 
         $mcqs = [];
         $essays = [];
@@ -200,7 +212,7 @@ class MarkExamController extends Controller
 
                 $ex = ExamQuestion::where('exam_id', '=', $exam->id)->where('question_id', '=', $a->question_id)->first();
 
-                Answer::where(['exam_id' => $exam->id, 'student_id' => $student->id, 'option_id' => $a['option_id'], 'question_id' => $a->question_id])->update(['questionMark' => $ex->mark]);
+                Answer::where(['exam_id' => $exam->id, 'student_id' => $student->id, 'option_id' => $a['option_id'], 'question_id' => $a->question_id, 'attempt' => $examSession->attempt])->update(['questionMark' => $ex->mark]);
 
                 $totalMark += $ex->mark;
             }
@@ -209,6 +221,7 @@ class MarkExamController extends Controller
         //for essay Automatic Marking
 
         foreach ($essays as $essay) {
+
             // $correctAnswer = $essay->question->options[0]->value;
             // $studentAnswer = $essay->studentAnswer;
             // $response = Http::post('http://13.59.36.254/m1/automatic', [
@@ -279,6 +292,7 @@ class MarkExamController extends Controller
             return response()->json(['message' => 'There is no Logged in Instructor!'], 400);
         }
 
+
         $gradMethod = Configuration::where(['exam_id' => $exam->id])->first()->gradingMethod;
         if ($gradMethod == "manual") {
             return response()->json(['message' => 'This Exam Can Only Be Marked Manually!'], 400);
@@ -289,8 +303,13 @@ class MarkExamController extends Controller
         $students = Student::all();
 
         foreach ($students as $s) {
+            $examSession = examSession::where(['exam_id' => $exam->id, 'student_id' => $s->id])->orderBy('attempt', 'DESC')->get()->first();
+            if (!$examSession) {
+                return response()->json(['message' => 'No exam session found for this student'], 422);
+            }
 
-            $answers = Answer::where(['exam_id' => $exam->id, 'student_id' => $s->id])->get();
+
+            $answers = Answer::where(['exam_id' => $exam->id, 'student_id' => $s->id, 'attempt' => $examSession->attempt])->get();
 
             $mcqs = [];
             $essays = [];
@@ -314,7 +333,7 @@ class MarkExamController extends Controller
 
                     $ex = ExamQuestion::where('exam_id', '=', $exam->id)->where('question_id', '=', $a->question_id)->first();
 
-                    Answer::where(['exam_id' => $exam->id, 'student_id' => $s->id, 'option_id' => $a['option_id'], 'question_id' => $a->question_id])->update(['questionMark' => $ex->mark]);
+                    Answer::where(['exam_id' => $exam->id, 'student_id' => $s->id, 'option_id' => $a['option_id'], 'question_id' => $a->question_id, 'attempt' => $examSession->attempt])->update(['questionMark' => $ex->mark]);
 
                     $totalMark += $ex->mark;
                 }
@@ -323,6 +342,7 @@ class MarkExamController extends Controller
             //for essay Automatic Marking
 
             foreach ($essays as $essay) {
+
                 // $correctAnswer = $essay->question->options[0]->value;
                 // $studentAnswer = $essay->studentAnswer;
                 // $response = Http::post('http://13.59.36.254/m1/automatic', [
@@ -396,24 +416,24 @@ class MarkExamController extends Controller
     {
         $user = auth()->user();
         if ($user->type == 'student') {
-            $session = DB::table('examSession')->where(['exam_id' => $exam->id, 'student_id' => $user->id, 'isSubmitted' => true])->get()->first();
+            $session = examSession::where(['exam_id' => $exam->id, 'student_id' => $user->id, 'isSubmitted' => true])->get()->first();
             if (!$session) {
-                return response()->json(['message' => 'You Must Take Exam First!'], 400);
+                return response()->json(['message' => 'There is no exam session for this student'], 404);
             }
 
-            $solutions = DB::table('answers')->where(['exam_id' => $exam->id, 'student_id' => $user->id])->get();
+            $solutions = Answer::where(['exam_id' => $exam->id, 'student_id' => $user->id, 'attempt' => $session->attempt])->get();
             if (!$solutions) {
-                return response()->json(['message' => 'Failed to fetch your solutions!'], 400);
+                return response()->json(['message' => 'Failed to fetch your solutions!'], 422);
             }
 
             foreach ($solutions as $s) {
-                $s->question = DB::table('questions')->where(['id' => $s->question_id])->get()->first();
+                $s->question = Question::where(['id' => $s->question_id])->get()->first();
                 $s->totalQuestionMark = DB::table('exam_question')->where(['exam_id' => $exam->id, 'question_id' => $s->question_id])->get()->first()->mark;
                 $answers = Option::where(['question_id' => $s->question->id])->get();
                 $s->question->answers = $answers;
             }
 
-            return response()->json(['message' => 'Report Generated successfully', 'solution' => $solutions]);
+            return response()->json(['message' => 'Report generated successfully', 'solution' => $solutions]);
         } else {
             return response()->json(['message' => 'There is no logged in Student'], 400);
         }
