@@ -494,7 +494,7 @@ paths:
             application/json:
               schema:
                 properties:
-                  message: 
+                  message:
                     type: string
                     example: "cheater status fetched successfully"
                   cheaterStatus:
@@ -1191,6 +1191,128 @@ paths:
           description: Forbidden
         "404":
           description: Resource Not Found
+
+  "/questions/questionGroup/create":
+    post:
+      tags:
+        - GroupQuestion
+      summary: create question Group
+      description: create question group with optional tags
+      operationId: storeQuestionGroup
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/StoreQuestionGroupRequest"
+      responses:
+        "201":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                properties:
+                  question:
+                    "$ref": "#/components/schemas/Question"
+                type: object
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthenticated
+        "403":
+          description: Forbidden
+      security:
+        - bearer: []
+  "/questions/questionGroup/{question}":
+    get:
+      tags:
+        - GroupQuestion
+      parameters:
+        - in: path
+          name: question
+          schema:
+            type: integer
+          required: true
+      summary: Get question details
+      description: Returns question details
+      operationId: getquestionDetails
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                properties:
+                  question:
+                    "$ref": "#/components/schemas/Question"
+                type: object
+        "401":
+          description: Unauthenticated
+        "403":
+          description: Forbidden
+      security:
+        - bearer: []
+  "/questions/questionGroup/{id}":
+    put:
+      tags:
+        - GroupQuestion
+      summary: Edit question
+      description: if we can update this question because it is not in one of the prev exams =>> nothing is required ,  if we create New Question Because this question is found in another prev exam =>> questions and type is required
+      operationId: editQuestion
+      parameters:
+        - name: id
+          in: path
+          description: Question id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/StoreEditQuestionGroupRequest"
+      responses:
+        "201":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                properties:
+                  question:
+                    "$ref": "#/components/schemas/Question"
+                type: object
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthenticated
+        "403":
+          description: Forbidden
+      security:
+        - bearer: []
+    delete:
+      tags:
+        - GroupQuestion
+      summary: Delete existing question
+      description: Deletes a record and returns no content
+      operationId: deleteQuestion
+      parameters:
+        - name: id
+          in: path
+          description: Question id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Successful operation
+        "401":
+          description: Unauthenticated
+        "403":
+          description: Forbidden
+        "404":
+          description: Resource Not Found
+
   "/schools":
     get:
       tags:
@@ -2265,6 +2387,25 @@ components:
       type: object
       xml:
         name: ExamStudent
+    GroupQuestion:
+      title: GroupQuestion
+      description: GroupQuestion model
+      properties:
+        group_id:
+          title: Group ID
+          description: Group id
+          type: integer
+          format: int64
+          example: 3
+        question_id:
+          title: Question ID
+          description: Question id
+          type: integer
+          format: int64
+          example: 1
+      type: object
+      xml:
+        name: GroupQuestion
     Instructor:
       title: Instructor
       description: Instructor model
@@ -2978,6 +3119,11 @@ components:
           description: correct Answer
           type: string
           example: seven
+        image:
+          title: image
+          description: image of the new student
+          type: string
+          example: http://pixels.com/4040
       type: object
     StoreEditQuestionRequest:
       title: StoreEditQuestionRequest
@@ -3008,6 +3154,97 @@ components:
           description: correct Answer
           type: string
           example: seven
+        image:
+          title: image
+          description: image of the new student
+          type: string
+          example: http://pixels.com/4040
+      type: object
+    StoreQuestionGroupRequest:
+      title: StoreQuestionGroupRequest
+      description: Store Question Group request body data
+      required:
+        - type
+        - questions
+      properties:
+        questionText:
+          title: Question Text
+          description: question text
+          type: string
+          example: How many days are in the week?
+        type:
+          title: type
+          description: the type of the question
+          type: string
+          example: group
+        tags:
+          title: tags
+          description: tags
+          type: array
+          items:
+            type: string
+            example:
+              - math
+              - exponential
+        questions:
+          title: questions
+          description: questions
+          type: array
+          items:
+            type: integer
+            example:
+              - 1
+              - 4
+              - 6
+              - 10
+        image:
+          title: image
+          description: image of the new student
+          type: string
+          example: http://pixels.com/4040
+      type: object
+    StoreEditQuestionGroupRequest:
+      title: StoreEditQuestionGroupRequest
+      description: if we can update this question because it is not in one of the prev exams =>> nothing is required ,  if we create New Question Because this question is found in another prev exam =>> questions and type is required
+      required:
+        - type
+        - questions
+      properties:
+        questionText:
+          title: Question Text
+          description: question text
+          type: string
+          example: How many days are in the week?
+        type:
+          title: type
+          description: the type of the question
+          type: string
+          example: group
+        tags:
+          title: tags
+          description: tags
+          type: array
+          items:
+            type: string
+            example:
+              - math
+              - exponential
+        questions:
+          title: questions
+          description: array of question ids
+          type: array
+          items:
+            type: integer
+            example:
+              - 1
+              - 4
+              - 6
+              - 10
+        image:
+          title: image
+          description: image of the new student
+          type: string
+          example: http://pixels.com/4040
       type: object
     StoreStudentRequest:
       title: StoreStudentRequest
