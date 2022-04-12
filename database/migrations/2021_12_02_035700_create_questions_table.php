@@ -15,7 +15,8 @@ class CreateQuestionsTable extends Migration
     {
         Schema::create('questions', function (Blueprint $table) {
             $table->id();
-            $table->text('questionText');
+            $table->text('questionText')->nullable();
+            $table->string('image')->nullable();
             $table->string('type');
             $table->boolean('isHidden')->default(false);
             $table->unsignedBigInteger('instructor_id');

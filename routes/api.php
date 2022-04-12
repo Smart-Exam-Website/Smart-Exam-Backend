@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\QuestionController;
+use App\Http\Controllers\GroupQuestionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -106,7 +107,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     // Get student answers
     Route::get('/exams/{exam}/my-answers', 'App\Http\Controllers\TakeExamController@showStudentAnswers');
     // check if student is a cheater to ban him from continuing the exam
-    Route::get('/exams/{exam}/cheater-status' , 'App\Http\Controllers\TakeExamController@checkCheaterStatus');
+    Route::get('/exams/{exam}/cheater-status', 'App\Http\Controllers\TakeExamController@checkCheaterStatus');
     // ----------------------- Mark Exam APIs ------------------------
     // Get all student solutions
     Route::get('/exams/{exam}/all-answers', 'App\Http\Controllers\MarkExamController@showExamAnswers');
@@ -154,6 +155,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/questions', [QuestionController::class, 'store']);
     Route::put('/questions/{id}', [QuestionController::class, 'update']);
     Route::delete('/questions/{id}', [QuestionController::class, 'destroy']);
+    Route::post('/questions/questionGroup/create', 'App\Http\Controllers\GroupQuestionController@store');
+    Route::put('/questions/questionGroup/{id}', [GroupQuestionController::class, 'update']);
+    Route::delete('/questions/questionGroup/{id}', [GroupQuestionController::class, 'destroy']);
 });
 
 // ------------------- TAG ROUTES ----------------------
@@ -174,5 +178,4 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/cheater', 'App\Http\Controllers\CheatingDetailsController@store');
     Route::post('/cheater/action', 'App\Http\Controllers\CheatingDetailsController@takeAction');
-    
 });

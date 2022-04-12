@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 use App\Models\ExamQuestion;
 use App\Models\Option;
 use Illuminate\Http\Request;
@@ -61,6 +63,9 @@ class QuestionController extends Controller
             $q->instructor->user;
             $q->tags;
             $q->options;
+            if ($q->type == "group") {
+                $q->questions;
+            }
         }
 
         return $qs;
@@ -75,6 +80,7 @@ class QuestionController extends Controller
 
             $fields = $request->validate([
                 'questionText' => 'required|string|max:255',
+                'image' => 'image',
                 'type' => 'required|string',
                 'answers'    => 'required|array',
                 'answers.*'  => 'required|string|distinct',
@@ -83,8 +89,13 @@ class QuestionController extends Controller
                 'correctAnswer' => 'string',
             ]);
 
+            if (array_key_exists("image", $fields)) {
+                $path = Storage::disk('s3')->put('questionImages', $fields['image']);
+                $path = Storage::disk('s3')->url($path);
+            }
             $question = Question::create([
                 'questionText' => $fields['questionText'],
+                'image' => array_key_exists("image", $fields) ? $path : NULL,
                 'type' => $fields['type'],
                 'isHidden' => false,
                 'instructor_id' => $user->id
@@ -164,6 +175,11 @@ class QuestionController extends Controller
         $question = Question::where('id', $id)->get()->first();
         $question->instructor->user;
         $question->tags;
+        if ($question->type == "group") {
+            $question->questions->each(function ($e) {
+                $e->tags;
+            });
+        }
         $question->options;
         return response()->json(['question' => $question]);
     }
@@ -171,6 +187,7 @@ class QuestionController extends Controller
     // Edit Question
     public function update(Request $request, $id)
     {
+
         $user = auth()->user();
         $examQuestions = ExamQuestion::where(['question_id' => $id])->get();
         $exams = [];
@@ -193,20 +210,27 @@ class QuestionController extends Controller
 
                 $fields = $request->validate([
                     'questionText' => 'required|string|max:255',
+                    'image' => 'image',
                     'type' => 'required|string',
-                    'answers'    => 'required|array|min:2',
-                    'answers.*'  => 'required|string|distinct|min:2',
-                    'correctAnswer' => 'required|string',
+                    'answers'    => 'required|array',
+                    'answers.*'  => 'required|string|distinct',
+                    'correctAnswer' => 'string'
                 ]);
 
+                if (array_key_exists("image", $fields)) {
+                    $path = Storage::disk('s3')->put('questionImages', $fields['image']);
+                    $path = Storage::disk('s3')->url($path);
+                }
 
                 $question = Question::create([
                     'questionText' => $fields['questionText'],
+                    'image' => array_key_exists("image", $fields) ? $path : NULL,
                     'type' => 'mcq',
                     'instructor_id' => $user->id
                 ]);
 
                 $answers = $fields['answers'];
+
                 if ($fields['type'] == 'mcq') {
                     foreach ($answers as $a) {
                         if ($fields['correctAnswer'] == $a) {
@@ -249,9 +273,10 @@ class QuestionController extends Controller
 
                 $fields = $request->validate([
                     'questionText' => 'string|max:255',
+                    'image' => 'image',
                     'answers'    => 'array',
                     'answers.*'  => 'string|distinct',
-                    'correctAnswer' => 'string',
+                    'correctAnswer' => 'string'
                 ]);
 
                 $newanswers = [];
@@ -324,8 +349,18 @@ class QuestionController extends Controller
                     }
                 }
 
+                if (array_key_exists("image", $fields)) {
+                    if ($questionn->image) {
+                        $s = explode("/", $questionn->image);
+                        Storage::disk('s3')->delete($s[3] . "/" . $s[4]);
+                    }
+                    $path = Storage::disk('s3')->put('questionImages', $fields['image']);
+                    $path = Storage::disk('s3')->url($path);
+                }
+
                 $questionn->update([
-                    'questionText' => $request['questionText'] ? $request['questionText'] : $questionn->questionText
+                    'questionText' => array_key_exists("questionText", $fields) ? $request['questionText'] : $questionn->questionText,
+                    'image' => array_key_exists("image", $fields) ? $path : $questionn->image
                 ]);
 
                 return response(['question' => $questionn], 200);
@@ -375,6 +410,10 @@ class QuestionController extends Controller
                 $question = Question::where(['id' => $id])->first();
                 if ($question == null) {
                     return response()->json(['message' => 'There is no Question with this id'], 200);
+                }
+                if ($question->image) {
+                    $s = explode("/", $question->image);
+                    Storage::disk('s3')->delete($s[3] . "/" . $s[4]);
                 }
                 $question->delete();
                 return response()->json(['message' => 'Question Deleted'], 200);
