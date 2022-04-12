@@ -42,51 +42,51 @@ class faceDetectionController extends Controller
             return response()->json(['message' => 'This exam does not support face detection!'], 400);
         }
 
-        $numberOfFaces = rand(1, 10);
-        if ($numberOfFaces > 1) {
-            $image = $request->image;
-            // list($baseType, $image) = explode(';', $imageEncoded);
-            // list(, $image) = explode(',', $image);
-            $imageDecoded = base64_decode($image);
-            $imageName = Str::random(30) . '.jpg';
-            $path = Storage::disk('s3')->put('uploads/' . $imageName, $imageDecoded);
-            $path = Storage::disk('s3')->url($path);
+        // $numberOfFaces = rand(1, 10);
+        // if ($numberOfFaces > 1) {
+        //     $image = $request->image;
+        //     // list($baseType, $image) = explode(';', $imageEncoded);
+        //     // list(, $image) = explode(',', $image);
+        //     $imageDecoded = base64_decode($image);
+        //     $imageName = Str::random(30) . '.jpg';
+        //     $path = Storage::disk('s3')->put('uploads/' . $imageName, $imageDecoded);
+        //     $path = Storage::disk('s3')->url($path);
 
-            return response()->json(['message' => 'Success!', 'numberOfFaces' => $numberOfFaces, 'image' => $imageName]);
-        }
-
-        return response()->json(['message' => 'Success!', 'numberOfFaces' => $numberOfFaces]);
-
-
-
-
-        // $response = Http::post('http://13.59.36.254/m1/detect', [
-        //     'image_encode' => $request->image,
-        // ]);
-
-        // // return response()->json(['message' => 'Success!', 'verified' => $response->object()]);
-
-        // if ($response->ok()) {
-        //     if ($response->status() != 200) {
-        //         return response()->json(['message' => 'Failed to send image!'], 400);
-        //     } else {
-        //         $numberOfFaces = $response->object()->number_of_faces;
-        //         if ($numberOfFaces > 1) {
-        //             $image = $response->object()->image_encode;
-        //             // list($baseType, $image) = explode(';', $imageEncoded);
-        //             // list(, $image) = explode(',', $image);
-        //             $imageDecoded = base64_decode($image);
-        //             $imageName = Str::random(30) . '.jpg';
-        //             $path = Storage::disk('s3')->put('uploads/' . $imageName, $imageDecoded);
-        //             $path = Storage::disk('s3')->url($path);
-
-        //             return response()->json(['message' => 'Success!', 'numberOfFaces' => $numberOfFaces, 'image' => $imageName]);
-        //         }
-
-        //         return response()->json(['message' => 'Success!', 'numberOfFaces' => $numberOfFaces]);
-        //     }
-        // } else {
-        //     return response()->json(['message' => 'An error occurred!'], 400);
+        //     return response()->json(['message' => 'Success!', 'numberOfFaces' => $numberOfFaces, 'image' => $imageName]);
         // }
+
+        // return response()->json(['message' => 'Success!', 'numberOfFaces' => $numberOfFaces]);
+
+
+
+
+        $response = Http::post('http:/44.203.19.75/m1/detect', [
+            'image_encode' => $request->image,
+        ]);
+
+        // return response()->json(['message' => 'Success!', 'verified' => $response->object()]);
+
+        if ($response->ok()) {
+            if ($response->status() != 200) {
+                return response()->json(['message' => 'Failed to send image!'], 400);
+            } else {
+                $numberOfFaces = $response->object()->number_of_faces;
+                if ($numberOfFaces > 1) {
+                    $image = $response->object()->image_encode;
+                    // list($baseType, $image) = explode(';', $imageEncoded);
+                    // list(, $image) = explode(',', $image);
+                    $imageDecoded = base64_decode($image);
+                    $imageName = Str::random(30) . '.jpg';
+                    $path = Storage::disk('s3')->put('uploads/' . $imageName, $imageDecoded);
+                    $path = Storage::disk('s3')->url($path);
+
+                    return response()->json(['message' => 'Success!', 'numberOfFaces' => $numberOfFaces, 'image' => $imageName]);
+                }
+
+                return response()->json(['message' => 'Success!', 'numberOfFaces' => $numberOfFaces]);
+            }
+        } else {
+            return response()->json(['message' => 'An error occurred!'], 400);
+        }
     }
 }

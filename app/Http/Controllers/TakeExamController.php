@@ -8,7 +8,6 @@ use App\Models\Exam;
 use App\Models\examSession;
 use DateTime;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class TakeExamController extends Controller
@@ -43,13 +42,10 @@ class TakeExamController extends Controller
 
         $examSession = examSession::where(['exam_id' => $exam->id, 'student_id' => auth()->user()->id])->orderBy('attempt', 'DESC')->get()->first();
 
-
-        // ----------- QUESTIONS ----------
-
-        // Can we submit multiple attempts for the same exam?
-        // Should the multiple attempts be marked?
-
         if ($examSession) {
+            if($examSession->isCheater) {
+                return response()->json(['message' => 'You cannot retake the exam, you are a cheater!'], 400);
+            }
             if (!$examSession->isSubmitted) {
                 return response()->json(['message' => 'You must submit the previous attempt first before starting a new attempt!'], 400);
             } else {
@@ -115,16 +111,14 @@ class TakeExamController extends Controller
             return response()->json(['message' => 'Exam already submitted!'], 400);
         }
 
-        // check number of questions of exam
-        $questions = DB::table('exam_question')->where('exam_id', $exam->id)->join('questions', 'question_id', 'questions.id')->select(['questions.id', 'questions.questionText', 'exam_question.mark', 'questions.type'])->get();
-        // check how many questions the student answered!
-        $answers = DB::table('answers')->where(['exam_id' => $exam->id, 'student_id' => $student->id])->get();
-        // cannot submit until they are all answered!
-        // if ($answers->count() < $questions->count()) {
-        //     return response()->json(['message' => 'You cannot submit yet!, you haven\'t answered all questions'], 400);
-        // }
 
-        $status = DB::table('examSession')->where(['exam_id' => $exam->id, 'student_id' => $student->id, 'attempt' => $examSession->attempt])->update(['isSubmitted' => true, 'submittedAt' => now()]);
+        $status = examSession::where(['exam_id' => $exam->id, 'student_id' => $student->id, 'attempt' => $examSession->attempt])->update(['isSubmitted' => true, 'submittedAt' => now()]);
+
+        // if a new attempt is submitted, we should remove all the old attempts and its answers, as they are now irrelevant.
+
+        examSession::where(['exam_id' => $exam->id, 'student_id' => $student->id])->where('attempt', '!=', $examSession->attempt)->delete();
+        Answer::where(['exam_id' => $exam->id, 'student_id' => $student->id])->where('attempt', '!=', $examSession->attempt)->delete();
+
 
         if ($status) {
             return response()->json(['message' => 'Submitted exam successfully!']);
@@ -152,7 +146,7 @@ class TakeExamController extends Controller
         $startTime = new DateTime($examSession->startTime);
         [$hours, $minutes, $seconds] = explode(":", $duration);
         $startTime->modify('+'.$hours.' hours '.$minutes. ' minutes '.$seconds.' seconds');
-        $answers = Answer::where(['student_id' => $studentId, 'exam_id' => $exam->id])->get();
+        $answers = Answer::where(['student_id' => $studentId, 'exam_id' => $exam->id, 'attempt' => $examSession->attempt])->get();
 
         if (!$answers) {
             return response()->json(['message' => 'No answers found!'], 400);

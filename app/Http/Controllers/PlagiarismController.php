@@ -31,13 +31,13 @@ class PlagiarismController extends Controller
         $exam = Exam::where(['id' => $request->examId])->get()->first();
 
         if (!$exam) {
-            return response()->json(['message' => 'This exam does not Exist!'], 400);
+            return response()->json(['message' => 'This exam does not exist!'], 400);
         }
 
         $config = $exam->config;
 
         if (!$config->plagiarismCheck) {
-            return response()->json(['message' => 'This exam does not support plagiarism Check!'], 400);
+            return response()->json(['message' => 'This exam does not support plagiarism check!'], 400);
         }
 
         $exqs = ExamQuestion::where(['exam_id' => $exam->id])->get();
@@ -74,7 +74,7 @@ class PlagiarismController extends Controller
                     return response()->json(['message' => 'Failed to send list!'], 400);
                 } else {
                     $res = $response->object();
-                    return response()->json(['message' => 'Successfully Checked!', 'res' => $res]);
+                    return response()->json(['message' => 'Plagiarism check done successfully!', 'res' => $res]);
                 }
             } else {
                 return response()->json(['message' => 'An error occurred!'], 400);
