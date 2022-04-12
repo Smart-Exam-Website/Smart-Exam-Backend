@@ -6,6 +6,8 @@ use App\Models\Answer;
 use App\Models\CheatingDetails;
 use App\Models\Exam;
 use App\Models\examSession;
+use App\Models\ExamStudent;
+use App\Models\CheatingAction;
 use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -36,14 +38,14 @@ class TakeExamController extends Controller
         if ($exam->endAt < $request->startTime) {
             return response()->json(['message' => 'Exam is closed now!'], 400);
         }
-        if(!$exam->isPublished) {
+        if (!$exam->isPublished) {
             return response()->json(['message' => 'Exam not published yet!'], 400);
         }
 
         $examSession = examSession::where(['exam_id' => $exam->id, 'student_id' => auth()->user()->id])->orderBy('attempt', 'DESC')->get()->first();
 
         if ($examSession) {
-            if($examSession->isCheater) {
+            if ($examSession->isCheater) {
                 return response()->json(['message' => 'You cannot retake the exam, you are a cheater!'], 400);
             }
             if (!$examSession->isSubmitted) {
@@ -60,7 +62,7 @@ class TakeExamController extends Controller
                         'numberOfFaces' => $request->numberOfFaces
                     ]);
                 } else {
-                    return response()->json(['message' => 'Exceeded number of attempts!'] ,400);
+                    return response()->json(['message' => 'Exceeded number of attempts!'], 400);
                 }
             }
         } else {
@@ -103,8 +105,32 @@ class TakeExamController extends Controller
             return response()->json(['message' => 'No exam session for this student!'], 400);
         }
 
-        if($examSession->isCheater) {
-            return response()->json(['message' => 'Cheater! You cannot submit the exam!'], 400);
+        if ($examSession->isCheater) {
+            //Cheating Actions
+            $ch_details = CheatingDetails::orderBy('action_id')->where(['student_id' => $student->id, 'exam_id' => $exam->id])->where('action_id', '!=', 3)->get();
+            if (count($ch_details) != 0 && examSession::where(['student_id' => $student->id, 'exam_id' => $exam->id])->first()->isCheater) {
+                $totalMark = 0;
+                $cheatingDetails = CheatingDetails::where(['student_id' => $student->id, 'exam_id' => $exam->id])->whereNotNull('action_id')->get();
+                foreach ($cheatingDetails as $c) {
+                    $action = CheatingAction::where(['id' => $c->action_id])->first();
+                    if ($action->name == "zero") {
+                        $totalMark = 0;
+                        break;
+                    } else if ($action->name == "minus") {
+                        $totalMark = $totalMark - $c->minusMarks;
+                    }
+                }
+                if (ExamStudent::where(['student_id' => $student->id, 'exam_id' => $exam->id])->first() == NULL) {
+                    ExamStudent::create([
+                        'student_id' => $student->id,
+                        'exam_id' => $exam->id,
+                        'totalMark' => $totalMark
+                    ]);
+                } else {
+                    $exst = ExamStudent::where(['student_id' => $student->id, 'exam_id' => $exam->id])->first();
+                    $exst->update(['totalMark' => $totalMark]);
+                }
+            }
         }
 
         if ($examSession->isSubmitted) {
@@ -125,10 +151,9 @@ class TakeExamController extends Controller
         } else {
             return response()->json(['message' => 'Failed to submit exam!'], 400);
         }
-
     }
 
-    // Get student Answers 
+    // Get student Answers
 
 
     public function showStudentAnswers(Exam $exam)
@@ -140,12 +165,12 @@ class TakeExamController extends Controller
         }
         $studentId = $student->id;
         $examSession = examSession::where(['student_id' => $studentId, 'exam_id' => $exam->id])->orderBy('attempt', 'DESC')->get()->first();
-        if(!$examSession) {
+        if (!$examSession) {
             return response()->json(['message' => 'No exam session for this student!'], 400);
         }
         $startTime = new DateTime($examSession->startTime);
         [$hours, $minutes, $seconds] = explode(":", $duration);
-        $startTime->modify('+'.$hours.' hours '.$minutes. ' minutes '.$seconds.' seconds');
+        $startTime->modify('+' . $hours . ' hours ' . $minutes . ' minutes ' . $seconds . ' seconds');
         $answers = Answer::where(['student_id' => $studentId, 'exam_id' => $exam->id, 'attempt' => $examSession->attempt])->get();
 
         if (!$answers) {
@@ -155,9 +180,10 @@ class TakeExamController extends Controller
         return response()->json(['message' => 'Success!', 'answers' => $answers, 'endTime' => $startTime->format('Y-m-d H:i:s')]);
     }
 
-    public function checkCheaterStatus(Exam $exam) {
+    public function checkCheaterStatus(Exam $exam)
+    {
         $user = auth()->user();
-        if($user->type != 'student') {
+        if ($user->type != 'student') {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -166,7 +192,7 @@ class TakeExamController extends Controller
             'student_id' => $user->id
         ])->orderBy('attempt', 'DESC')->get()->first();
 
-        if(!$examSession) {
+        if (!$examSession) {
             return response()->json(['message' => 'No exam session found!'], 400);
         }
         $cheaterStatus = false;
@@ -177,18 +203,13 @@ class TakeExamController extends Controller
             'action_id' => 1,
         ])->get();
 
-        if(!$cheatingDetails) {
+        if (!$cheatingDetails) {
             $cheaterStatus = false;
-        } else if($cheatingDetails && $examSession->isCheater) {
+        } else if ($cheatingDetails && $examSession->isCheater) {
             $cheaterStatus = true;
         }
 
 
         return response()->json(['message' => 'Cheater status fetched successfully!', 'cheaterStatus' => $cheaterStatus]);
     }
-
-
-
-
 }
-
