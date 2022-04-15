@@ -22,8 +22,8 @@ class TakeExamController extends Controller
         }
         $rules = [
             'startTime' => 'required|date',
-            'numberOfFaces' => 'required|integer',
-            'isVerified' => 'required|boolean'
+            'numberOfFaces' => 'required',
+            'isVerified' => 'required'
         ];
 
         $validator = Validator::make($request->all(), $rules);
