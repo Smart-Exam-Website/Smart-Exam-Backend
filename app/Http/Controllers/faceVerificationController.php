@@ -61,7 +61,7 @@ class faceVerificationController extends Controller
 
 
 
-        $response = Http::post('http://18.214.40.220/m2/verify', [
+        $response = Http::post('http://44.192.1.67/m2/verify', [
             'img' => [[
                 'img1' => $request->image1,
                 'img2' => $image2Encoded,
