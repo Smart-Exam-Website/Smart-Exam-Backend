@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
 use App\Models\ExamQuestion;
 use App\Models\Option;
 use Illuminate\Http\Request;

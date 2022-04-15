@@ -22,8 +22,8 @@ class CreateCheatingDetailsTable extends Migration
             $table->unsignedBigInteger('action_id')->nullable()->constrained();
             $table->foreign('action_id')->references('id')->on('cheating_actions')->onDelete('cascade');
             $table->float('minusMarks')->default(0);
-            $table->string('type');
-            $table->string('image');
+            $table->string('type')->nullable();;
+            $table->string('image')->nullable();;
             $table->timestamps();
         });
     }
