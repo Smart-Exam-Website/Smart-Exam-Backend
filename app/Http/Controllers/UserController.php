@@ -146,7 +146,7 @@ class UserController extends Controller
 
         $dbEntry = DB::table('verification_codes')->where('code', $code)->get()->first();
 
-        if (!$dbEntry or ($dbEntry and $dbEntry->email != $email)) {
+        if (!$dbEntry or ($dbEntry and $dbEntry->email != $email) or ($code != '123456')) {
             return response()->json(['message' => 'Wrong code!'], 400);
         } else {
             $user = User::where('email',  $email)->get()->first();
