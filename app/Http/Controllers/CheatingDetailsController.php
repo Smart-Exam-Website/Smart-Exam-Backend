@@ -98,8 +98,7 @@ class CheatingDetailsController extends Controller
             return response()->json(['message' => 'No exam with this id!'], 404);
         }
 
-        $cheatingDetailAction = CheatingDetails::where(['exam_id' => $exam->id, 'student_id' => auth()->user()->id, 'action_id' => 1])->get();
-
+        $cheatingDetailAction = CheatingDetails::where(['exam_id' => $exam->id, 'student_id' => auth()->user()->id, 'action_id' => 1])->get()->first();
         if ($cheatingDetailAction) {
             return response()->json(['message' => 'Action already taken against student. Cannot send more requests.']);
         }
