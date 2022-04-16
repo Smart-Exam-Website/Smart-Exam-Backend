@@ -230,7 +230,6 @@ class CheatingDetailsController extends Controller
                     }
 
                     if (!$exst) {
-
                         ExamStudent::create([
                             'student_id' => $cheatingDetails->student_id,
                             'exam_id' => $cheatingDetails->exam_id,
