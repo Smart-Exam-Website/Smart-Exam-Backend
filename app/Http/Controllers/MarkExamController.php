@@ -216,7 +216,7 @@ class MarkExamController extends Controller
 
                 $totalMark += $ex->mark;
             } else {
-                Answer::where(['exam_id' => $exam->id, 'student_id' => $s->id, 'question_id' => $a->question_id, 'attempt' => $examSession->attempt])->update(['questionMark' => 0, 'isMarked' => true]);
+                Answer::where(['exam_id' => $exam->id, 'student_id' => $student->id, 'question_id' => $a->question_id, 'attempt' => $examSession->attempt])->update(['questionMark' => 0, 'isMarked' => true]);
             }
         }
 
