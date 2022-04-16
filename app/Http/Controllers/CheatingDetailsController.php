@@ -41,10 +41,9 @@ class CheatingDetailsController extends Controller
         if (!$cheatingDetails) {
             return response()->json(['message' => 'Failed to fetch cheating details!'], 400);
         }
-
-        $cheatingDetails->filter(function ($detail, $key) use ($studentIdsZero) {
-            return $studentIdsZero.indexOf($detail->student_id) == -1;
-        });
+        // $cheatingDetails->filter(function ($detail, $key) use ($studentIdsZero) {
+        //     return !(in_array($detail->student_id, $studentIdsZero)) == true;
+        // })->values();
         foreach ($cheatingDetails as $cheatingDetail) {
             // first, check if zero action was taken against student
             // if it was, remove all records regarding that student.
@@ -98,6 +97,11 @@ class CheatingDetailsController extends Controller
             return response()->json(['message' => 'No exam with this id!'], 404);
         }
 
+        $examSession = examSession::where(['exam_id' => $exam->id, 'student_id' => auth()->user()->id])->orderBy('attempt', 'DESC')->get()->first();
+
+        if(!$examSession) {
+            return response()->json(['message' => 'No exam session found for this student!'], 400);
+        }
         $cheatingDetailAction = CheatingDetails::where(['exam_id' => $exam->id, 'student_id' => auth()->user()->id, 'action_id' => 1])->get()->first();
         if ($cheatingDetailAction) {
             return response()->json(['message' => 'Action already taken against student. Cannot send more requests.']);
