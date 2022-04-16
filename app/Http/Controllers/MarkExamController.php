@@ -192,7 +192,6 @@ class MarkExamController extends Controller
 
         $mcqs = [];
         $essays = [];
-        $manually_corrected = [];
 
         foreach ($answers as $ans) {
             $ans->question;
@@ -200,8 +199,6 @@ class MarkExamController extends Controller
                 array_push($mcqs, $ans);
             } else if (($ans->question->type == "essay") && ($ans->isMarked == false)) {
                 array_push($essays, $ans);
-            } else {
-                array_push($manually_corrected, $ans);
             }
         }
 
@@ -247,10 +244,6 @@ class MarkExamController extends Controller
             // } else {
             //     return response()->json(['message' => 'An error occurred!'], 400);
             // }
-        }
-
-        foreach ($manually_corrected as $m) {
-            $totalMark += $m->questionMark;
         }
 
         //Final Saving for the total Mark of the student
@@ -309,7 +302,6 @@ class MarkExamController extends Controller
 
             $mcqs = [];
             $essays = [];
-            $manually_corrected = [];
 
             foreach ($answers as $ans) {
                 $ans->question;
@@ -317,8 +309,6 @@ class MarkExamController extends Controller
                     array_push($mcqs, $ans);
                 } else if (($ans->question->type == "essay") && ($ans->isMarked == false)) {
                     array_push($essays, $ans);
-                } else {
-                    array_push($manually_corrected, $ans);
                 }
             }
 
@@ -332,9 +322,11 @@ class MarkExamController extends Controller
 
                     $ex = ExamQuestion::where('exam_id', '=', $exam->id)->where('question_id', '=', $a->question_id)->first();
 
-                    Answer::where(['exam_id' => $exam->id, 'student_id' => $s->id, 'option_id' => $a['option_id'], 'question_id' => $a->question_id, 'attempt' => $examSession->attempt])->update(['questionMark' => $ex->mark]);
+                    Answer::where(['exam_id' => $exam->id, 'student_id' => $s->id, 'option_id' => $a['option_id'], 'question_id' => $a->question_id, 'attempt' => $examSession->attempt])->update(['questionMark' => $ex->mark, 'isMarked' => true]);
 
                     $totalMark += $ex->mark;
+                } else {
+                    Answer::where(['exam_id' => $exam->id, 'student_id' => $s->id, 'question_id' => $a->question_id, 'attempt' => $examSession->attempt])->update(['questionMark' => 0, 'isMarked' => true]);
                 }
             }
 
@@ -358,16 +350,12 @@ class MarkExamController extends Controller
                 $ex = ExamQuestion::where(['question_id' => $essay->question_id, 'exam_id' => $exam->id])->get()->first();
                 $totalquestionMark = $ex->mark;
                 $student_Mark = ((float)$percent / 100) * $totalquestionMark;
-                DB::table('answers')->where(['student_id' => $s->id, 'exam_id' => $exam->id, 'question_id' => $essay->question_id])->update(['questionMark' => $student_Mark]);
+                DB::table('answers')->where(['student_id' => $s->id, 'exam_id' => $exam->id, 'question_id' => $essay->question_id])->update(['questionMark' => $student_Mark, 'isMarked' => true]);
                 $totalMark += $student_Mark;
                 //    }
                 // } else {
                 //     return response()->json(['message' => 'An error occurred!'], 400);
                 // }
-            }
-
-            foreach ($manually_corrected as $m) {
-                $totalMark += $m->questionMark;
             }
 
             //Final Saving for the total Mark of the student
