@@ -192,13 +192,16 @@ class MarkExamController extends Controller
 
         $mcqs = [];
         $essays = [];
+        $manually_corrected = [];
 
         foreach ($answers as $ans) {
             $ans->question;
-            if ($ans->question->type == "mcq") {
+            if (($ans->question->type == "mcq") && ($ans->isMarked == false)) {
                 array_push($mcqs, $ans);
-            } else if ($ans->question->type == "essay") {
+            } else if (($ans->question->type == "essay") && ($ans->isMarked == false)) {
                 array_push($essays, $ans);
+            } else {
+                array_push($manually_corrected, $ans);
             }
         }
 
@@ -221,15 +224,17 @@ class MarkExamController extends Controller
             }
         }
 
-        //for mcq Automatic Marking
+
         if ($zero == false) {
+
+            //for mcq Automatic Marking
             foreach ($mcqs as $a) {
                 $m = Option::where(['id' => $a['option_id'], 'question_id' => $a['question_id']])->first();
                 if ($m != NULL && $m->isCorrect == 1) {
 
                     $ex = ExamQuestion::where('exam_id', '=', $exam->id)->where('question_id', '=', $a->question_id)->first();
 
-                    Answer::where(['exam_id' => $exam->id, 'student_id' => $student->id, 'option_id' => $a['option_id'], 'question_id' => $a->question_id, 'attempt' => $examSession->attempt])->update(['questionMark' => $ex->mark]);
+                    Answer::where(['exam_id' => $exam->id, 'student_id' => $student->id, 'option_id' => $a['option_id'], 'question_id' => $a->question_id, 'attempt' => $examSession->attempt])->update(['questionMark' => $ex->mark, 'isMarked' => true]);
 
                     $totalMark += $ex->mark;
                 }
@@ -255,12 +260,32 @@ class MarkExamController extends Controller
                 $ex = ExamQuestion::where(['question_id' => $essay->question_id, 'exam_id' => $exam->id])->get()->first();
                 $totalquestionMark = $ex->mark;
                 $student_Mark = ((float)$percent / 100) * $totalquestionMark;
-                DB::table('answers')->where(['student_id' => $student->id, 'exam_id' => $exam->id, 'question_id' => $essay->question_id])->update(['questionMark' => $student_Mark]);
+                DB::table('answers')->where(['student_id' => $student->id, 'exam_id' => $exam->id, 'question_id' => $essay->question_id])->update(['questionMark' => $student_Mark, 'isMarked' => true]);
                 $totalMark += $student_Mark;
                 //     }
                 // } else {
                 //     return response()->json(['message' => 'An error occurred!'], 400);
                 // }
+            }
+
+            foreach ($manually_corrected as $m) {
+                $totalMark += $m->questionMark;
+            }
+
+            //Cheating Actions
+            $ch_details = CheatingDetails::where(['student_id' => $student->id, 'exam_id' => $exam->id])->where('action_id', '!=', 3)->get();
+            if (count($ch_details) != 0 &&  examSession::where(['student_id' => $student->id, 'exam_id' => $exam->id])->first()->isCheater) {
+                $cheatingDetails = CheatingDetails::where(['student_id' => $student->id, 'exam_id' => $exam->id])->whereNotNull('action_id')->get();
+                foreach ($cheatingDetails as $c) {
+                    $action = CheatingAction::where(['id' => $c->action_id])->first();
+                    if ($action->name == "zero") {
+                        $totalMark = 0;
+                        break;
+                    } else if ($action->name == "minus") {
+                        $totalMark = $totalMark - $c->minusMarks;
+                        if ($totalMark < 0) $totalMark = 0;
+                    }
+                }
             }
 
 
