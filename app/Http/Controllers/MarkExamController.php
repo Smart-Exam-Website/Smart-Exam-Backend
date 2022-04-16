@@ -195,93 +195,77 @@ class MarkExamController extends Controller
 
         foreach ($answers as $ans) {
             $ans->question;
-            if ($ans->question->type == "mcq") {
+            if (($ans->question->type == "mcq") && ($ans->isMarked == false)) {
                 array_push($mcqs, $ans);
-            } else if ($ans->question->type == "essay") {
+            } else if (($ans->question->type == "essay") && ($ans->isMarked == false)) {
                 array_push($essays, $ans);
             }
         }
 
-        $totalMark = 0;
-        $zero = false;
-        //if cheater and minus
-
-        $ch_details = CheatingDetails::orderBy('action_id')->where(['student_id' => $student->id, 'exam_id' => $exam->id])->where('action_id', '!=', 3)->get();
-        if (count($ch_details) != 0 && examSession::where(['student_id' => $student->id, 'exam_id' => $exam->id])->first()->isCheater) {
-            $cheatingDetails = CheatingDetails::where(['student_id' => $student->id, 'exam_id' => $exam->id])->whereNotNull('action_id')->get();
-            foreach ($cheatingDetails as $c) {
-                $action = CheatingAction::where(['id' => $c->action_id])->first();
-                if ($action->name == "zero") {
-                    $zero = true;
-                    break;
-                } else if ($action->name == "minus") {
-                    //all the minus values
-                    $totalMark = $totalMark - $c->minusMarks;
-                }
-            }
-        }
+        $exst = ExamStudent::where(['student_id' => $student->id, 'exam_id' => $exam->id])->first();
+        $totalMark = $exst ? $exst->totalMark : 0;
 
         //for mcq Automatic Marking
-        if ($zero == false) {
-            foreach ($mcqs as $a) {
-                $m = Option::where(['id' => $a['option_id'], 'question_id' => $a['question_id']])->first();
-                if ($m != NULL && $m->isCorrect == 1) {
+        foreach ($mcqs as $a) {
+            $m = Option::where(['id' => $a['option_id'], 'question_id' => $a['question_id']])->first();
+            if ($m != NULL && $m->isCorrect == 1) {
 
-                    $ex = ExamQuestion::where('exam_id', '=', $exam->id)->where('question_id', '=', $a->question_id)->first();
+                $ex = ExamQuestion::where('exam_id', '=', $exam->id)->where('question_id', '=', $a->question_id)->first();
 
-                    Answer::where(['exam_id' => $exam->id, 'student_id' => $student->id, 'option_id' => $a['option_id'], 'question_id' => $a->question_id, 'attempt' => $examSession->attempt])->update(['questionMark' => $ex->mark]);
+                Answer::where(['exam_id' => $exam->id, 'student_id' => $student->id, 'option_id' => $a['option_id'], 'question_id' => $a->question_id, 'attempt' => $examSession->attempt])->update(['questionMark' => $ex->mark, 'isMarked' => true]);
 
-                    $totalMark += $ex->mark;
-                }
-            }
-
-            //for essay Automatic Marking
-
-            foreach ($essays as $essay) {
-
-                // $correctAnswer = $essay->question->options[0]->value;
-                // $studentAnswer = $essay->studentAnswer;
-                // $response = Http::post('http://13.59.36.254/m1/automatic', [
-                //     'correctAnswer' => $correctAnswer,
-                //     'studentAnswer' => $studentAnswer
-                // ]);
-
-                // if ($response->ok()) {
-                //     if ($response->status() != 200) {
-                //         return response()->json(['message' => 'Failed to send Answers!'], 400);
-                //     } else {
-                //         $percent = $response->object()->percentage;
-                $percent = "70";
-                $ex = ExamQuestion::where(['question_id' => $essay->question_id, 'exam_id' => $exam->id])->get()->first();
-                $totalquestionMark = $ex->mark;
-                $student_Mark = ((float)$percent / 100) * $totalquestionMark;
-                DB::table('answers')->where(['student_id' => $student->id, 'exam_id' => $exam->id, 'question_id' => $essay->question_id])->update(['questionMark' => $student_Mark]);
-                $totalMark += $student_Mark;
-                //     }
-                // } else {
-                //     return response()->json(['message' => 'An error occurred!'], 400);
-                // }
-            }
-
-
-            //Final Saving for the total Mark of the student
-
-            if ($answers->count() != 0) {
-
-                if (ExamStudent::where(['student_id' => $student->id, 'exam_id' => $exam->id])->first() == NULL) {
-
-                    $exst = ExamStudent::create([
-                        'student_id' => $student->id,
-                        'exam_id' => $exam->id,
-                        'totalMark' => $totalMark
-                    ]);
-                } else {
-
-                    $exst = ExamStudent::where(['student_id' => $student->id, 'exam_id' => $exam->id])->first();
-                    $exst->update(['totalMark' => $totalMark]);
-                }
+                $totalMark += $ex->mark;
+            } else {
+                Answer::where(['exam_id' => $exam->id, 'student_id' => $student->id, 'question_id' => $a->question_id, 'attempt' => $examSession->attempt])->update(['questionMark' => 0, 'isMarked' => true]);
             }
         }
+
+        //for essay Automatic Marking
+
+        foreach ($essays as $essay) {
+
+            // $correctAnswer = $essay->question->options[0]->value;
+            // $studentAnswer = $essay->studentAnswer;
+            // $response = Http::post('http://13.59.36.254/m1/automatic', [
+            //     'correctAnswer' => $correctAnswer,
+            //     'studentAnswer' => $studentAnswer
+            // ]);
+
+            // if ($response->ok()) {
+            //     if ($response->status() != 200) {
+            //         return response()->json(['message' => 'Failed to send Answers!'], 400);
+            //     } else {
+            //         $percent = $response->object()->percentage;
+            $percent = "70";
+            $ex = ExamQuestion::where(['question_id' => $essay->question_id, 'exam_id' => $exam->id])->get()->first();
+            $totalquestionMark = $ex->mark;
+            $student_Mark = ((float)$percent / 100) * $totalquestionMark;
+            DB::table('answers')->where(['student_id' => $student->id, 'exam_id' => $exam->id, 'question_id' => $essay->question_id])->update(['questionMark' => $student_Mark, 'isMarked' => true]);
+            $totalMark += $student_Mark;
+            //     }
+            // } else {
+            //     return response()->json(['message' => 'An error occurred!'], 400);
+            // }
+        }
+
+        //Final Saving for the total Mark of the student
+
+        if ($answers->count() != 0) {
+
+            if (ExamStudent::where(['student_id' => $student->id, 'exam_id' => $exam->id])->first() == NULL) {
+
+                $exst = ExamStudent::create([
+                    'student_id' => $student->id,
+                    'exam_id' => $exam->id,
+                    'totalMark' => $totalMark
+                ]);
+            } else {
+
+                $exst = ExamStudent::where(['student_id' => $student->id, 'exam_id' => $exam->id])->first();
+                $exst->update(['totalMark' => $totalMark]);
+            }
+        }
+
 
         $res = ExamStudent::where(['exam_id' => $exam->id, 'student_id' => $student->id])->first();
 
@@ -323,90 +307,74 @@ class MarkExamController extends Controller
 
             foreach ($answers as $ans) {
                 $ans->question;
-                if ($ans->question->type == "mcq") {
+                if (($ans->question->type == "mcq") && ($ans->isMarked == false)) {
                     array_push($mcqs, $ans);
-                } else if ($ans->question->type == "essay") {
+                } else if (($ans->question->type == "essay") && ($ans->isMarked == false)) {
                     array_push($essays, $ans);
                 }
             }
-            $totalMark = 0;
-            $zero = false;
-            //if cheater and minus
 
-            $ch_details = CheatingDetails::orderBy('action_id')->where(['student_id' => $s->id, 'exam_id' => $exam->id])->where('action_id', '!=', 3)->get();
-            if (count($ch_details) != 0 && examSession::where(['student_id' => $s->id, 'exam_id' => $exam->id])->first()->isCheater) {
-                $cheatingDetails = CheatingDetails::where(['student_id' => $s->id, 'exam_id' => $exam->id])->whereNotNull('action_id')->get();
-                foreach ($cheatingDetails as $c) {
-                    $action = CheatingAction::where(['id' => $c->action_id])->first();
-                    if ($action->name == "zero") {
-                        $zero = true;
-                        break;
-                    } else if ($action->name == "minus") {
-                        //all the minus values
-                        $totalMark = $totalMark - $c->minusMarks;
-                    }
+            $exst = ExamStudent::where(['student_id' => $s->id, 'exam_id' => $exam->id])->first();
+            $totalMark = $exst ? $exst->totalMark : 0;
+            //for mcq Automatic Marking
+            foreach ($mcqs as $a) {
+
+                $m = Option::where(['id' => $a['option_id'], 'question_id' => $a['question_id']])->first();
+                if ($m != NULL && $m->isCorrect == 1) {
+
+                    $ex = ExamQuestion::where('exam_id', '=', $exam->id)->where('question_id', '=', $a->question_id)->first();
+
+                    Answer::where(['exam_id' => $exam->id, 'student_id' => $s->id, 'option_id' => $a['option_id'], 'question_id' => $a->question_id, 'attempt' => $examSession->attempt])->update(['questionMark' => $ex->mark, 'isMarked' => true]);
+
+                    $totalMark += $ex->mark;
+                } else {
+                    Answer::where(['exam_id' => $exam->id, 'student_id' => $s->id, 'question_id' => $a->question_id, 'attempt' => $examSession->attempt])->update(['questionMark' => 0, 'isMarked' => true]);
                 }
             }
 
-            //for mcq Automatic Marking
-            if ($zero == false) {
-                foreach ($mcqs as $a) {
+            //for essay Automatic Marking
 
-                    $m = Option::where(['id' => $a['option_id'], 'question_id' => $a['question_id']])->first();
-                    if ($m != NULL && $m->isCorrect == 1) {
+            foreach ($essays as $essay) {
 
-                        $ex = ExamQuestion::where('exam_id', '=', $exam->id)->where('question_id', '=', $a->question_id)->first();
+                // $correctAnswer = $essay->question->options[0]->value;
+                // $studentAnswer = $essay->studentAnswer;
+                // $response = Http::post('http://13.59.36.254/m1/automatic', [
+                //     'correctAnswer' => $correctAnswer,
+                //     'studentAnswer' => $studentAnswer
+                // ]);
 
-                        Answer::where(['exam_id' => $exam->id, 'student_id' => $s->id, 'option_id' => $a['option_id'], 'question_id' => $a->question_id, 'attempt' => $examSession->attempt])->update(['questionMark' => $ex->mark]);
+                // if ($response->ok()) {
+                //     if ($response->status() != 200) {
+                //         return response()->json(['message' => 'Failed to send Answers!'], 400);
+                //     } else {
+                //         $percent = $response->object()->percentage;
+                $percent = "70";
+                $ex = ExamQuestion::where(['question_id' => $essay->question_id, 'exam_id' => $exam->id])->get()->first();
+                $totalquestionMark = $ex->mark;
+                $student_Mark = ((float)$percent / 100) * $totalquestionMark;
+                DB::table('answers')->where(['student_id' => $s->id, 'exam_id' => $exam->id, 'question_id' => $essay->question_id])->update(['questionMark' => $student_Mark, 'isMarked' => true]);
+                $totalMark += $student_Mark;
+                //    }
+                // } else {
+                //     return response()->json(['message' => 'An error occurred!'], 400);
+                // }
+            }
 
-                        $totalMark += $ex->mark;
-                    }
-                }
+            //Final Saving for the total Mark of the student
 
-                //for essay Automatic Marking
+            if ($answers->count() != 0) {
 
-                foreach ($essays as $essay) {
+                if (ExamStudent::where(['student_id' => $s->id, 'exam_id' => $exam->id])->first() == NULL) {
 
-                    // $correctAnswer = $essay->question->options[0]->value;
-                    // $studentAnswer = $essay->studentAnswer;
-                    // $response = Http::post('http://13.59.36.254/m1/automatic', [
-                    //     'correctAnswer' => $correctAnswer,
-                    //     'studentAnswer' => $studentAnswer
-                    // ]);
+                    $exst = ExamStudent::create([
+                        'student_id' => $s->id,
+                        'exam_id' => $exam->id,
+                        'totalMark' => $totalMark
+                    ]);
+                } else {
 
-                    // if ($response->ok()) {
-                    //     if ($response->status() != 200) {
-                    //         return response()->json(['message' => 'Failed to send Answers!'], 400);
-                    //     } else {
-                    //         $percent = $response->object()->percentage;
-                    $percent = "70";
-                    $ex = ExamQuestion::where(['question_id' => $essay->question_id, 'exam_id' => $exam->id])->get()->first();
-                    $totalquestionMark = $ex->mark;
-                    $student_Mark = ((float)$percent / 100) * $totalquestionMark;
-                    DB::table('answers')->where(['student_id' => $s->id, 'exam_id' => $exam->id, 'question_id' => $essay->question_id])->update(['questionMark' => $student_Mark]);
-                    $totalMark += $student_Mark;
-                    //    }
-                    // } else {
-                    //     return response()->json(['message' => 'An error occurred!'], 400);
-                    // }
-                }
-
-                //Final Saving for the total Mark of the student
-
-                if ($answers->count() != 0) {
-
-                    if (ExamStudent::where(['student_id' => $s->id, 'exam_id' => $exam->id])->first() == NULL) {
-
-                        $exst = ExamStudent::create([
-                            'student_id' => $s->id,
-                            'exam_id' => $exam->id,
-                            'totalMark' => $totalMark
-                        ]);
-                    } else {
-
-                        $exst = ExamStudent::where(['student_id' => $s->id, 'exam_id' => $exam->id])->first();
-                        $exst->update(['totalMark' => $totalMark]);
-                    }
+                    $exst = ExamStudent::where(['student_id' => $s->id, 'exam_id' => $exam->id])->first();
+                    $exst->update(['totalMark' => $totalMark]);
                 }
             }
         }

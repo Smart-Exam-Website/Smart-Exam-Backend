@@ -7,6 +7,7 @@ use App\Models\CheatingAction;
 use App\Models\CheatingDetails;
 use App\Models\Exam;
 use App\Models\examSession;
+use App\Models\ExamQuestion;
 use App\Models\ExamStudent;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -221,10 +222,6 @@ class CheatingDetailsController extends Controller
                     ]);
                 }
                 $studentMark = ExamStudent::where(['exam_id' => $examSession->exam_id, 'student_id' => $examSession->student_id])->get()->first();
-                $studentAnswers = Answer::where([
-                    'exam_id' => $examSession->exam_id,
-                    'student_id' => $examSession->student_id
-                ])->get();
                 if ($request->action == 'zero') {
                     // mark exam and set all marks = zero.
                     if ($studentMark) {
@@ -238,16 +235,20 @@ class CheatingDetailsController extends Controller
                             'student_id' => $examSession->student_id,
                             'totalMark' => 0
                         ]);
-                        foreach ($studentAnswers as $answer) {
-                            Answer::where([
-                                'student_id' => $answer->student_id,
-                                'exam_id' => $answer->exam_id,
-                                'question_id' => $answer->question_id,
-                                'option_id' => $answer->option_id
-                            ])->update([
-                                'questionMark' => 0,
-                                'isMarked' => true
-                            ]);
+                        $examQuestions = ExamQuestion::where(['exam_id' => $cheatingDetails->exam_id])->get();
+                        foreach ($examQuestions as $q) {
+                            $a = Answer::where(['exam_id' => $cheatingDetails->exam_id, 'student_id' => $cheatingDetails->student_id, 'question_id' => $q->question_id])->first();
+                            if (!$a) {
+                                Answer::create([
+                                    'exam_id' => $cheatingDetails->exam_id,
+                                    'student_id' => $cheatingDetails->student_id,
+                                    'question_id' => $q->question_id,
+                                    'questionMark' => 0,
+                                    'isMarked' => true
+                                ]);
+                            } else {
+                                DB::table('answers')->where(['exam_id' => $cheatingDetails->exam_id, 'student_id' => $cheatingDetails->student_id, 'question_id' => $q->question_id])->update(['questionMark' => 0, 'isMarked' => true]);
+                            }
                         }
                     }
                 } else if ($request->action == 'minus') {
