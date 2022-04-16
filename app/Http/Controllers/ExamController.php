@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Configuration;
 use App\Models\Exam;
 use App\Models\examSession;
+use App\Models\ExamStudent;
 use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -44,7 +45,7 @@ class ExamController extends Controller
                 $exam['isSubmitted'] = $isSubmitted;
             }
             foreach ($finalExams as $exam) {
-                $examMark = DB::table('exam_students')->where(['exam_id' => $exam->id, 'student_id' => auth()->user()->id])->get()->first();
+                $examMark = ExamStudent::where(['exam_id' => $exam->id, 'student_id' => auth()->user()->id])->get()->first();
                 if ($examMark) {
                     $exam['isMarked'] = true;
                     $exam['mark'] = $examMark;
