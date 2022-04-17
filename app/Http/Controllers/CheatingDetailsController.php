@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Answer;
+use App\Models\CheatingAction;
 use App\Models\CheatingDetails;
 use App\Models\Exam;
-use App\Models\Answer;
+use App\Models\examSession;
 use App\Models\ExamQuestion;
 use App\Models\ExamStudent;
 use App\Models\User;
@@ -31,6 +33,14 @@ class CheatingDetailsController extends Controller
             'exam_id' => $exam->id
         ])->whereNull('action_id')->get();
 
+        $studentIdsZero = CheatingDetails::where([
+            'exam_id' => $exam->id,
+            'action_id' => 1
+        ])->pluck('student_id')->toArray();
+
+        if (!$cheatingDetails) {
+            return response()->json(['message' => 'Failed to fetch cheating details!'], 400);
+        }
         foreach ($cheatingDetails as $cheatingDetail) {
             $student = User::where(['id' => $cheatingDetail->student_id])->get()->first();
 
@@ -40,11 +50,7 @@ class CheatingDetailsController extends Controller
             $cheatingDetail['profileImage'] = $profileImage;
         }
 
-        if (!$cheatingDetails) {
-            return response()->json(['message' => 'Failed to fetch cheating details!'], 400);
-        } else {
-            return response()->json(['message' => 'Fetched details successfully!', 'details' => $cheatingDetails]);
-        }
+        return response()->json(['message' => 'Fetched details successfully!', 'details' => $cheatingDetails]);
     }
 
     /**
@@ -80,20 +86,24 @@ class CheatingDetailsController extends Controller
             return response()->json(['message' => $validator->errors()], 400);
         }
 
-        $exam = DB::table('exams')->where(['id' => $request->examId])->get()->first();
+        $exam = Exam::where(['id' => $request->examId])->get()->first();
 
         if (!$exam) {
             return response()->json(['message' => 'No exam with this id!'], 404);
         }
 
-        $cheatingDetailAction = DB::table('cheating_details')->where(['exam_id' => $exam->id, 'student_id' => auth()->user()->id])->whereNotNull('action_id')->get();
+        $examSession = examSession::where(['exam_id' => $exam->id, 'student_id' => auth()->user()->id])->orderBy('attempt', 'DESC')->get()->first();
 
-        if (!$cheatingDetailAction) {
+        if (!$examSession) {
+            return response()->json(['message' => 'No exam session found for this student!'], 400);
+        }
+        $cheatingDetailAction = CheatingDetails::where(['exam_id' => $exam->id, 'student_id' => auth()->user()->id, 'action_id' => 1])->get()->first();
+        if ($cheatingDetailAction) {
             return response()->json(['message' => 'Action already taken against student. Cannot send more requests.']);
         }
 
 
-        $cheatingDetails = DB::table('cheating_details')->insert([
+        $cheatingDetails = CheatingDetails::create([
             'exam_id' => $exam->id,
             'student_id' => auth()->user()->id,
             'image' => ($request->image) ? $request->image : '',
@@ -166,27 +176,33 @@ class CheatingDetailsController extends Controller
         if ($validator->fails()) {
             return response()->json(['message' => 'The given data is invalid!'], 400);
         }
-        $cheatingDetails = DB::table('cheating_details')->where(['id' => $request->cheatingDetailId])->get()->first();
+        $cheatingDetails = CheatingDetails::where(['id' => $request->cheatingDetailId])->get()->first();
 
         if (!$cheatingDetails) {
             return response()->json(['message' => 'No cheating details found with this id'], 404);
         }
-        $examSession = DB::table('examSession')->where(['exam_id' => $cheatingDetails->exam_id, 'student_id' => $cheatingDetails->student_id])->orderBy('attempt', 'DESC')->get()->first();
+        $examSession = examSession::where(['exam_id' => $cheatingDetails->exam_id, 'student_id' => $cheatingDetails->student_id])->orderBy('attempt', 'DESC')->get()->first();;
 
         if (!$examSession) {
             return response()->json(['message' => 'No exam session with this id!'], 404);
+        }
+
+        $zeroAction = CheatingDetails::where(['action_id' => 1, 'student_id' => $cheatingDetails->student_id, 'exam_id' => $cheatingDetails->exam_id])->get()->first();
+
+        if ($zeroAction) {
+            return response()->json(['message' => 'Exam already revoked, cannot take more actions against student!'], 400);
         }
 
 
         if ($cheatingDetails->action_id) {
             return response()->json(['message' => 'Action already taken!'], 400);
         } else {
-            $exam = DB::table('exams')->where(['id' => $cheatingDetails->exam_id])->get()->first();
-            $action = DB::table('cheating_actions')->where(['name' => $request->action])->get()->first();
+            $exam = Exam::where(['id' => $cheatingDetails->exam_id])->get()->first();
+            $action = CheatingAction::where(['name' => $request->action])->get()->first();
             if (!$action) {
                 return response()->json(['message' => 'Wrong action name specified!'], 400);
             }
-            DB::table('cheating_details')->where([
+            CheatingDetails::where([
                 'id' => $request->cheatingDetailId,
                 'type' => $request->type,
             ])->update([
@@ -195,19 +211,30 @@ class CheatingDetailsController extends Controller
             ]);
             if ($request->action != 'dismiss') {
                 if (!$examSession->isCheater) {
-                    $exst = ExamStudent::where(['student_id' => $cheatingDetails->student_id, 'exam_id' => $cheatingDetails->exam_id])->first();
-                    DB::table('examSession')->where([
+                    examSession::where([
                         'exam_id' => $examSession->exam_id,
                         'student_id' => $examSession->student_id,
                         'attempt' => $examSession->attempt,
                     ])->update([
                         'isCheater' => true,
                     ]);
-
-                    // actions
-                    if ($action->name == "zero") {
-                        $exam_questions = ExamQuestion::where(['exam_id' => $cheatingDetails->exam_id])->get();
-                        foreach ($exam_questions as $q) {
+                }
+                $studentMark = ExamStudent::where(['exam_id' => $examSession->exam_id, 'student_id' => $examSession->student_id])->get()->first();
+                if ($request->action == 'zero') {
+                    // mark exam and set all marks = zero.
+                    if ($studentMark) {
+                        ExamStudent::where([
+                            'exam_id' => $examSession->exam_id,
+                            'student_id' => $examSession->student_id
+                        ])->update(['totalMark' => 0]);
+                    } else {
+                        ExamStudent::create([
+                            'exam_id' => $examSession->exam_id,
+                            'student_id' => $examSession->student_id,
+                            'totalMark' => 0
+                        ]);
+                        $examQuestions = ExamQuestion::where(['exam_id' => $cheatingDetails->exam_id])->get();
+                        foreach ($examQuestions as $q) {
                             $a = Answer::where(['exam_id' => $cheatingDetails->exam_id, 'student_id' => $cheatingDetails->student_id, 'question_id' => $q->question_id])->first();
                             if (!$a) {
                                 Answer::create([
@@ -221,27 +248,29 @@ class CheatingDetailsController extends Controller
                                 DB::table('answers')->where(['exam_id' => $cheatingDetails->exam_id, 'student_id' => $cheatingDetails->student_id, 'question_id' => $q->question_id])->update(['questionMark' => 0, 'isMarked' => true]);
                             }
                         }
-                        //totalMark is zero
-                        $totalMark = 0;
-                    } else if ($action->name == "minus") {
-                        //all the minus values
-                        $totalMark = $exst ? $exst->totalMark : 0;
-                        $totalMark = $totalMark - $request->minusMarks;
                     }
-
-                    if (!$exst) {
-                        ExamStudent::create([
-                            'student_id' => $cheatingDetails->student_id,
-                            'exam_id' => $cheatingDetails->exam_id,
-                            'totalMark' => $totalMark
-                        ]);
+                    CheatingDetails::where([
+                        'student_id' => 6,
+                        'exam_id' => 11
+                    ])->where('action_id', '!=', 1)
+                        ->orWhereNull('action_id')
+                        ->delete();
+                } else if ($request->action == 'minus') {
+                    if ($studentMark) {
+                        ExamStudent::where([
+                            'exam_id' => $examSession->exam_id,
+                            'student_id' => $examSession->student_id
+                        ])->update(['totalMark' => $studentMark->totalMark - $request->minusMarks]);
                     } else {
-                        $exst->update(['totalMark' => $totalMark]);
+                        ExamStudent::create([
+                            'exam_id' => $examSession->exam_id,
+                            'student_id' => $examSession->student_id,
+                            'totalMark' => -1 * $request->minusMarks
+                        ]);
                     }
-                } else {
-                    return response()->json(['message' => 'Action against student already taken!'], 400);
                 }
             }
+
 
             return response()->json(['message' => 'Action stored successfully!']);
         }
