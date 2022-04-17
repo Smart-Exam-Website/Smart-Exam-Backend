@@ -321,13 +321,13 @@ class QuestionController extends Controller
                             );
                             $option = Option::where(['id' => $answers[$i]->id])->first();
 
-                            $option->update([
+                            $answers[$i]->update([
                                 'value' => ((object)$request)->answers[$i]
                             ]);
 
                             if (isset(((object)$request)->correctAnswer)) {
                                 $answers[$i]->update([
-                                    'isCorrect' => (int)($option->value == $correct_answer)
+                                    'isCorrect' => (int)($answers[$i]->value == $correct_answer)
                                 ]);
                             }
                         } else {
