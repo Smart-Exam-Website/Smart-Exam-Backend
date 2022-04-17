@@ -60,7 +60,7 @@ class faceDetectionController extends Controller
 
 
 
-        $response = Http::post('http:/44.192.1.67/m1/detect', [
+        $response = Http::post('http:/35.168.230.239/m1/detect', [
             'image_encode' => $request->image,
         ]);
 
