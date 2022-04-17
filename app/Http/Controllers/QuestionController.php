@@ -186,7 +186,11 @@ class QuestionController extends Controller
     // Edit Question
     public function update(Request $request, $id)
     {
+        $questionn = Question::find($id);
 
+        if (!$questionn) {
+            return response()->json(['message' => 'No Question Found']);
+        }
         $user = auth()->user();
         $examQuestions = ExamQuestion::where(['question_id' => $id])->get();
         $exams = [];
@@ -208,11 +212,10 @@ class QuestionController extends Controller
             if ($user->type == 'instructor') {
 
                 $fields = $request->validate([
-                    'questionText' => 'required|string|max:255',
+                    'questionText' => 'string|max:255',
                     'image' => 'image',
-                    'type' => 'required|string',
-                    'answers'    => 'required|array',
-                    'answers.*'  => 'required|string|distinct',
+                    'answers'    => 'array',
+                    'answers.*'  => 'string|distinct',
                     'correctAnswer' => 'string'
                 ]);
 
@@ -222,37 +225,50 @@ class QuestionController extends Controller
                 }
 
                 $question = Question::create([
-                    'questionText' => $fields['questionText'],
-                    'image' => array_key_exists("image", $fields) ? $path : NULL,
-                    'type' => 'mcq',
-                    'instructor_id' => $user->id
+                    'questionText' => array_key_exists("questionText", $fields) ? $fields['questionText'] : $questionn->questionText,
+                    'image' => array_key_exists("image", $fields) ? $path : $questionn->image,
+                    'type' => $questionn->type,
+                    'instructor_id' => $questionn->instructor_id
                 ]);
 
-                $answers = $fields['answers'];
+                $answers = $questionn->options;
+                $newanswers = [];
 
-                if ($fields['type'] == 'mcq') {
-                    foreach ($answers as $a) {
-                        if ($fields['correctAnswer'] == $a) {
+                for ($i = 0; $i < $answers->count(); $i++) {
+                    array_push($newanswers, isset(((object)$request)->answers[$i]) ? $fields['answers'][$i] : $answers[$i]->value);
+                }
+
+                $correct = "";
+                foreach ($answers as $a) {
+                    if ($a->isCorrect == 1) {
+                        $correct_answer = $a->value;
+                    }
+                }
+                $correct_answer = array_key_exists("correctAnswer", $fields) ? $fields['correctAnswer'] : $correct;
+
+                if ($questionn->type == 'mcq') {
+                    foreach ($newanswers as $a) {
+                        if ($correct_answer == $a) {
                             Option::create([
                                 'value' => $a,
-                                'type' => $fields['type'],
+                                'type' => $questionn->type,
                                 'question_id' => $question->id,
                                 'isCorrect' => true
                             ]);
                         } else {
                             Option::create([
                                 'value' => $a,
-                                'type' => $fields['type'],
+                                'type' => $questionn->type,
                                 'question_id' => $question->id,
                                 'isCorrect' => false
                             ]);
                         }
                     }
-                } else if ($fields['type'] == 'essay') {
+                } else if ($questionn->type == 'essay') {
                     foreach ($answers as $a) {
                         Option::create([
                             'value' => $a,
-                            'type' => $fields['type'],
+                            'type' => $questionn->type,
                             'question_id' => $question->id,
                             'isCorrect' => true
                         ]);
