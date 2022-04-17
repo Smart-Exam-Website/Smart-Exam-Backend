@@ -37,16 +37,11 @@ class CheatingDetailsController extends Controller
             'exam_id' => $exam->id,
             'action_id' => 1
         ])->pluck('student_id')->toArray();
-        
+
         if (!$cheatingDetails) {
             return response()->json(['message' => 'Failed to fetch cheating details!'], 400);
         }
-        // $cheatingDetails->filter(function ($detail, $key) use ($studentIdsZero) {
-        //     return !(in_array($detail->student_id, $studentIdsZero)) == true;
-        // })->values();
         foreach ($cheatingDetails as $cheatingDetail) {
-            // first, check if zero action was taken against student
-            // if it was, remove all records regarding that student.
             $student = User::where(['id' => $cheatingDetail->student_id])->get()->first();
 
             $studentName = $student->firstName . ' ' . $student->lastName;
@@ -55,7 +50,7 @@ class CheatingDetailsController extends Controller
             $cheatingDetail['profileImage'] = $profileImage;
         }
 
-            return response()->json(['message' => 'Fetched details successfully!', 'details' => $cheatingDetails]);
+        return response()->json(['message' => 'Fetched details successfully!', 'details' => $cheatingDetails]);
     }
 
     /**
@@ -99,7 +94,7 @@ class CheatingDetailsController extends Controller
 
         $examSession = examSession::where(['exam_id' => $exam->id, 'student_id' => auth()->user()->id])->orderBy('attempt', 'DESC')->get()->first();
 
-        if(!$examSession) {
+        if (!$examSession) {
             return response()->json(['message' => 'No exam session found for this student!'], 400);
         }
         $cheatingDetailAction = CheatingDetails::where(['exam_id' => $exam->id, 'student_id' => auth()->user()->id, 'action_id' => 1])->get()->first();
@@ -254,6 +249,12 @@ class CheatingDetailsController extends Controller
                             }
                         }
                     }
+                    CheatingDetails::where([
+                        'student_id' => 6,
+                        'exam_id' => 11
+                    ])->where('action_id', '!=', 1)
+                        ->orWhereNull('action_id')
+                        ->delete();
                 } else if ($request->action == 'minus') {
                     if ($studentMark) {
                         ExamStudent::where([
