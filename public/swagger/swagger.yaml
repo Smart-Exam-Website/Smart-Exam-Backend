@@ -1257,7 +1257,7 @@ paths:
       tags:
         - GroupQuestion
       summary: Edit question
-      description: if we can update this question because it is not in one of the prev exams =>> nothing is required ,  if we create New Question Because this question is found in another prev exam =>> questions and type is required
+      description: edit Question
       operationId: editQuestion
       parameters:
         - name: id
@@ -3212,7 +3212,7 @@ components:
       type: object
     StoreEditQuestionGroupRequest:
       title: StoreEditQuestionGroupRequest
-      description: if we can update this question because it is not in one of the prev exams =>> nothing is required ,  if we create New Question Because this question is found in another prev exam =>> questions and type is required
+      description: edit question
       required:
         - type
         - questions
