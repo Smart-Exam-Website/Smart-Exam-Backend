@@ -250,8 +250,8 @@ class CheatingDetailsController extends Controller
                         }
                     }
                     CheatingDetails::where([
-                        'student_id' => 6,
-                        'exam_id' => 11
+                        'student_id' => $cheatingDetails->student_id,
+                        'exam_id' => $cheatingDetails->exam_id
                     ])->where('action_id', '!=', 1)
                         ->orWhereNull('action_id')
                         ->delete();
