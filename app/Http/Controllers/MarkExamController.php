@@ -117,6 +117,14 @@ class MarkExamController extends Controller
             if (!$examSession) {
                 return response()->json(['message' => 'No exam session found for this student'], 422);
             }
+            $exam = Exam::where(['id' => $fields['examId']])->first();
+            if (!$exam) {
+                return response()->json(['message' => 'No exam with this id!'], 404);
+            }
+
+            if (date('Y-m-d H:i:s') <= $exam->endAt) {
+                return response()->json(['message' => 'Cannot mark exam yet!'], 400);
+            }
 
             if (ExamStudent::where(['student_id' => $fields['studentId'], 'exam_id' => $fields['examId']])->first() != NULL) {
                 $exst = ExamStudent::where(['student_id' => $fields['studentId'], 'exam_id' => $fields['examId']])->first();

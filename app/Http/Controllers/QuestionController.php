@@ -307,13 +307,22 @@ class QuestionController extends Controller
 
                 $newanswers = [];
 
+                $correct = "";
+                foreach ($answers as $a) {
+                    if ($a->isCorrect == 1) {
+                        $correct_answer = $a->value;
+                    }
+                }
+                $correct_answer = array_key_exists("correctAnswer", $fields) ? $fields['correctAnswer'] : $correct;
+
+
                 if ($questionn->type == 'mcq') {
 
                     for ($i = 0; $i < $answers->count(); $i++) {
                         $correctAnswerid = 0;
                         $op = Option::where(['id' => (int)($answers[$i]->id)])->first();
 
-                        if ($op->value == $request['correctAnswer'])
+                        if ($op->value == $correct_answer)
                             $correctAnswerid = $op->id;
 
                         if (isset(((object)$request)->answers[$i])) {
@@ -322,13 +331,14 @@ class QuestionController extends Controller
                                 ((object)$request)->answers[$i]
                             );
                             $option = Option::where(['id' => $answers[$i]->id])->first();
-                            $option->update([
+
+                            $answers[$i]->update([
                                 'value' => ((object)$request)->answers[$i]
                             ]);
-                            if (isset(((object)$request)->correctAnswer)) {
 
+                            if (isset(((object)$request)->correctAnswer)) {
                                 $answers[$i]->update([
-                                    'isCorrect' => (int)($option->id == $correctAnswerid)
+                                    'isCorrect' => (int)($answers[$i]->value == $correct_answer)
                                 ]);
                             }
                         } else {
@@ -339,7 +349,7 @@ class QuestionController extends Controller
                             $option = Option::where(['id' => $answers[$i]->id])->first();
                             if (isset(((object)$request)->correctAnswer)) {
                                 $answers[$i]->update([
-                                    'isCorrect' => (int)($option->id == Option::where(['value' => $request['correctAnswer']])->first()->id)
+                                    'isCorrect' => (int)($option->id == Option::where(['value' => $correct_answer, 'question_id' => $id])->first()->id)
                                 ]);
                             }
                         }
@@ -374,7 +384,7 @@ class QuestionController extends Controller
                         }
                     }
                 }
-
+                return $answers;
                 if (array_key_exists("image", $fields)) {
                     if ($questionn->image) {
                         $s = explode("/", $questionn->image);
