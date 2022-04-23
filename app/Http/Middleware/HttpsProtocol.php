@@ -18,7 +18,7 @@ class HttpsProtocol
     public function handle($request, Closure $next)
     {
         if (!$request->secure() && App::environment() === 'production') {
-            return redirect()->secure($request->getRequestUri());
+            return redirect()->secure('https://ec2-44-201-124-239.compute-1.amazonaws.com');
         }
 
         return $next($request);

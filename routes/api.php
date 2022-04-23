@@ -67,7 +67,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 Route::post('/instructors/register', 'App\Http\Controllers\InstructorController@store');
 
 
-Route::group(['middleware' => ['auth:sanctum'], 'scheme' => 'https'], function () {
+Route::group(['middleware' => ['auth:sanctum']], function () {
     // Get instructor's profile
     Route::get('/instructors/me', 'App\Http\Controllers\InstructorController@showProfile');
     Route::get('/instructors/my-exams', 'App\Http\Controllers\InstructorController@showMyExams');

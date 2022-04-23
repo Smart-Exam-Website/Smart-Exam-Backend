@@ -18,8 +18,6 @@ use App\Http\Controllers\UserController;
 Route::get('/', function () {
     return view('welcome');
 });
-Route::group(['scheme' => 'https'], function () {
-    Route::get('/api/documentation', function () {
-        return view('swagger.index');
-    });
+Route::get('/api/documentation', function () {
+    return view('swagger.index');
 });
