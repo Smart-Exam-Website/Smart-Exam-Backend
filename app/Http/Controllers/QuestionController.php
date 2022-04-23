@@ -10,7 +10,6 @@ use App\Models\Question;
 use App\Models\Exam;
 use App\Models\QuestionTag;
 use App\Models\Tag;
-use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 
 class QuestionController extends Controller

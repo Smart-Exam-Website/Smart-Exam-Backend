@@ -113,6 +113,19 @@ class UserSeeder extends Seeder
                     'password' => Hash::make('secret'), // password
                     'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
                     'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
+                ],
+                [
+                    'firstName' => 'Hazem',
+                    'lastName' => 'Ali',
+                    'email' => 'hazemali627@gmail.com',
+                    'email_verified_at' => now(),
+                    'gender' => 'male',
+                    'image' => 'Y4FtEuEiB67G1MrRcG1h6DmqCD9njs.jpg',
+                    'phone' => '01045634578',
+                    'type' => 'student',
+                    'password' => Hash::make('secret'), // password
+                    'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
+                    'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
                 ]
             ]);
             $users = User::all();

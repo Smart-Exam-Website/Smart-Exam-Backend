@@ -32,4 +32,8 @@ class Student extends Model
     {
         return $this->belongsToMany(examSession::class, 'examSession', 'student_id')->withTimestamps()->withPivot(['numberOfFaces', 'isVerified', 'startTime']);
     }
+
+    public function formulaQuestions() {
+        return $this->belongsToMany(FormulaQuestion::class, 'formula_student', 'student_id')->withTimestamps();
+    }
 }
