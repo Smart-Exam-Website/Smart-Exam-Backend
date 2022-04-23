@@ -18,7 +18,6 @@ class CreateFormulasTable extends Migration
             $table->unsignedBigInteger('question_id');
             $table->foreign('question_id')->references('id')->on('questions')->onDelete('cascade');
             $table->text('formula');
-            $table->text('vars');
             $table->timestamps();
         });
         Schema::create('formula_student', function (Blueprint $table) {
@@ -38,6 +37,15 @@ class CreateFormulasTable extends Migration
             $table->float('value');
             $table->timestamps();
         });
+        Schema::create('formula_variables', function (Blueprint $table) {
+            $table->unsignedBigInteger('question_id');
+            $table->foreign('question_id')->references('id')->on('questions')->onDelete('cascade');
+            $table->text('variable');
+            $table->float('startVal');
+            $table->float('endVal');
+            $table->timestamps();
+        });
+
     }
 
     /**
@@ -49,5 +57,7 @@ class CreateFormulasTable extends Migration
     {
         Schema::dropIfExists('formulas');
         Schema::dropIfExists('formula_student');
+        Schema::dropIfExists('formula_variables');
+        Schema::dropIfExists('formula_questions');
     }
 }
