@@ -35,4 +35,12 @@ class Question extends Model
     {
         return $this->belongsToMany(Question::class, 'group_questions', 'group_id');
     }
+
+    public function formula() {
+        return $this->hasOne(Formula::class);
+    }
+
+    public function formulaQuestions() {
+        return $this->hasMany(FormulaQuestion::class);
+    }
 }

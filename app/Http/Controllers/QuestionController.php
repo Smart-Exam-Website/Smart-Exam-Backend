@@ -10,6 +10,7 @@ use App\Models\Question;
 use App\Models\Exam;
 use App\Models\QuestionTag;
 use App\Models\Tag;
+use Illuminate\Database\Eloquent\Builder;
 
 class QuestionController extends Controller
 {
@@ -19,47 +20,56 @@ class QuestionController extends Controller
         $user = auth()->user();
         $queryTag = request('tag');
         $myQuestions = request('myQuestions');
+        $type = request('type');
+        $searchText = request('search');
         $questions = [];
         $qs = [];
-        if ($queryTag) {
-            $tag = Tag::where('name', 'LIKE', $queryTag . '%')->get()->first();
-            $questions = $tag->questions;
-            if ($myQuestions != NULL) {
-                if ($myQuestions == "true") {
-                    foreach ($questions as $q) {
-                        if (($q->instructor_id == $user->id) && ($q->isHidden == false)) {
-                            array_push($qs, $q);
-                        }
-                    };
-                } else if ($myQuestions == "false") {
-                    foreach ($questions as $q) {
-                        if (($q->instructor_id != $user->id) && ($q->isHidden == false)) {
-                            array_push($qs, $q);
-                        }
-                    };
-                }
-            } else {
-                foreach ($questions as $q) {
-                    if ($q->isHidden == false) {
-                        array_push($qs, $q);
-                    }
-                };
-            }
+
+        if($searchText) {
+            $questions = Question::latest('created_at')->where(
+                'questionText', 'LIKE', '%' . $searchText . '%'
+            )->where(['isHidden' => false]);
         } else {
-            if ($myQuestions != NULL) {
-                if ($myQuestions == "true") {
-                    $questions = Question::latest('created_at')->where(['instructor_id' => $user->id, 'isHidden' => false])->get();
-                } else if ($myQuestions == "false") {
-                    $questions = Question::latest('created_at')->where('instructor_id', '<>', $user->id)->where(['isHidden' => false])->get();
-                }
-            } else {
-                $questions = Question::latest('created_at')->where(['isHidden' => false])->get();
-            }
-            $qs = $questions;
+            $questions = Question::latest('created_at')->where(['isHidden' => false]);
         }
 
+        // if we're filtering by tag, it is easier to get questions associated 
+        // with a certain tag, rather than fetching all questions then filter by tag.
+        if ($queryTag) {
+
+            $questions = $questions->whereHas('tags', function (Builder $query) use ($queryTag) { 
+                $query->where('tags.name', $queryTag);
+            });
+            
+        }
+
+        $questions = $questions->get();
+
+        if($myQuestions) {
+            $filteredQuestions = $questions->filter(function ($question, $key) use ($myQuestions, $user) {
+                $myQuestions = filter_var($myQuestions, FILTER_VALIDATE_BOOLEAN);
+                return $myQuestions? $question->instructor_id == $user->id: $question->instructor_id != $user->id;
+            });
+
+            $questions = collect(array_values($filteredQuestions->all()));
+        }
+
+        if($type) {
+
+            $filteredQuestions = $questions->filter(function ($question, $key) use ($type) {
+                return $question->type == $type;
+            });
+
+            $questions = collect(array_values($filteredQuestions->all()));
+
+        }
+
+    
+
         foreach ($questions as $q) {
-            $q->instructor->user;
+
+            $instructorName = $q->instructor->user->firstName . ' ' . $q->instructor->user->lastName;
+            $q->instructorName = $instructorName;
             $q->tags;
             $q->options;
             if ($q->type == "group") {
@@ -67,7 +77,7 @@ class QuestionController extends Controller
             }
         }
 
-        return $qs;
+        return $questions;
     }
 
     // Create new question

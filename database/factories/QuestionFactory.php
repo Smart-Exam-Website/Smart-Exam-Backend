@@ -16,7 +16,7 @@ class QuestionFactory extends Factory
     {
         return [
             'questionText' => $this->faker->sentence(),
-            'type' => $this->faker->randomElement(['mcq']),
+            'type' => $this->faker->randomElement(['mcq', 'essay' , 'group' , 'formula']),
             'isHidden' => false,
             'instructor_id' => Instructor::all()->random()->id
         ];

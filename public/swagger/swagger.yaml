@@ -1018,11 +1018,25 @@ paths:
           name: tag
           schema:
             type: string
+            example: "Maths"
           required: false
         - in: query
           name: myQuestions
           schema:
             type: boolean
+            example: true
+          required: false
+        - in: query
+          name: search
+          schema:
+            type: string
+            example: "what"
+          required: false
+        - in: query
+          name: type
+          schema:
+            type: string
+            example: "mcq"
           required: false
       summary: Get list of Questions
       description: Returns list of Questions
