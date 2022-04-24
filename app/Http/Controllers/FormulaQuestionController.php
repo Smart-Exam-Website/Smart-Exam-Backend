@@ -212,7 +212,6 @@ class FormulaQuestionController extends Controller
         }
 
         if ($examQuestions) {
-            Question::where('id', $question->id)->update(['isHidden' => true]);
             $question = Question::create([
                 'questionText' => $request->questionText,
                 'image' => $imageName,
