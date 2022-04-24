@@ -13,6 +13,137 @@ servers:
   - url: http://44.201.124.239/api/
     description: Smart Exam API Server
 paths:
+  "/questions/formula/create":
+    description: create new formula question
+    post:
+      tags:
+        - "Questions"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                questionText:
+                  required: true
+                  example: "What is [x] + [y]?"
+                  type: String
+                image:
+                  example: "SEND IMAGE AS MULTIPART/FORM-DATA"
+                "type":
+                  type: String
+                  required: true
+                  example: "formula"
+                "tags":
+                  type: array
+                  items:
+                    type: array
+                    items: []
+                    example: ['x', 30, 60]
+                formula:
+                  type: string
+                  example: "x+y"
+                variables:
+                  type: array
+                  items:
+                    type: array
+                    items: []
+                    example: [['x', 30, 60], ['y', 0, 5]]
+                formulas:
+                  type: array
+                  items:
+                    type: array
+                    items: []
+                    example: [['What is 5 + 6?', 7], ['What is 4 + 5', 6]]                 
+              type: object
+      responses:
+        "201":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    example: successfully created formula question!
+                type: object
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthenticated
+        "403":
+          description: Forbidden
+      security:
+        - bearer: []
+  "/questions/formula/{question}":
+    description: edit formula question
+    post:
+      tags:
+        - "Questions"
+      parameters:
+        - in: path
+          name: question
+          schema:
+            type: integer
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                questionText:
+                  required: true
+                  example: "What is [x] + [y]?"
+                  type: String
+                image:
+                  example: "SEND IMAGE AS MULTIPART/FORM-DATA"
+                "type":
+                  type: String
+                  required: true
+                  example: "formula"
+                "tags":
+                  type: array
+                  items:
+                    type: array
+                    items: []
+                    example: ['x', 30, 60]
+                formula:
+                  type: string
+                  example: "x+y"
+                variables:
+                  type: array
+                  items:
+                    type: array
+                    items: []
+                    example: [['x', 30, 60], ['y', 0, 5]]
+                formulas:
+                  type: array
+                  items:
+                    type: array
+                    items: []
+                    example: [['What is 5 + 6?', 7], ['What is 4 + 5', 6]]                 
+              type: object
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    example: successfully created formula question!
+                type: object
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthenticated
+        "403":
+          description: Forbidden
+      security:
+        - bearer: []
+      
   "/tags":
     description: Get all tags
     get:
@@ -1206,7 +1337,7 @@ paths:
         "404":
           description: Resource Not Found
 
-  "/questions/questionGroup/create":
+  "/questions/question-group/create":
     post:
       tags:
         - GroupQuestion
@@ -1237,7 +1368,7 @@ paths:
           description: Forbidden
       security:
         - bearer: []
-  "/questions/questionGroup/{id}":
+  "/questions/question-group/{id}":
     put:
       tags:
         - GroupQuestion
