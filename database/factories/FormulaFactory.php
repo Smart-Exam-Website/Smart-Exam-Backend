@@ -16,7 +16,6 @@ class FormulaFactory extends Factory
     {
         return [
             'formula' => $this->faker->randomElement(['x + y' , 'x + 2 * y', 'x - y']),
-            'vars' => 'x,y'
         ];
     }
 }

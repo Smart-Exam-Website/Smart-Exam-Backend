@@ -159,6 +159,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/questions/questionGroup/{question}', 'App\Http\Controllers\GroupQuestionController@show');
     Route::put('/questions/questionGroup/{id}', [GroupQuestionController::class, 'update']);
     Route::delete('/questions/questionGroup/{id}', [GroupQuestionController::class, 'destroy']);
+    Route::post('/questions/formula/create', 'App\Http\Controllers\FormulaQuestionController@store');
+    Route::put('/questions/formula/{question}', 'App\Http\Controllers\FormulaQuestionController@update');
+    
 });
 
 // ------------------- TAG ROUTES ----------------------

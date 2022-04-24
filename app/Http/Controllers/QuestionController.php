@@ -25,9 +25,11 @@ class QuestionController extends Controller
         $questions = [];
         $qs = [];
 
-        if($searchText) {
+        if ($searchText) {
             $questions = Question::latest('created_at')->where(
-                'questionText', 'LIKE', '%' . $searchText . '%'
+                'questionText',
+                'LIKE',
+                '%' . $searchText . '%'
             )->where(['isHidden' => false]);
         } else {
             $questions = Question::latest('created_at')->where(['isHidden' => false]);
@@ -37,34 +39,32 @@ class QuestionController extends Controller
         // with a certain tag, rather than fetching all questions then filter by tag.
         if ($queryTag) {
 
-            $questions = $questions->whereHas('tags', function (Builder $query) use ($queryTag) { 
+            $questions = $questions->whereHas('tags', function (Builder $query) use ($queryTag) {
                 $query->where('tags.name', $queryTag);
             });
-            
         }
 
         $questions = $questions->get();
 
-        if($myQuestions) {
+        if ($myQuestions) {
             $filteredQuestions = $questions->filter(function ($question, $key) use ($myQuestions, $user) {
                 $myQuestions = filter_var($myQuestions, FILTER_VALIDATE_BOOLEAN);
-                return $myQuestions? $question->instructor_id == $user->id: $question->instructor_id != $user->id;
+                return $myQuestions ? $question->instructor_id == $user->id : $question->instructor_id != $user->id;
             });
 
             $questions = collect(array_values($filteredQuestions->all()));
         }
 
-        if($type) {
+        if ($type) {
 
             $filteredQuestions = $questions->filter(function ($question, $key) use ($type) {
                 return $question->type == $type;
             });
 
             $questions = collect(array_values($filteredQuestions->all()));
-
         }
 
-    
+
 
         foreach ($questions as $q) {
 
@@ -98,13 +98,14 @@ class QuestionController extends Controller
                 'correctAnswer' => 'string',
             ]);
 
+            $imageName = $fields['image'] ? Str::random(30) . '.jpg' : null;
             if (array_key_exists("image", $fields)) {
-                $path = Storage::disk('s3')->put('questionImages', $fields['image']);
+                $path = Storage::disk('s3')->put('questionImages/', $imageName, $fields['image']);
                 $path = Storage::disk('s3')->url($path);
             }
             $question = Question::create([
                 'questionText' => $fields['questionText'],
-                'image' => array_key_exists("image", $fields) ? $path : NULL,
+                'image' => $imageName,
                 'type' => $fields['type'],
                 'isHidden' => false,
                 'instructor_id' => $user->id
@@ -229,14 +230,15 @@ class QuestionController extends Controller
                     'correctAnswer' => 'string'
                 ]);
 
+                $imageName = $fields['image'] ? Str::random(30) . '.jpg' : null;
                 if (array_key_exists("image", $fields)) {
-                    $path = Storage::disk('s3')->put('questionImages', $fields['image']);
+                    $path = Storage::disk('s3')->put('questionImages/', $imageName, $fields['image']);
                     $path = Storage::disk('s3')->url($path);
                 }
 
                 $question = Question::create([
                     'questionText' => array_key_exists("questionText", $fields) ? $fields['questionText'] : $questionn->questionText,
-                    'image' => array_key_exists("image", $fields) ? $path : $questionn->image,
+                    'image' => array_key_exists("image", $fields) ? $imageName : $questionn->image,
                     'type' => $questionn->type,
                     'instructor_id' => $questionn->instructor_id
                 ]);

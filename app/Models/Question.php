@@ -43,4 +43,8 @@ class Question extends Model
     public function formulaQuestions() {
         return $this->hasMany(FormulaQuestion::class);
     }
+
+    public function variables() {
+        return $this->hasMany(FormulaVariable::class);
+    }
 }
