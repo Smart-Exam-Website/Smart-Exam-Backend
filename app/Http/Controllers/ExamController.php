@@ -6,6 +6,7 @@ use App\Models\Configuration;
 use App\Models\Exam;
 use App\Models\examSession;
 use App\Models\ExamStudent;
+use App\Models\FormulaQuestion;
 use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -230,12 +231,20 @@ class ExamController extends Controller
         foreach ($questions as $question) {
 
             if ($question->type == "group") {
-                $question->questions->each(function ($e) {
-                    $e->tags;
+                $question->questions->each(function ($question) {
+                    $question->tags;
                 });
+            } else if($question->type == "formula") {
+                $formulaQs = FormulaQuestion::where([
+                    'question_id' => $question->id
+                ])->get();
+
+                $question->questions = $formulaQs;
+
+            } else {
+                $question->options;
             }
 
-            $question->options;
         }
         return response()->json(['questions' => $questions]);
     }

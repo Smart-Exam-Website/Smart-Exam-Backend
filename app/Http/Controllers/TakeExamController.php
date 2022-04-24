@@ -8,6 +8,8 @@ use App\Models\Exam;
 use App\Models\examSession;
 use App\Models\ExamStudent;
 use App\Models\CheatingAction;
+use App\Models\FormulaQuestion;
+use App\Models\FormulaStudent;
 use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -86,7 +88,39 @@ class TakeExamController extends Controller
         $questions = $exam->questions;
 
         foreach ($questions as $question) {
-            $question->options;
+            if ($question->type == 'group') {
+                $question->questions;
+            } else if ($question->type == 'formula') {
+                $formulaQ = FormulaQuestion::where([
+                    'question_id' => $question->id,
+                ])->inRandomOrder()->get()->first();
+
+                $question->questionText = $formulaQ->formulaText;
+
+                $studentFormulaQ = FormulaStudent::where([
+                    'student_id' => auth()->user()->id,
+                    'exam_id' => $exam->id,
+                ])->get()->first();
+                if (!$studentFormulaQ) {
+                    $studentFormulaQ = FormulaStudent::create([
+                        'student_id' => auth()->user()->id,
+                        'formula_question_id' => $formulaQ->id,
+                        'exam_id' => $exam->id,
+                    ]);
+                    if (!$studentFormulaQ) {
+                        return response()->json(['message' => 'Failed.'], 400);
+                    }
+                } else {
+                    FormulaStudent::where([
+                        'student_id' => auth()->user()->id,
+                        'exam_id' => $exam->id,
+                    ])->update([
+                        'formula_question_id' => $formulaQ->id
+                    ]);
+                }
+            } else {
+                $question->options;
+            }
         }
         return response()->json(['questions' => $questions]);
     }
