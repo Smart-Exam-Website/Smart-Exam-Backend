@@ -81,7 +81,7 @@ class UserSeeder extends Seeder
                     'email' => 'nouran@gmail.com',
                     'email_verified_at' => now(),
                     'gender' => 'female',
-                    'image' => 'Y4FtEuEiB67G1MrRcG1h6DmqCD9njs.jpg',
+                    'image' => 'adb0jCtwrcdtb3XcyijupURwyihbeTStU7L4a2gd.jpg',
                     'phone' => '01045634578',
                     'type' => 'student',
                     'password' => Hash::make('secret'), // password
@@ -116,8 +116,8 @@ class UserSeeder extends Seeder
                 ]
             ]);
             $users = User::all();
-            foreach($users as $user) {
-                if($user->type == 'instructor') {
+            foreach ($users as $user) {
+                if ($user->type == 'instructor') {
                     DB::table('instructors')->insert([
                         [
                             'degree' => 'Phd',
