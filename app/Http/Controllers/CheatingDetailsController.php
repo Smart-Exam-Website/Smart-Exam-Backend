@@ -33,11 +33,6 @@ class CheatingDetailsController extends Controller
             'exam_id' => $exam->id
         ])->whereNull('action_id')->get();
 
-        $studentIdsZero = CheatingDetails::where([
-            'exam_id' => $exam->id,
-            'action_id' => 1
-        ])->pluck('student_id')->toArray();
-
         if (!$cheatingDetails) {
             return response()->json(['message' => 'Failed to fetch cheating details!'], 400);
         }
@@ -202,13 +197,25 @@ class CheatingDetailsController extends Controller
             if (!$action) {
                 return response()->json(['message' => 'Wrong action name specified!'], 400);
             }
-            CheatingDetails::where([
-                'id' => $request->cheatingDetailId,
-                'type' => $request->type,
-            ])->update([
-                'action_id' => $action->id,
-                'minusMarks' => $action->id == 1 ? $exam->totalMark : ($action->id == 2 ? $request->minusMarks : 0),
-            ]);
+            if($cheatingDetails->type != 'Switch Browser') {
+                CheatingDetails::where([
+                    'id' => $request->cheatingDetailId,
+                    'type' => $request->type,
+                ])->update([
+                    'action_id' => $action->id,
+                    'minusMarks' => $action->id == 1 ? $exam->totalMark : ($action->id == 2 ? $request->minusMarks : 0),
+                ]);
+
+            } else {
+                CheatingDetails::where([
+                    'student_id' => $cheatingDetails->student_id,
+                    'exam_id' => $cheatingDetails->exam_id,
+                    'type' => $request->type,
+                ])->whereNull('action_id')->update([
+                    'action_id' => $action->id,
+                    'minusMarks' => $action->id == 1 ? $exam->totalMark : ($action->id == 2 ? $request->minusMarks : 0),
+                ]);
+            }
             if ($request->action != 'dismiss') {
                 if (!$examSession->isCheater) {
                     examSession::where([
