@@ -6,11 +6,11 @@ use App\Models\Exam;
 use App\Models\Answer;
 use App\Models\Option;
 use App\Models\Configuration;
-use App\Models\CheatingDetails;
-use App\Models\CheatingAction;
 use App\Models\examSession;
 use App\Models\ExamQuestion;
 use App\Models\ExamStudent;
+use App\Models\FormulaQuestion;
+use App\Models\FormulaStudent;
 use App\Models\Question;
 use App\Models\Student;
 use App\Models\User;
@@ -425,6 +425,17 @@ class MarkExamController extends Controller
                 $s->totalQuestionMark = DB::table('exam_question')->where(['exam_id' => $exam->id, 'question_id' => $s->question_id])->get()->first()->mark;
                 $answers = Option::where(['question_id' => $s->question->id])->get();
                 $s->question->answers = $answers;
+                if ($s->question->type == "group") {
+                    $s->question->questions->each(function ($e) {
+                        $answers = Option::where(['question_id' => $e->id])->get();
+                        $e->answers = $answers;
+                    });
+                } else if ($s->question->type == "formula") {
+                    $formula_ques = FormulaStudent::where(['student_id' => $user->id, 'exam_id' => $exam->id])->get()->first()->formula_question_id;
+                    $s->question->formula_questions = FormulaQuestion::where(['id' => $formula_ques])->get()->first();
+                    $s->question->formula;
+                    $s->question->variables;
+                }
             }
 
             return response()->json(['message' => 'Report generated successfully', 'solution' => $solutions]);

@@ -11,5 +11,4 @@ class FormulaStudent extends Model
     protected $guarded = [];
     protected $table = 'formula_student';
     public $timestamps = true;
-
 }
