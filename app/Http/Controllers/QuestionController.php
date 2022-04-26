@@ -35,7 +35,7 @@ class QuestionController extends Controller
             $questions = Question::latest('created_at')->where(['isHidden' => false]);
         }
 
-        // if we're filtering by tag, it is easier to get questions associated 
+        // if we're filtering by tag, it is easier to get questions associated
         // with a certain tag, rather than fetching all questions then filter by tag.
         if ($queryTag) {
 
@@ -74,6 +74,8 @@ class QuestionController extends Controller
             $q->options;
             if ($q->type == "group") {
                 $q->questions;
+            } else if ($q->type == "formula") {
+                $q->formulaQuestions;
             }
         }
 
