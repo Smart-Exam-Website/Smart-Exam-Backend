@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\Question;
 
 
-class GroupFactory extends Factory
+class GroupQuestionFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -16,7 +16,7 @@ class GroupFactory extends Factory
     public function definition()
     {
         return [
-            'question_id' => Question::where('type', '<>', 'group')->random()->id
+            'question_id' => Question::where('type', '<>', 'group')->get()->random()->id
         ];
     }
 }
