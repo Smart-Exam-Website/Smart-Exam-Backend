@@ -78,6 +78,8 @@ class QuestionController extends Controller
                 });
             } else if ($q->type == "formula") {
                 $q->formulaQuestions;
+                $q->formula;
+                $q->variables;
             }
         }
 
@@ -195,6 +197,8 @@ class QuestionController extends Controller
             });
         } else if ($question->type == "formula") {
             $question->formulaQuestions;
+            $question->formula;
+            $question->variables;
         }
         $question->options;
         return response()->json(['question' => $question]);
