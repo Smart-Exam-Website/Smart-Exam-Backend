@@ -75,6 +75,7 @@ class QuestionController extends Controller
             if ($q->type == "group") {
                 $q->questions->each(function ($e) {
                     $e->tags;
+                    $e->options;
                 });
             } else if ($q->type == "formula") {
                 $q->formulaQuestions;
@@ -194,6 +195,7 @@ class QuestionController extends Controller
         if ($question->type == "group") {
             $question->questions->each(function ($e) {
                 $e->tags;
+                $e->options;
             });
         } else if ($question->type == "formula") {
             $question->formulaQuestions;

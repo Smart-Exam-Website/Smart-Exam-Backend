@@ -86,15 +86,22 @@ class MarkExamController extends Controller
             $q->tags;
             $q->options;
             if ($q->type == "group") {
-                $q->questions->each(function ($e) {
+                foreach ($q->questions as $e) {
                     $e->tags;
-                });
+                    $e->options;
+                    $answer = Answer::where(['student_id' => $user->id, 'question_id' => $e->id, 'exam_id' => $exam->id, 'attempt' => $session->attempt])->get()->first();
+                    $e['answers'] = $answer;
+                };
             } else if ($q->type == "formula") {
-                $q->formulaQuestions;
+                $formula_ques = FormulaStudent::where(['student_id' => $user->id, 'exam_id' => $exam->id, 'question_id' => $q->id])->get()->first()->formula_question_id;
+                $q->formula_questions = FormulaQuestion::where(['id' => $formula_ques])->get()->first();
+                $q->formula;
+                $q->variables;
             }
-            $answer = Answer::where(['student_id' => $studentId, 'question_id' => $q->id, 'exam_id' => $exam->id, 'attempt' => $session->attempt])->get()->first();
-
-            $question['answer'] = $answer;
+            if (!($q->type == "group")) {
+                $answer = Answer::where(['student_id' => $studentId, 'question_id' => $q->id, 'exam_id' => $exam->id, 'attempt' => $session->attempt])->get()->first();
+                $q['answer'] = $answer;
+            }
         }
 
         $examConfig = Configuration::where(['exam_id' => $exam->id])->get()->first();
@@ -431,7 +438,7 @@ class MarkExamController extends Controller
                         $e->answers = $answers;
                     });
                 } else if ($s->question->type == "formula") {
-                    $formula_ques = FormulaStudent::where(['student_id' => $user->id, 'exam_id' => $exam->id])->get()->first()->formula_question_id;
+                    $formula_ques = FormulaStudent::where(['student_id' => $user->id, 'exam_id' => $exam->id, 'question_id' => $s->question_id])->get()->first()->formula_question_id;
                     $s->question->formula_questions = FormulaQuestion::where(['id' => $formula_ques])->get()->first();
                     $s->question->formula;
                     $s->question->variables;

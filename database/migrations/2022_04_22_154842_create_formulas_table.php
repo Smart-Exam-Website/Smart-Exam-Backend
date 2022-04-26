@@ -38,13 +38,14 @@ class CreateFormulasTable extends Migration
         Schema::create('formula_student', function (Blueprint $table) {
             $table->unsignedBigInteger('student_id');
             $table->foreign('student_id')->references('id')->on('students')->onDelete('cascade');
+            $table->unsignedBigInteger('question_id');
+            $table->foreign('question_id')->references('id')->on('questions')->onDelete('cascade');
             $table->unsignedBigInteger('formula_question_id');
             $table->foreign('formula_question_id')->references('id')->on('formula_questions')->onDelete('cascade');
             $table->unsignedBigInteger('exam_id');
             $table->foreign('exam_id')->references('id')->on('exams')->onDelete('cascade');
             $table->timestamps();
         });
-        
     }
 
     /**
