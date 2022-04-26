@@ -73,7 +73,9 @@ class QuestionController extends Controller
             $q->tags;
             $q->options;
             if ($q->type == "group") {
-                $q->questions;
+                $q->questions->each(function ($e) {
+                    $e->tags;
+                });
             } else if ($q->type == "formula") {
                 $q->formulaQuestions;
             }
@@ -191,6 +193,8 @@ class QuestionController extends Controller
             $question->questions->each(function ($e) {
                 $e->tags;
             });
+        } else if ($question->type == "formula") {
+            $question->formulaQuestions;
         }
         $question->options;
         return response()->json(['question' => $question]);
