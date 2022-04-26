@@ -81,9 +81,18 @@ class MarkExamController extends Controller
 
         $questions = $exam->questions;
 
-        foreach ($questions as $question) {
-            $question->options;
-            $answer = Answer::where(['student_id' => $studentId, 'question_id' => $question->id, 'exam_id' => $exam->id, 'attempt' => $session->attempt])->get()->first();
+        foreach ($questions as $q) {
+            $q->instructor->user;
+            $q->tags;
+            $q->options;
+            if ($q->type == "group") {
+                $q->questions->each(function ($e) {
+                    $e->tags;
+                });
+            } else if ($q->type == "formula") {
+                $q->formulaQuestions;
+            }
+            $answer = Answer::where(['student_id' => $studentId, 'question_id' => $q->id, 'exam_id' => $exam->id, 'attempt' => $session->attempt])->get()->first();
 
             $question['answer'] = $answer;
         }
