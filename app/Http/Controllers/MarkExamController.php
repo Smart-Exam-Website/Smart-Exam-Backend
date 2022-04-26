@@ -288,6 +288,8 @@ class MarkExamController extends Controller
                 $ex = ExamQuestion::where('exam_id', '=', $exam->id)->where('question_id', '=', $a->question_id)->first();
                 Answer::where(['exam_id' => $exam->id, 'student_id' => $student->id, 'question_id' => $a->question_id, 'attempt' => $examSession->attempt])->update(['questionMark' => $ex->mark, 'isMarked' => true]);
                 $totalMark += $ex->mark;
+            } else {
+                Answer::where(['exam_id' => $exam->id, 'student_id' => $student->id, 'question_id' => $a->question_id, 'attempt' => $examSession->attempt])->update(['questionMark' => 0, 'isMarked' => true]);
             }
         }
 
@@ -359,6 +361,8 @@ class MarkExamController extends Controller
 
             $mcqs = [];
             $essays = [];
+            $formulas = [];
+            $groups = [];
 
             foreach ($answers as $ans) {
                 $ans->question;
@@ -366,6 +370,12 @@ class MarkExamController extends Controller
                     array_push($mcqs, $ans);
                 } else if (($ans->question->type == "essay") && ($ans->isMarked == false)) {
                     array_push($essays, $ans);
+                } else if (($ans->question->type == "formula") && ($ans->isMarked == false)) {
+                    $formula_ques = FormulaStudent::where(['student_id' => $s->id, 'exam_id' => $exam->id, 'question_id' => $ans->question->id])->get()->first()->formula_question_id;
+                    $ans->question->formula_questions = FormulaQuestion::where(['id' => $formula_ques])->get()->first();
+                    array_push($formulas, $ans);
+                } else if (($ans->question->type == "group") && ($ans->isMarked == false)) {
+                    array_push($groups, [$ans->question->id => $ans->question->questions]);
                 }
             }
 
@@ -413,6 +423,30 @@ class MarkExamController extends Controller
                 // } else {
                 //     return response()->json(['message' => 'An error occurred!'], 400);
                 // }
+            }
+
+            // For formula marking
+
+            foreach ($formulas as $a) {
+                if ($a->studentAnswer == $a->question->formula_questions->value) {
+                    $ex = ExamQuestion::where('exam_id', '=', $exam->id)->where('question_id', '=', $a->question_id)->first();
+                    Answer::where(['exam_id' => $exam->id, 'student_id' => $s->id, 'question_id' => $a->question_id, 'attempt' => $examSession->attempt])->update(['questionMark' => $ex->mark, 'isMarked' => true]);
+                    $totalMark += $ex->mark;
+                } else {
+                    Answer::where(['exam_id' => $exam->id, 'student_id' => $s->id, 'question_id' => $a->question_id, 'attempt' => $examSession->attempt])->update(['questionMark' => 0, 'isMarked' => true]);
+                }
+            }
+
+            // For Question Group
+
+            foreach ($groups as $g) {
+                $all_questions = 0;
+                foreach ($g as $q) {
+                    foreach ($q as $e) {
+                        $all_questions += Answer::where(['exam_id' => $exam->id, 'student_id' => $s->id, 'question_id' => $e->id, 'attempt' => $examSession->attempt])->get()->first()->questionMark;
+                    };
+                }
+                Answer::where(['exam_id' => $exam->id, 'student_id' => $s->id, 'question_id' => array_keys($g)[0], 'attempt' => $examSession->attempt])->update(['questionMark' => $all_questions, 'isMarked' => true]);
             }
 
             //Final Saving for the total Mark of the student
