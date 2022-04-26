@@ -6,6 +6,7 @@ use App\Models\Formula;
 use App\Models\FormulaQuestion;
 use Illuminate\Database\Seeder;
 use App\Models\Question;
+use App\Models\GroupQuestion;
 use App\Models\Option;
 
 class QuestionSeeder extends Seeder
@@ -19,7 +20,7 @@ class QuestionSeeder extends Seeder
     {
         //Question::factory(10)->create();
         Question::factory(20)->create()->each(function ($q) {
-            if($q->type == 'mcq') {
+            if ($q->type == 'mcq') {
                 for ($i = 0; $i < 4; $i++) {
                     if ($i == 0) {
                         Option::factory()->create([
@@ -33,10 +34,14 @@ class QuestionSeeder extends Seeder
                         ]);
                     }
                 }
-            } else if($q->type == 'essay') {
+            } else if ($q->type == 'essay') {
                 Option::factory()->create([
                     'question_id' => $q->id,
                     'isCorrect' => true,
+                ]);
+            } else if ($q->type == 'group') {
+                GroupQuestion::factory()->create([
+                    'group_id' => $q->id,
                 ]);
             } else if ($q->type == 'formula') {
                 Formula::factory()->create([

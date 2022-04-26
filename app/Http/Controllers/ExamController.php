@@ -234,17 +234,15 @@ class ExamController extends Controller
                 $question->questions->each(function ($question) {
                     $question->tags;
                 });
-            } else if($question->type == "formula") {
+            } else if ($question->type == "formula") {
                 $formulaQs = FormulaQuestion::where([
                     'question_id' => $question->id
                 ])->get();
 
                 $question->questions = $formulaQs;
-
             } else {
                 $question->options;
             }
-
         }
         return response()->json(['questions' => $questions]);
     }
@@ -346,7 +344,7 @@ class ExamController extends Controller
         if (auth()->user()->type != 'instructor') {
             return response()->json(['message' => 'Unauthorized to create exam!'], 403);
         }
-        if(!$exam) {
+        if (!$exam) {
             return response()->json(['message' => 'Failed to find exam!'], 400);
         }
         $rules = [
@@ -358,7 +356,7 @@ class ExamController extends Controller
             return response()->json(['message' => 'the given data is invalid'], 400);
         }
 
-        
+
         $tag = Tag::where('name', $exam->examSubject)->get()->first();
 
         if (!$tag) {
@@ -367,7 +365,7 @@ class ExamController extends Controller
             ]);
         }
         // update exam
-        
+
 
 
         $questions = $request->questions;
