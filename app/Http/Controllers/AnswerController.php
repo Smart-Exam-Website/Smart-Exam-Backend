@@ -35,18 +35,18 @@ class AnswerController extends Controller
 
         // get exam session first.
         $examSession = examSession::where(['exam_id' => $request->exam_id, 'student_id' => $studentId])->orderBy('attempt', 'DESC')->get()->first();
-        if(!$examSession) {
+        if (!$examSession) {
             return response()->json(['message' => 'Could not find a session for this student!'], 404);
         }
         $answerDetails['attempt'] = $examSession->attempt;
         $answer = Answer::where(['exam_id' => $request->exam_id, 'student_id' => $studentId, 'question_id' => $request->question_id, 'attempt' => $examSession->attempt])->get()->first();
         $question = Question::where(['id' => $request->question_id])->get()->first();
-        if(!$request->option_id) {
+        if (!$request->option_id) {
             $option = Option::where('question_id', $question->id)->get()->first();
             $answerDetails['option_id'] = $option->id;
         } else {
             $option = Option::where(['question_id' => $question->id, 'id' => $request->option_id])->get()->first();
-            if(!$option) {
+            if (!$option) {
                 return response()->json(['message' => 'Wrong option id!'], 400);
             }
         }
