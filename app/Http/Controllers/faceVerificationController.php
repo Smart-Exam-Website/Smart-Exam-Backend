@@ -61,7 +61,7 @@ class faceVerificationController extends Controller
 
 
 
-        $response = Http::post('http://35.168.230.239/m2/verify', [
+        $response = Http::post('https://machinelearning.api.smart-exam.ml/m2/verify', [
             'img' => [[
                 'img1' => $request->image1,
                 'img2' => $image2Encoded,

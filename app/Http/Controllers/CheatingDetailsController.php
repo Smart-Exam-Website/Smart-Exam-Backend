@@ -197,7 +197,7 @@ class CheatingDetailsController extends Controller
             if (!$action) {
                 return response()->json(['message' => 'Wrong action name specified!'], 400);
             }
-            if($cheatingDetails->type != 'Switch Browser') {
+            if($cheatingDetails->type != 'SWITCH_BROWSER') {
                 CheatingDetails::where([
                     'id' => $request->cheatingDetailId,
                     'type' => $request->type,

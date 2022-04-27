@@ -100,12 +100,14 @@ class TakeExamController extends Controller
                 $studentFormulaQ = FormulaStudent::where([
                     'student_id' => auth()->user()->id,
                     'exam_id' => $exam->id,
+                    'question_id' => $question->id,
                 ])->get()->first();
                 if (!$studentFormulaQ) {
                     $studentFormulaQ = FormulaStudent::create([
                         'student_id' => auth()->user()->id,
                         'formula_question_id' => $formulaQ->id,
                         'exam_id' => $exam->id,
+                        'question_id' => $question->id
                     ]);
                     if (!$studentFormulaQ) {
                         return response()->json(['message' => 'Failed.'], 400);
@@ -114,6 +116,7 @@ class TakeExamController extends Controller
                     FormulaStudent::where([
                         'student_id' => auth()->user()->id,
                         'exam_id' => $exam->id,
+                        'question_id' => $question->id,
                     ])->update([
                         'formula_question_id' => $formulaQ->id
                     ]);

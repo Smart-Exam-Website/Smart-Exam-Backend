@@ -60,7 +60,7 @@ class faceDetectionController extends Controller
 
 
 
-        $response = Http::post('http:/35.168.230.239/m1/detect', [
+        $response = Http::post('https://machinelearning.api.smart-exam.ml/m1/detect', [
             'image_encode' => $request->image,
         ]);
 
