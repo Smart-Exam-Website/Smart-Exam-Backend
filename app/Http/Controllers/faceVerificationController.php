@@ -59,16 +59,16 @@ class faceVerificationController extends Controller
 
         // return response()->json(['message' => 'Success!', 'verified' => $verified]);
         $route = 'machinelearning.api.smart-exam.ml/m2/verify';
-        if(!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] != 'on') {
-            $route = 'http://'.$route;
-            dd($route);
-        } else {
-            $route = 'https://'.$route;
-            dd($route);
-        }
+        // if(!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] != 'on') {
+        //     $route = 'http://'.$route;
+        //     dd($route);
+        // } else {
+        //     $route = 'https://'.$route;
+        //     dd($route);
+        // }
 
 
-        $response = Http::post($route, [
+        $response = Http::post('https://machinelearning.api.smart-exam.ml/m2/verify', [
             'img' => [[
                 'img1' => $request->image1,
                 'img2' => $image2Encoded,

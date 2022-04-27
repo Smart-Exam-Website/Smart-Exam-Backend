@@ -57,16 +57,16 @@ class faceDetectionController extends Controller
 
         // return response()->json(['message' => 'Success!', 'numberOfFaces' => $numberOfFaces]);
         $route = 'machinelearning.api.smart-exam.ml/m1/detect';
-        if(!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] != 'on') {
-            $route = 'http://'.$route;
-            // dd($route);
-        } else {
-            $route = 'https://'.$route;
-            // dd($route);
-        }
+        // if(!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] != 'on') {
+        //     $route = 'http://'.$route;
+        //     // dd($route);
+        // } else {
+        //     $route = 'https://'.$route;
+        //     // dd($route);
+        // }
 
 
-        $response = Http::post($route, [
+        $response = Http::post('https://machinelearning.api.smart-exam.ml/m1/detect', [
             'image_encode' => $request->image,
         ]);
 
