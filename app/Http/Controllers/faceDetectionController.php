@@ -56,11 +56,17 @@ class faceDetectionController extends Controller
         // }
 
         // return response()->json(['message' => 'Success!', 'numberOfFaces' => $numberOfFaces]);
+        $route = 'machinelearning.api.smart-exam.ml/m1/detect';
+        if(!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] != 'on') {
+            $route = 'http://'.$route;
+            // dd($route);
+        } else {
+            $route = 'https://'.$route;
+            // dd($route);
+        }
 
 
-
-
-        $response = Http::post('https://machinelearning.api.smart-exam.ml/m1/detect', [
+        $response = Http::post($route, [
             'image_encode' => $request->image,
         ]);
 
@@ -74,8 +80,8 @@ class faceDetectionController extends Controller
                 if ($numberOfFaces > 1) {
                     $image = $response->object()->image_encode;
                     // list($baseType, $image) = explode(';', $imageEncoded);
-                    // list(, $image) = explode(',', $image);
-                    $imageDecoded = base64_decode($image);
+                    $imageData = explode(',', $image);
+                    $imageDecoded = base64_decode($imageData[1]);
                     $imageName = Str::random(30) . '.jpg';
                     $path = Storage::disk('s3')->put('uploads/' . $imageName, $imageDecoded);
                     $path = Storage::disk('s3')->url($path);

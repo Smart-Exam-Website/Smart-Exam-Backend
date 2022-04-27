@@ -58,10 +58,17 @@ class faceVerificationController extends Controller
         // }
 
         // return response()->json(['message' => 'Success!', 'verified' => $verified]);
+        $route = 'machinelearning.api.smart-exam.ml/m2/verify';
+        if(!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] != 'on') {
+            $route = 'http://'.$route;
+            dd($route);
+        } else {
+            $route = 'https://'.$route;
+            dd($route);
+        }
 
 
-
-        $response = Http::post('https://machinelearning.api.smart-exam.ml/m2/verify', [
+        $response = Http::post($route, [
             'img' => [[
                 'img1' => $request->image1,
                 'img2' => $image2Encoded,
@@ -78,8 +85,8 @@ class faceVerificationController extends Controller
                 if (!$verified) {
                     $image = $request->image1;
                     // list($baseType, $image) = explode(';', $imageEncoded);
-                    // list(, $image) = explode(',', $image);
-                    $imageDecoded = base64_decode($image);
+                    $imageData = explode(',', $image);
+                    $imageDecoded = base64_decode($imageData[1]);
                     $imageName = Str::random(30) . '.jpg';
                     $path = Storage::disk('s3')->put('uploads/' . $imageName, $imageDecoded);
                     $path = Storage::disk('s3')->url($path);
