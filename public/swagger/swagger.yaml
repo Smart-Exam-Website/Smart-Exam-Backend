@@ -77,7 +77,7 @@ paths:
         - bearer: []
   "/questions/formula/{question}":
     description: edit formula question
-    post:
+    put:
       tags:
         - "Questions"
       parameters:
