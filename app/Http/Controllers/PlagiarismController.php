@@ -65,7 +65,7 @@ class PlagiarismController extends Controller
                 array_push($list, [$a->student_id => $a->studentAnswer]);
             }
             //return $list;
-            $response = Http::post('http://13.59.36.254/m1/plagiarism', [
+            $response = Http::post('http://3.236.195.95/plagiarism/predict', [
                 'list' => $list,
             ]);
 

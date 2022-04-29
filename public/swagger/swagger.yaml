@@ -1340,7 +1340,7 @@ paths:
   "/questions/question-group/create":
     post:
       tags:
-        - GroupQuestion
+        - Questions
       summary: create question Group
       description: create question group with optional tags
       operationId: storeQuestionGroup
@@ -1371,7 +1371,7 @@ paths:
   "/questions/question-group/{id}":
     put:
       tags:
-        - GroupQuestion
+        - Questions
       summary: Edit question
       description: edit Question
       operationId: editQuestion
