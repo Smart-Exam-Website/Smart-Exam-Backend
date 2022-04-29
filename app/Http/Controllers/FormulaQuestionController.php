@@ -184,6 +184,9 @@ class FormulaQuestionController extends Controller
             return response()->json(['message' => 'No question found with this id!'], 400);
         }
 
+        if($question->instructor_id != auth()->user()->id) {
+            return response()->json(['message' => 'Cannot edit a question that does not belong to you!'], 400);
+        }
         $rules = [
             'questionText' => 'required',
             'image' => 'image',

@@ -102,6 +102,16 @@ class GroupQuestionController extends Controller
             return strcmp($a->startAt, $b->startAt);
         });
 
+        $existingQuestion = Question::where(['id' => id])->get()->first();
+
+        if($existingQuestion) {
+            if($existingQuestion->instructor_id != auth()->user()->id) {
+                return response()->json(['message' => 'Cannot edit a question that does not belong to you!'], 400);
+            }
+        } else {
+            return response()->json(['message' => 'No question with this id !'], 400);
+        }
+
 
         $now = date("Y-m-d H:i:s");
         if (count($exams) > 0)

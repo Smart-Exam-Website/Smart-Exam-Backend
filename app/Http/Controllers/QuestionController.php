@@ -209,10 +209,16 @@ class QuestionController extends Controller
     // Edit Question
     public function update(Request $request, $id)
     {
+        if (auth()->user()->type != 'instructor') {
+            return response()->json(['message' => 'Unauthorized!'], 403);
+        }
         $questionn = Question::find($id);
 
         if (!$questionn) {
             return response()->json(['message' => 'No Question Found']);
+        }
+        if ($questionn->instructor_id != auth()->user()->id) {
+            return response()->json(['message' => 'Cannot edit a question that does not belong to you!'], 400);
         }
         $user = auth()->user();
         $examQuestions = ExamQuestion::where(['question_id' => $id])->get();
@@ -232,190 +238,182 @@ class QuestionController extends Controller
         //return response([$now, $start_time]);
         if ($start_time != 0 && $now >= $start_time) {
             //create New Question Because this question is found in another prev exam
-            if ($user->type == 'instructor') {
 
-                $fields = $request->validate([
-                    'questionText' => 'string|max:255',
-                    'image' => 'image',
-                    'answers'    => 'array',
-                    'answers.*'  => 'string|distinct',
-                    'correctAnswer' => 'string'
-                ]);
+            $fields = $request->validate([
+                'questionText' => 'string|max:255',
+                'image' => 'image',
+                'answers'    => 'array',
+                'answers.*'  => 'string|distinct',
+                'correctAnswer' => 'string'
+            ]);
 
-                $imageName = $fields['image'] ? Str::random(30) . '.jpg' : null;
-                if (array_key_exists("image", $fields)) {
-                    $path = Storage::disk('s3')->put('questionImages/', $imageName, $fields['image']);
-                    $path = Storage::disk('s3')->url($path);
+            $imageName = $fields['image'] ? Str::random(30) . '.jpg' : null;
+            if (array_key_exists("image", $fields)) {
+                $path = Storage::disk('s3')->put('questionImages/', $imageName, $fields['image']);
+                $path = Storage::disk('s3')->url($path);
+            }
+
+            $question = Question::create([
+                'questionText' => array_key_exists("questionText", $fields) ? $fields['questionText'] : $questionn->questionText,
+                'image' => array_key_exists("image", $fields) ? $imageName : $questionn->image,
+                'type' => $questionn->type,
+                'instructor_id' => $questionn->instructor_id
+            ]);
+
+            $answers = $questionn->options;
+            $newanswers = [];
+
+            for ($i = 0; $i < $answers->count(); $i++) {
+                array_push($newanswers, isset(((object)$request)->answers[$i]) ? $fields['answers'][$i] : $answers[$i]->value);
+            }
+
+            $correct = "";
+            foreach ($answers as $a) {
+                if ($a->isCorrect == 1) {
+                    $correct_answer = $a->value;
                 }
+            }
+            $correct_answer = array_key_exists("correctAnswer", $fields) ? $fields['correctAnswer'] : $correct;
 
-                $question = Question::create([
-                    'questionText' => array_key_exists("questionText", $fields) ? $fields['questionText'] : $questionn->questionText,
-                    'image' => array_key_exists("image", $fields) ? $imageName : $questionn->image,
-                    'type' => $questionn->type,
-                    'instructor_id' => $questionn->instructor_id
-                ]);
-
-                $answers = $questionn->options;
-                $newanswers = [];
-
-                for ($i = 0; $i < $answers->count(); $i++) {
-                    array_push($newanswers, isset(((object)$request)->answers[$i]) ? $fields['answers'][$i] : $answers[$i]->value);
-                }
-
-                $correct = "";
-                foreach ($answers as $a) {
-                    if ($a->isCorrect == 1) {
-                        $correct_answer = $a->value;
-                    }
-                }
-                $correct_answer = array_key_exists("correctAnswer", $fields) ? $fields['correctAnswer'] : $correct;
-
-                if ($questionn->type == 'mcq') {
-                    foreach ($newanswers as $a) {
-                        if ($correct_answer == $a) {
-                            Option::create([
-                                'value' => $a,
-                                'type' => $questionn->type,
-                                'question_id' => $question->id,
-                                'isCorrect' => true
-                            ]);
-                        } else {
-                            Option::create([
-                                'value' => $a,
-                                'type' => $questionn->type,
-                                'question_id' => $question->id,
-                                'isCorrect' => false
-                            ]);
-                        }
-                    }
-                } else if ($questionn->type == 'essay') {
-                    foreach ($answers as $a) {
+            if ($questionn->type == 'mcq') {
+                foreach ($newanswers as $a) {
+                    if ($correct_answer == $a) {
                         Option::create([
                             'value' => $a,
                             'type' => $questionn->type,
                             'question_id' => $question->id,
                             'isCorrect' => true
                         ]);
+                    } else {
+                        Option::create([
+                            'value' => $a,
+                            'type' => $questionn->type,
+                            'question_id' => $question->id,
+                            'isCorrect' => false
+                        ]);
                     }
                 }
-
-                return response($question, 201);
-            } else {
-                return response()->json(['message' => 'There is no logged in Instructor'], 400);
+            } else if ($questionn->type == 'essay') {
+                foreach ($answers as $a) {
+                    Option::create([
+                        'value' => $a,
+                        'type' => $questionn->type,
+                        'question_id' => $question->id,
+                        'isCorrect' => true
+                    ]);
+                }
             }
+
+            return response($question, 201);
         } else {
             //we can update this question because it is not in one of the prev exams
             $questionn = Question::find($id);
             $answers = $questionn->options;
 
-            if ($user->type == 'instructor') {
 
-                $fields = $request->validate([
-                    'questionText' => 'string|max:255',
-                    'image' => 'image',
-                    'answers'    => 'array',
-                    'answers.*'  => 'string|distinct',
-                    'correctAnswer' => 'string'
-                ]);
+            $fields = $request->validate([
+                'questionText' => 'string|max:255',
+                'image' => 'image',
+                'answers'    => 'array',
+                'answers.*'  => 'string|distinct',
+                'correctAnswer' => 'string'
+            ]);
 
-                $newanswers = [];
+            $newanswers = [];
 
-                $correct = "";
-                foreach ($answers as $a) {
-                    if ($a->isCorrect == 1) {
-                        $correct_answer = $a->value;
-                    }
+            $correct = "";
+            foreach ($answers as $a) {
+                if ($a->isCorrect == 1) {
+                    $correct_answer = $a->value;
                 }
-                $correct_answer = array_key_exists("correctAnswer", $fields) ? $fields['correctAnswer'] : $correct;
-
-
-                if ($questionn->type == 'mcq') {
-
-                    for ($i = 0; $i < $answers->count(); $i++) {
-                        $correctAnswerid = 0;
-                        $op = Option::where(['id' => (int)($answers[$i]->id)])->first();
-
-                        if ($op->value == $correct_answer)
-                            $correctAnswerid = $op->id;
-
-                        if (isset(((object)$request)->answers[$i])) {
-                            array_push(
-                                $newanswers,
-                                ((object)$request)->answers[$i]
-                            );
-                            $option = Option::where(['id' => $answers[$i]->id])->first();
-
-                            $answers[$i]->update([
-                                'value' => ((object)$request)->answers[$i]
-                            ]);
-
-                            if (isset(((object)$request)->correctAnswer)) {
-                                $answers[$i]->update([
-                                    'isCorrect' => (int)($answers[$i]->value == $correct_answer)
-                                ]);
-                            }
-                        } else {
-                            array_push(
-                                $newanswers,
-                                Option::where(['id' => $answers[$i]->id])->first()->value
-                            );
-                            $option = Option::where(['id' => $answers[$i]->id])->first();
-                            if (isset(((object)$request)->correctAnswer)) {
-                                $answers[$i]->update([
-                                    'isCorrect' => (int)($option->id == Option::where(['value' => $correct_answer, 'question_id' => $id])->first()->id)
-                                ]);
-                            }
-                        }
-                    }
-                } else if ($questionn->type == 'essay') {
-
-                    for ($i = 0; $i < $answers->count(); $i++) {
-
-                        if (isset(((object)$request)->answers[$i])) {
-                            array_push(
-                                $newanswers,
-                                ((object)$request)->answers[$i]
-                            );
-                            $option = Option::where(['id' => $answers[$i]->id])->first();
-
-                            $option->update([
-                                'value' => ((object)$request)->answers[$i]
-                            ]);
-
-                            $answers[$i]->update([
-                                'isCorrect' => 1
-                            ]);
-                        } else {
-                            array_push(
-                                $newanswers,
-                                Option::where(['id' => $answers[$i]->id])->first()->value
-                            );
-                            $option = Option::where(['id' => $answers[$i]->id])->first();
-                            $answers[$i]->update([
-                                'isCorrect' => 1
-                            ]);
-                        }
-                    }
-                }
-                return $answers;
-                if (array_key_exists("image", $fields)) {
-                    if ($questionn->image) {
-                        $s = explode("/", $questionn->image);
-                        Storage::disk('s3')->delete($s[3] . "/" . $s[4]);
-                    }
-                    $path = Storage::disk('s3')->put('questionImages', $fields['image']);
-                    $path = Storage::disk('s3')->url($path);
-                }
-
-                $questionn->update([
-                    'questionText' => array_key_exists("questionText", $fields) ? $request['questionText'] : $questionn->questionText,
-                    'image' => array_key_exists("image", $fields) ? $path : $questionn->image
-                ]);
-
-                return response(['question' => $questionn], 200);
-            } else {
-                return response()->json(['message' => 'There is no logged in Instructor'], 400);
             }
+            $correct_answer = array_key_exists("correctAnswer", $fields) ? $fields['correctAnswer'] : $correct;
+
+
+            if ($questionn->type == 'mcq') {
+
+                for ($i = 0; $i < $answers->count(); $i++) {
+                    $correctAnswerid = 0;
+                    $op = Option::where(['id' => (int)($answers[$i]->id)])->first();
+
+                    if ($op->value == $correct_answer)
+                        $correctAnswerid = $op->id;
+
+                    if (isset(((object)$request)->answers[$i])) {
+                        array_push(
+                            $newanswers,
+                            ((object)$request)->answers[$i]
+                        );
+                        $option = Option::where(['id' => $answers[$i]->id])->first();
+
+                        $answers[$i]->update([
+                            'value' => ((object)$request)->answers[$i]
+                        ]);
+
+                        if (isset(((object)$request)->correctAnswer)) {
+                            $answers[$i]->update([
+                                'isCorrect' => (int)($answers[$i]->value == $correct_answer)
+                            ]);
+                        }
+                    } else {
+                        array_push(
+                            $newanswers,
+                            Option::where(['id' => $answers[$i]->id])->first()->value
+                        );
+                        $option = Option::where(['id' => $answers[$i]->id])->first();
+                        if (isset(((object)$request)->correctAnswer)) {
+                            $answers[$i]->update([
+                                'isCorrect' => (int)($option->id == Option::where(['value' => $correct_answer, 'question_id' => $id])->first()->id)
+                            ]);
+                        }
+                    }
+                }
+            } else if ($questionn->type == 'essay') {
+
+                for ($i = 0; $i < $answers->count(); $i++) {
+
+                    if (isset(((object)$request)->answers[$i])) {
+                        array_push(
+                            $newanswers,
+                            ((object)$request)->answers[$i]
+                        );
+                        $option = Option::where(['id' => $answers[$i]->id])->first();
+
+                        $option->update([
+                            'value' => ((object)$request)->answers[$i]
+                        ]);
+
+                        $answers[$i]->update([
+                            'isCorrect' => 1
+                        ]);
+                    } else {
+                        array_push(
+                            $newanswers,
+                            Option::where(['id' => $answers[$i]->id])->first()->value
+                        );
+                        $option = Option::where(['id' => $answers[$i]->id])->first();
+                        $answers[$i]->update([
+                            'isCorrect' => 1
+                        ]);
+                    }
+                }
+            }
+            return $answers;
+            if (array_key_exists("image", $fields)) {
+                if ($questionn->image) {
+                    $s = explode("/", $questionn->image);
+                    Storage::disk('s3')->delete($s[3] . "/" . $s[4]);
+                }
+                $path = Storage::disk('s3')->put('questionImages', $fields['image']);
+                $path = Storage::disk('s3')->url($path);
+            }
+
+            $questionn->update([
+                'questionText' => array_key_exists("questionText", $fields) ? $request['questionText'] : $questionn->questionText,
+                'image' => array_key_exists("image", $fields) ? $path : $questionn->image
+            ]);
+
+            return response(['question' => $questionn], 200);
         }
     }
 
@@ -425,6 +423,16 @@ class QuestionController extends Controller
     {
 
         $user = auth()->user();
+        if ($user->type != 'instructor') {
+            return response()->json(['message' => 'Unauthorized!'], 403);
+        }
+        $question = Question::where(['id' => $id])->first();
+        if (!$question) {
+            return response()->json(['message' => 'There is no Question with this id'], 200);
+        }
+        if ($question->instructor_id != auth()->user()->id) {
+            return response()->json(['message' => 'Cannot delete a question that does not belong to you!'], 400);
+        }
         $examQuestions = ExamQuestion::where(['question_id' => $id])->get();
         $exams = [];
         foreach ($examQuestions as $exQ) {
@@ -442,33 +450,21 @@ class QuestionController extends Controller
 
         if ($start_time != 0 && $now >= $start_time) {
             //We cannot delete only set is hidden to true
-            if ($user->type == 'instructor') {
-                $question = Question::where(['id' => $id])->first();
-                if ($question == null) {
-                    return response()->json(['message' => 'There is no Question with this id'], 200);
-                }
-                $question->update(['isHidden' => true]);
-                $question->save();
-                return response()->json(['message' => 'Question is Hidden'], 200);
-            } else {
-                return response()->json(['message' => 'There is no logged in Instructor'], 400);
-            }
+            $question->update(['isHidden' => true]);
+            $question->save();
+            return response()->json(['message' => 'Question is Hidden'], 200);
         } else {
 
-            if ($user->type == 'instructor') {
-                $question = Question::where(['id' => $id])->first();
-                if ($question == null) {
-                    return response()->json(['message' => 'There is no Question with this id'], 200);
-                }
-                if ($question->image) {
-                    $s = explode("/", $question->image);
-                    Storage::disk('s3')->delete($s[3] . "/" . $s[4]);
-                }
-                $question->delete();
-                return response()->json(['message' => 'Question Deleted'], 200);
-            } else {
-                return response()->json(['message' => 'There is no logged in Instructor'], 400);
+            $question = Question::where(['id' => $id])->first();
+            if ($question == null) {
+                return response()->json(['message' => 'There is no Question with this id'], 200);
             }
+            if ($question->image) {
+                $s = explode("/", $question->image);
+                Storage::disk('s3')->delete($s[3] . "/" . $s[4]);
+            }
+            $question->delete();
+            return response()->json(['message' => 'Question Deleted'], 200);
         }
     }
 }
