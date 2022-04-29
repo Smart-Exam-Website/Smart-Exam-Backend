@@ -23,8 +23,8 @@ class GroupQuestionController extends Controller
                 'questionText' => 'string|max:255',
                 'image' => 'image',
                 'type' => 'required|string',
-                'questions'    => 'required|array',
-                'questions.*'  => 'required|distinct',
+                'questions'    => 'array',
+                'questions.*'  => 'distinct',
                 'tags'    => 'array',
                 'tags.*'  => 'string|distinct'
             ]);
@@ -68,12 +68,14 @@ class GroupQuestionController extends Controller
                     ]);
                 }
             }
-            $questions = $fields['questions'];
-            foreach ($questions as $q) {
-                GroupQuestion::create([
-                    'group_id' => $question->id,
-                    'question_id' => $q,
-                ]);
+            if (array_key_exists("questions", $fields)) {
+                $questions = $fields['questions'];
+                foreach ($questions as $q) {
+                    GroupQuestion::create([
+                        'group_id' => $question->id,
+                        'question_id' => $q,
+                    ]);
+                }
             }
             $question = Question::where(['id' => $question->id])->first();
             $question->tags;
