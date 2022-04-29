@@ -10,6 +10,7 @@ use App\Models\Tag;
 use App\Models\ExamQuestion;
 use App\Models\Exam;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class GroupQuestionController extends Controller
 {
@@ -29,13 +30,15 @@ class GroupQuestionController extends Controller
                 'tags.*'  => 'string|distinct'
             ]);
 
+            $imageName = array_key_exists("image", $fields) ? Str::random(30) . '.jpg' : null;
+
             if (array_key_exists("image", $fields)) {
-                $path = Storage::disk('s3')->put('questionImages', $fields['image']);
+                $path = Storage::disk('s3')->put('questionImages/', $imageName, $fields['image']);
                 $path = Storage::disk('s3')->url($path);
             }
             $question = Question::create([
                 'questionText' => array_key_exists("questionText", $fields) ? $fields['questionText'] : NULL,
-                'image' => array_key_exists("image", $fields) ? $path : NULL,
+                'image' => array_key_exists("image", $fields) ? $imageName : NULL,
                 'type' => $fields['type'],
                 'isHidden' => false,
                 'instructor_id' => $user->id
@@ -107,7 +110,7 @@ class GroupQuestionController extends Controller
             return strcmp($a->startAt, $b->startAt);
         });
 
-        $existingQuestion = Question::where(['id' => id])->get()->first();
+        $existingQuestion = Question::where(['id' => $id])->get()->first();
 
         if ($existingQuestion) {
             if ($existingQuestion->instructor_id != auth()->user()->id) {
@@ -129,19 +132,21 @@ class GroupQuestionController extends Controller
                 'questionText' => 'string|max:255',
                 'image' => 'image',
                 'type' => 'required|string',
-                'questions'    => 'required|array',
-                'questions.*'  => 'required|distinct',
+                'questions'    => 'array',
+                'questions.*'  => 'distinct',
                 'tags'    => 'array',
                 'tags.*'  => 'string|distinct'
             ]);
 
+            $imageName = $request->image ? Str::random(30) . '.jpg' : null;
+
             if (array_key_exists("image", $fields)) {
-                $path = Storage::disk('s3')->put('questionImages', $fields['image']);
+                $path = Storage::disk('s3')->put('questionImages/', $imageName, $fields['image']);
                 $path = Storage::disk('s3')->url($path);
             }
             $question = Question::create([
                 'questionText' => array_key_exists("questionText", $fields) ? $fields['questionText'] : NULL,
-                'image' => array_key_exists("image", $fields) ? $path : NULL,
+                'image' => array_key_exists("image", $fields) ? $imageName : NULL,
                 'type' => $fields['type'],
                 'isHidden' => false,
                 'instructor_id' => $user->id
@@ -174,12 +179,14 @@ class GroupQuestionController extends Controller
                     ]);
                 }
             }
-            $questions = $fields['questions'];
-            foreach ($questions as $q) {
-                GroupQuestion::create([
-                    'group_id' => $question->id,
-                    'question_id' => $q,
-                ]);
+            if (array_key_exists("questions", $fields)) {
+                $questions = $fields['questions'];
+                foreach ($questions as $q) {
+                    GroupQuestion::create([
+                        'group_id' => $question->id,
+                        'question_id' => $q,
+                    ]);
+                }
             }
             $question = Question::where(['id' => $question->id])->first();
             $question->tags;
@@ -212,19 +219,20 @@ class GroupQuestionController extends Controller
                     ]);
                 }
             }
-
+            $imageName = $request->image ? Str::random(30) . '.jpg' : null;
             if (array_key_exists("image", $fields)) {
                 if ($questionn->image) {
                     $s = explode("/", $questionn->image);
+                    return $s;
                     Storage::disk('s3')->delete($s[3] . "/" . $s[4]);
                 }
-                $path = Storage::disk('s3')->put('questionImages', $fields['image']);
+                $path = Storage::disk('s3')->put('questionImages/', $imageName, $fields['image']);
                 $path = Storage::disk('s3')->url($path);
             }
 
             $questionn->update([
                 'questionText' => array_key_exists("questionText", $fields) ? $request['questionText'] : $questionn->questionText,
-                'image' => array_key_exists("image", $fields) ? $path : $questionn->image
+                'image' => array_key_exists("image", $fields) ? $imageName : $questionn->image
             ]);
 
             $questionn->tags;
