@@ -33,7 +33,7 @@ class GroupQuestionController extends Controller
             $imageName = array_key_exists("image", $fields) ? Str::random(30) . '.jpg' : null;
 
             if (array_key_exists("image", $fields)) {
-                $path = Storage::disk('s3')->put('questionImages/', $imageName, $fields['image']);
+                $path = Storage::disk('s3')->putFileAs('questionImages/', $fields['image'], $imageName);
                 $path = Storage::disk('s3')->url($path);
             }
             $question = Question::create([
@@ -141,7 +141,7 @@ class GroupQuestionController extends Controller
             $imageName = $request->image ? Str::random(30) . '.jpg' : null;
 
             if (array_key_exists("image", $fields)) {
-                $path = Storage::disk('s3')->put('questionImages/', $imageName, $fields['image']);
+                $path = Storage::disk('s3')->putFileAs('questionImages/', $fields['image'], $imageName);
                 $path = Storage::disk('s3')->url($path);
             }
             $question = Question::create([
@@ -222,11 +222,9 @@ class GroupQuestionController extends Controller
             $imageName = $request->image ? Str::random(30) . '.jpg' : null;
             if (array_key_exists("image", $fields)) {
                 if ($questionn->image) {
-                    $s = explode("/", $questionn->image);
-                    return $s;
-                    Storage::disk('s3')->delete($s[3] . "/" . $s[4]);
+                    Storage::disk('s3')->delete('questionImages/' . $questionn->image);
                 }
-                $path = Storage::disk('s3')->put('questionImages/', $imageName, $fields['image']);
+                $path = Storage::disk('s3')->putFileAs('questionImages/', $fields['image'], $imageName);
                 $path = Storage::disk('s3')->url($path);
             }
 
