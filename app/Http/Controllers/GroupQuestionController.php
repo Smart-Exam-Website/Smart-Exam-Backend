@@ -112,7 +112,7 @@ class GroupQuestionController extends Controller
                 return response()->json(['message' => 'Cannot edit a question that does not belong to you!'], 400);
             }
         } else {
-            return response()->json(['message' => 'No question with this id !'], 400);
+            return response()->json(['message' => 'No question with this id!'], 400);
         }
 
 
