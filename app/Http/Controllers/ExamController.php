@@ -177,6 +177,7 @@ class ExamController extends Controller
         }
 
         $questions = $request->questions;
+        // dd(count($questions));
         $mark = $exam->totalMark / count($questions);
         // $duration = $exam->duration / count($questions);
         foreach ($questions as $q) {

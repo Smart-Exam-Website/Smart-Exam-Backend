@@ -61,7 +61,6 @@ class FormulaQuestionController extends Controller
 
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
-            dd($validator->errors());
             return response()->json(['message' => 'the given data is invalid'], 400);
         }
 
@@ -212,7 +211,9 @@ class FormulaQuestionController extends Controller
         }
 
         if ($examQuestions) {
-            $question = Question::create([
+
+            $question->update(['isHidden' => true]);
+            $newQuestion = Question::create([
                 'questionText' => $request->questionText,
                 'image' => $imageName,
                 'type' => $request->type,
@@ -220,7 +221,7 @@ class FormulaQuestionController extends Controller
                 'instructor_id' => auth()->user()->id
             ]);
 
-            if (!$question) {
+            if (!$newQuestion) {
                 return response()->json(['message' => 'Failed to create formula question!'], 400);
             }
             if ($request->tags) {
@@ -238,14 +239,11 @@ class FormulaQuestionController extends Controller
                         }
                     }
 
-                    $existingTag->questions()->attach($question);
+                    $existingTag->questions()->attach($newQuestion);
                 }
             }
-
-
-
             $formula = Formula::create([
-                'question_id' => $question->id,
+                'question_id' => $newQuestion->id,
                 'formula' => $request->formula
             ]);
 
@@ -257,7 +255,7 @@ class FormulaQuestionController extends Controller
             foreach ($variables as $variable) {
 
                 $createdVar = FormulaVariable::create([
-                    'question_id' => $question->id,
+                    'question_id' => $newQuestion->id,
                     'variable' => $variable[0],
                     'startVal' => $variable[1],
                     'endVal' => $variable[2]
@@ -272,7 +270,7 @@ class FormulaQuestionController extends Controller
             foreach ($formulas as $formula) {
 
                 $createdFormula = FormulaQuestion::create([
-                    'question_id' => $question->id,
+                    'question_id' => $newQuestion->id,
                     'formulaText' => $formula[0],
                     'value' => $formula[1]
 
@@ -283,10 +281,12 @@ class FormulaQuestionController extends Controller
                 }
             }
         } else {
-            Storage::disk('s3')->delete('questionImages/', $question->image);
-            Question::where('id', $question->id)->update([
+            if ($request->image) {
+                Storage::disk('s3')->delete('questionImages/', $question->image);
+            }
+            Question::where(['id' => $question->id])->update([
                 'questionText' => $request->questionText,
-                'image' => $imageName,
+                'image' => $request->image ? $imageName : $question->image,
                 'type' => $request->type,
             ]);
 
@@ -321,30 +321,20 @@ class FormulaQuestionController extends Controller
             ]);
 
             $variables = $request->variables;
+            FormulaVariable::where([
+                'question_id' => $question->id,
+            ])->delete();
             foreach ($variables as $variable) {
-                $existingVar = FormulaVariable::where([
-                    'variable' => $variable[0],
-                    'question_id' => $question->id,
-                ])->get()->first();
-                if ($existingVar) {
-                    FormulaVariable::where([
-                        'variable' => $variable[0],
-                        'question_id' => $question->id,
-                    ])->update([
-                        'startVal' => $variable[1],
-                        'endVal' => $variable[2]
-                    ]);
-                } else {
-                    $createdVar = FormulaVariable::create([
-                        'question_id' => $question->id,
-                        'variable' => $variable[0],
-                        'startVal' => $variable[1],
-                        'endVal' => $variable[2]
-                    ]);
 
-                    if (!$createdVar) {
-                        return response()->json(['message' => 'Failed to edit formula!'], 400);
-                    }
+                $createdVar = FormulaVariable::create([
+                    'question_id' => $question->id,
+                    'variable' => $variable[0],
+                    'startVal' => $variable[1],
+                    'endVal' => $variable[2]
+                ]);
+
+                if (!$createdVar) {
+                    return response()->json(['message' => 'Failed to edit formula!'], 400);
                 }
             }
 
