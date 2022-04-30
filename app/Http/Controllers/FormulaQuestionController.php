@@ -12,6 +12,7 @@ use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class FormulaQuestionController extends Controller
 {
@@ -65,6 +66,7 @@ class FormulaQuestionController extends Controller
         }
 
         $imageName = $request->image ? Str::random(30) . '.jpg' : null;
+
         if ($request->image) {
             $path = Storage::disk('s3')->put('questionImages/', $imageName, $request->image);
             $path = Storage::disk('s3')->url($path);
@@ -184,7 +186,7 @@ class FormulaQuestionController extends Controller
             return response()->json(['message' => 'No question found with this id!'], 400);
         }
 
-        if($question->instructor_id != auth()->user()->id) {
+        if ($question->instructor_id != auth()->user()->id) {
             return response()->json(['message' => 'Cannot edit a question that does not belong to you!'], 400);
         }
         $rules = [

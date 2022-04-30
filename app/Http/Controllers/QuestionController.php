@@ -107,7 +107,7 @@ class QuestionController extends Controller
 
             $imageName = array_key_exists("image", $fields) ? Str::random(30) . '.jpg' : null;
             if (array_key_exists("image", $fields)) {
-                $path = Storage::disk('s3')->put('questionImages/', $imageName, $fields['image']);
+                $path = Storage::disk('s3')->putFileAs('questionImages/', $fields['image'], $imageName);
                 $path = Storage::disk('s3')->url($path);
             }
             $question = Question::create([
@@ -249,7 +249,7 @@ class QuestionController extends Controller
 
             $imageName = $fields['image'] ? Str::random(30) . '.jpg' : null;
             if (array_key_exists("image", $fields)) {
-                $path = Storage::disk('s3')->put('questionImages/', $imageName, $fields['image']);
+                $path = Storage::disk('s3')->putFileAs('questionImages/', $fields['image'], $imageName);
                 $path = Storage::disk('s3')->url($path);
             }
 
@@ -399,18 +399,18 @@ class QuestionController extends Controller
                 }
             }
             return $answers;
+            $imageName = array_key_exists("image", $fields) ? Str::random(30) . '.jpg' : null;
             if (array_key_exists("image", $fields)) {
                 if ($questionn->image) {
-                    $s = explode("/", $questionn->image);
-                    Storage::disk('s3')->delete($s[3] . "/" . $s[4]);
+                    Storage::disk('s3')->delete('questionImages/' . $questionn->image);
                 }
-                $path = Storage::disk('s3')->put('questionImages', $fields['image']);
+                $path = Storage::disk('s3')->putFileAs('questionImages/', $fields['image'], $imageName);
                 $path = Storage::disk('s3')->url($path);
             }
 
             $questionn->update([
                 'questionText' => array_key_exists("questionText", $fields) ? $request['questionText'] : $questionn->questionText,
-                'image' => array_key_exists("image", $fields) ? $path : $questionn->image
+                'image' => array_key_exists("image", $fields) ? $imageName : $questionn->image
             ]);
 
             return response(['question' => $questionn], 200);
@@ -460,8 +460,7 @@ class QuestionController extends Controller
                 return response()->json(['message' => 'There is no Question with this id'], 200);
             }
             if ($question->image) {
-                $s = explode("/", $question->image);
-                Storage::disk('s3')->delete($s[3] . "/" . $s[4]);
+                Storage::disk('s3')->delete('questionImages/' . $question->image);
             }
             $question->delete();
             return response()->json(['message' => 'Question Deleted'], 200);
