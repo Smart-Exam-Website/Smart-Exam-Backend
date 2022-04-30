@@ -60,13 +60,13 @@ class PlagiarismController extends Controller
 
             $allanswers = Answer::where(['question_id' => $qid, 'exam_id' => $request->examId])->get();
 
-            $list = ['correctAnswer' => $allanswers[0]->question->options[0]->value];
+            $list = [];
+            $list[0] = $allanswers[0]->question->options[0]->value;
             foreach ($allanswers as $a) {
-                array_push($list, [$a->student_id => $a->studentAnswer]);
+                $list[intval($a->student_id)] = $a->studentAnswer;
             }
-            //return $list;
-            $response = Http::post('http://3.236.195.95/plagiarism/predict', [
-                'list' => $list,
+            $response = Http::post('http://ec2-44-202-185-228.compute-1.amazonaws.com/plagiarism/predict', [
+                'students_dict' => $list,
             ]);
 
             if ($response->ok()) {
