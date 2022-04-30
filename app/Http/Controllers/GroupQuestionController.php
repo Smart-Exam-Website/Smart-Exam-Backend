@@ -74,6 +74,16 @@ class GroupQuestionController extends Controller
             if (array_key_exists("questions", $fields)) {
                 $questions = $fields['questions'];
                 foreach ($questions as $q) {
+                    $existingQ = Question::where(['id' => $q])->get()->first();
+                    if(!$existingQ) {
+                        return response()->json(['message' => 'Question id does not exist!'], 400);
+                    }
+                    $qType = $existingQ->type;
+                    if($qType == 'group') {
+                        return response()->json(['message' => "Cannot add group to another group!"], 400);
+                    }
+                }
+                foreach ($questions as $q) {
                     GroupQuestion::create([
                         'group_id' => $question->id,
                         'question_id' => $q,
@@ -182,6 +192,16 @@ class GroupQuestionController extends Controller
             if (array_key_exists("questions", $fields)) {
                 $questions = $fields['questions'];
                 foreach ($questions as $q) {
+                    $existingQ = Question::where(['id' => $q])->get()->first();
+                    if(!$existingQ) {
+                        return response()->json(['message' => 'Question id does not exist!'], 400);
+                    }
+                    $qType = $existingQ->type;
+                    if($qType == 'group') {
+                        return response()->json(['message' => "Cannot add group to another group!"], 400);
+                    }
+                }
+                foreach ($questions as $q) {
                     GroupQuestion::create([
                         'group_id' => $question->id,
                         'question_id' => $q,
@@ -205,12 +225,23 @@ class GroupQuestionController extends Controller
                 'questionText' => 'string|max:255',
                 'image' => 'image',
                 'questions'    => 'array',
-                'questions.*'  => 'string|distinct'
+                'questions.*'  => 'distinct'
             ]);
 
             if (array_key_exists("questions", $fields)) {
                 $questions = $fields['questions'];
                 GroupQuestion::where('group_id', $questionn->id)->delete();
+
+                foreach ($questions as $q) {
+                    $existingQ = Question::where(['id' => $q])->get()->first();
+                    if(!$existingQ) {
+                        return response()->json(['message' => 'Question id does not exist!'], 400);
+                    }
+                    $qType = $existingQ->type;
+                    if($qType == 'group') {
+                        return response()->json(['message' => "Cannot add group to another group!"], 400);
+                    }
+                }
 
                 foreach ($questions as $q) {
                     GroupQuestion::create([
