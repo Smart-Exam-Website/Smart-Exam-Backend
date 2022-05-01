@@ -177,17 +177,8 @@ class ExamController extends Controller
         }
 
         $questions = $request->questions;
-        // dd(count($questions));
         $mark = $exam->totalMark / count($questions);
         // $duration = $exam->duration / count($questions);
-        // foreach ($questions as $q) {
-        //     $ques = Question::find($q['question_id']);
-        //     if ($ques->type == 'group') {
-        //         $qs = $ques->questions;
-        //         $sub_mark = $mark / count($ques->questions);
-        //         $exam->questions()->attach($qs, ['mark' => $sub_mark]);
-        //     }
-        // }
         $exam->questions()->attach($questions, ['mark' => $mark]);
         $tag->questions()->attach($questions);
 
@@ -381,14 +372,6 @@ class ExamController extends Controller
         $mark = $exam->totalMark / count($questions);
         // $duration = $exam->duration / count($questions);
         $exam->questions()->detach();
-        // foreach ($questions as $q) {
-        //     $ques = Question::find($q['question_id']);
-        //     if ($ques->type == 'group') {
-        //         $qs = $ques->questions;
-        //         $sub_mark = $mark / count($ques->questions);
-        //         $exam->questions()->attach($qs, ['mark' => $sub_mark]);
-        //     }
-        // }
         $exam->questions()->attach($questions, ['mark' => $mark]);
         $tag->questions()->attach($questions);
         // $exam->questions()->sync($questions, ['mark' => $mark]);
