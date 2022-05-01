@@ -9,6 +9,7 @@ use App\Models\Configuration;
 use App\Models\examSession;
 use App\Models\ExamQuestion;
 use App\Models\ExamStudent;
+use App\Models\GroupQuestion;
 use App\Models\FormulaQuestion;
 use App\Models\FormulaStudent;
 use App\Models\Question;
@@ -215,14 +216,15 @@ class MarkExamController extends Controller
         }
 
         $answers = Answer::where(['exam_id' => $exam->id, 'student_id' => $student->id, 'attempt' => $examSession->attempt])->get();
+        $examQuestions = ExamQuestion::where(['exam_id' => $exam->id])->get();
 
         $mcqs = [];
         $essays = [];
         $formulas = [];
         $groups = [];
 
-        foreach ($answers as $ans) {
-            $ans->question;
+        foreach ($examQuestions as $q) {
+            $ans = Answer::where(['exam_id' => $exam->id, 'student_id' => $student->id, 'question_id' => $q->question->id, 'attempt' => $examSession->attempt])->get()->first();
             if (($ans->question->type == "mcq") && ($ans->isMarked == false)) {
                 array_push($mcqs, $ans);
             } else if (($ans->question->type == "essay") && ($ans->isMarked == false)) {
@@ -233,22 +235,47 @@ class MarkExamController extends Controller
                 array_push($formulas, $ans);
             } else if (($ans->question->type == "group") && ($ans->isMarked == false)) {
                 array_push($groups, [$ans->question->id => $ans->question->questions]);
+                foreach ($ans->question->questions as $q) {
+                    $ans = Answer::where(['exam_id' => $exam->id, 'student_id' => $student->id, 'question_id' => $q->id, 'attempt' => $examSession->attempt])->get()->first();
+                    $ans->group = true;
+                    $ans->group_id = $q->pivot->group_id;
+                    $ans->question;
+                    if ($q->type == "mcq") {
+                        array_push($mcqs, $ans);
+                    } else if ($q->type == "essay") {
+                        array_push($essays, $ans);
+                    } else if ($q->type == "formula") {
+                        $formula_ques = FormulaStudent::where(['student_id' => $student->id, 'exam_id' => $exam->id, 'question_id' => $q->id])->get()->first()->formula_question_id;
+                        $ans->question->formula_questions = FormulaQuestion::where(['id' => $formula_ques])->get()->first();
+                        array_push($formulas, $ans);
+                    }
+                }
             }
         }
+
 
         $exst = ExamStudent::where(['student_id' => $student->id, 'exam_id' => $exam->id])->first();
         $totalMark = $exst ? $exst->totalMark : 0;
 
         //for mcq Automatic Marking
         foreach ($mcqs as $a) {
+
             $m = Option::where(['id' => $a['option_id'], 'question_id' => $a['question_id']])->first();
             if ($m != NULL && $m->isCorrect == 1) {
+                $table = 0;
+                if ($a->group) {
+                    $table = ExamQuestion::where(['question_id' => $a->group_id, 'exam_id' => $exam->id])->get()->first();
+                    $group_q = Question::find($a->group_id);
+                    $q_number = count($group_q->questions);
+                    $totalquestionMark = $table->mark / $q_number;
+                } else {
+                    $table = ExamQuestion::where('exam_id', '=', $exam->id)->where('question_id', '=', $a->question_id)->first();
+                    $totalquestionMark = $table->mark;
+                }
 
-                $ex = ExamQuestion::where('exam_id', '=', $exam->id)->where('question_id', '=', $a->question_id)->first();
+                Answer::where(['exam_id' => $exam->id, 'student_id' => $student->id, 'option_id' => $a['option_id'], 'question_id' => $a->question_id, 'attempt' => $examSession->attempt])->update(['questionMark' => $totalquestionMark, 'isMarked' => true]);
 
-                Answer::where(['exam_id' => $exam->id, 'student_id' => $student->id, 'option_id' => $a['option_id'], 'question_id' => $a->question_id, 'attempt' => $examSession->attempt])->update(['questionMark' => $ex->mark, 'isMarked' => true]);
-
-                $totalMark += $ex->mark;
+                $totalMark += $totalquestionMark;
             } else {
                 Answer::where(['exam_id' => $exam->id, 'student_id' => $student->id, 'question_id' => $a->question_id, 'attempt' => $examSession->attempt])->update(['questionMark' => 0, 'isMarked' => true]);
             }
@@ -259,47 +286,67 @@ class MarkExamController extends Controller
 
         foreach ($essays as $essay) {
 
-            $correctAnswer = $essay->question->options[0]->value;
-            $studentAnswer = $essay->studentAnswer;
+            // $correctAnswer = $essay->question->options[0]->value;
+            // $studentAnswer = $essay->studentAnswer;
 
-            $list[0] = $correctAnswer;
-            $list[intval($essay->student_id)] = $studentAnswer;
+            // $list[0] = $correctAnswer;
+            // $list[intval($essay->student_id)] = $studentAnswer;
 
-            $response = Http::post('http://ec2-3-239-150-58.compute-1.amazonaws.com/grading/predict', [
-                'students_dict' => $list,
-            ]);
+            // $response = Http::post('http://ec2-3-239-150-58.compute-1.amazonaws.com/grading/predict', [
+            //     'students_dict' => $list,
+            // ]);
 
 
-            if ($response->ok()) {
-                if ($response->status() != 200) {
-                    return response()->json(['message' => 'Failed to send Answers!'], 400);
-                } else {
-                    $percent = $response->object()->grades->$student_id;
-                    $ex = ExamQuestion::where(['question_id' => $essay->question_id, 'exam_id' => $exam->id])->get()->first();
-                    $totalquestionMark = $ex->mark;
-                    $student_Mark = (float)$percent  * $totalquestionMark;
-                    DB::table('answers')->where(['student_id' => $student->id, 'exam_id' => $exam->id, 'question_id' => $essay->question_id])->update(['questionMark' => $student_Mark, 'isMarked' => true]);
-                    $totalMark += $student_Mark;
-                }
+            // if ($response->ok()) {
+            //     if ($response->status() != 200) {
+            //         return response()->json(['message' => 'Failed to send Answers!'], 400);
+            //     } else {
+            //$percent = $response->object()->grades->$student_id;
+            $percent = "0.7";
+            $table = 0;
+
+            if ($essay->group) {
+                $table = ExamQuestion::where(['question_id' => $essay->group_id, 'exam_id' => $exam->id])->get()->first();
+                $group_q = Question::find($essay->group_id);
+                $q_number = count($group_q->questions);
+                $totalquestionMark = $table->mark / $q_number;
             } else {
-                return response()->json(['message' => 'An error occurred!'], 400);
+                $table = ExamQuestion::where(['question_id' => $essay->question_id, 'exam_id' => $exam->id])->get()->first();
+                $totalquestionMark = $table->mark;
             }
+
+            $student_Mark = (float)$percent  * $totalquestionMark;
+            DB::table('answers')->where(['student_id' => $student->id, 'exam_id' => $exam->id, 'question_id' => $essay->question_id])->update(['questionMark' => $student_Mark, 'isMarked' => true]);
+            $totalMark += $student_Mark;
+            //     }
+            // } else {
+            //     return response()->json(['message' => 'An error occurred!'], 400);
+            // }
         }
 
         // For formula marking
 
         foreach ($formulas as $a) {
             if ($a->studentAnswer == $a->question->formula_questions->value) {
-                $ex = ExamQuestion::where('exam_id', '=', $exam->id)->where('question_id', '=', $a->question_id)->first();
-                Answer::where(['exam_id' => $exam->id, 'student_id' => $student->id, 'question_id' => $a->question_id, 'attempt' => $examSession->attempt])->update(['questionMark' => $ex->mark, 'isMarked' => true]);
-                $totalMark += $ex->mark;
+                $table = 0;
+
+                if ($a->group) {
+                    $table = ExamQuestion::where(['question_id' => $a->group_id, 'exam_id' => $exam->id])->get()->first();
+                    $group_q = Question::find($a->group_id);
+                    $q_number = count($group_q->questions);
+                    $totalquestionMark = $table->mark / $q_number;
+                } else {
+                    $table = ExamQuestion::where('exam_id', '=', $exam->id)->where('question_id', '=', $a->question_id)->first();
+                    $totalquestionMark = $table->mark;
+                }
+                Answer::where(['exam_id' => $exam->id, 'student_id' => $student->id, 'question_id' => $a->question_id, 'attempt' => $examSession->attempt])->update(['questionMark' => $totalquestionMark, 'isMarked' => true]);
+                $totalMark += $totalquestionMark;
             } else {
                 Answer::where(['exam_id' => $exam->id, 'student_id' => $student->id, 'question_id' => $a->question_id, 'attempt' => $examSession->attempt])->update(['questionMark' => 0, 'isMarked' => true]);
             }
         }
 
         // For Question Group
-
         foreach ($groups as $g) {
             $all_questions = 0;
             foreach ($g as $q) {
