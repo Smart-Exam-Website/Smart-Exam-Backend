@@ -7,6 +7,7 @@ use App\Models\Exam;
 use App\Models\examSession;
 use App\Models\ExamStudent;
 use App\Models\FormulaQuestion;
+use App\Models\FormulaStudent;
 use App\Models\Tag;
 use App\Models\Question;
 use Illuminate\Http\Request;
@@ -233,13 +234,31 @@ class ExamController extends Controller
             if ($question->type == "group") {
                 $question->questions->each(function ($question) {
                     $question->tags;
+                    $question->options;
                 });
             } else if ($question->type == "formula") {
-                $formulaQs = FormulaQuestion::where([
-                    'question_id' => $question->id
-                ])->get();
+                if (auth()->user()->type == 'instructor') {
+                    $formulaQs = FormulaQuestion::where([
+                        'question_id' => $question->id
+                    ])->get();
 
-                $question->questions = $formulaQs;
+
+                    $question->questions = $formulaQs;
+                } else if (auth()->user()->type == 'student') {
+                    
+                    $studentFormulaQ = FormulaStudent::where([
+                        'student_id' => auth()->user()->id,
+                        'exam_id' => $exam->id,
+                        'question_id' => $question->id,
+                    ])->get()->first();
+                    if (!$studentFormulaQ) {
+                        return response()->json(['message' => 'Student has no formula question!'], 400);
+                    }
+                    $formulaQ = FormulaQuestion::where([
+                        'id' => $studentFormulaQ->formula_question_id
+                    ])->get()->first();
+                    $question->questionText = $formulaQ->formulaText;
+                }
             } else {
                 $question->options;
             }

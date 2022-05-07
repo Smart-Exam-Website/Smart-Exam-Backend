@@ -213,6 +213,7 @@ class GroupQuestionController extends Controller
             if ($question->type == "group") {
                 $question->questions->each(function ($e) {
                     $e->tags;
+                    $e->options;
                 });
             }
             return response($question, 201);

@@ -89,7 +89,10 @@ class TakeExamController extends Controller
 
         foreach ($questions as $question) {
             if ($question->type == 'group') {
-                $question->questions;
+                $question->questions->each(function ($question) {
+                    $question->options;
+                    $question->tags;
+                }); 
             } else if ($question->type == 'formula') {
                 $formulaQ = FormulaQuestion::where([
                     'question_id' => $question->id,

@@ -49,7 +49,7 @@ class QuestionController extends Controller
         if ($myQuestions) {
             $filteredQuestions = $questions->filter(function ($question, $key) use ($myQuestions, $user) {
                 $myQuestions = filter_var($myQuestions, FILTER_VALIDATE_BOOLEAN);
-                return $myQuestions ? $question->instructor_id == $user->id : $question->instructor_id != $user->id;
+                return $myQuestions ? $question->instructor_id == $user->id : true;
             });
 
             $questions = collect(array_values($filteredQuestions->all()));
