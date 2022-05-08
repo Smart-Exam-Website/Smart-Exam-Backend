@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Answer;
+use App\Models\Exam;
+use App\Models\ExamQuestion;
 use App\Models\examSession;
 use App\Models\Option;
 use App\Models\Question;
@@ -15,9 +17,9 @@ class AnswerController extends Controller
     public function store(Request $request)
     {
         $rules = [
-            'option_id' => 'numeric',
-            'question_id' => 'required|numeric',
-            'exam_id' => 'required|numeric',
+            'option_id' => 'numeric|exists:options,id',
+            'question_id' => 'required|numeric|exists:questions,id',
+            'exam_id' => 'required|numeric|exists:exams,id',
             'studentAnswer' => 'string'
         ];
 
@@ -26,7 +28,12 @@ class AnswerController extends Controller
         $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
-            return response()->json(['message' => 'failed to add answer'], 422);
+            return response()->json(['message' => 'the data is invalid'], 422);
+        }
+
+        $exam = Exam::where(['id' => $request->exam_id])->first();
+        if(!$exam) {
+            return message()->json(['message' => 'No exam found with this id!'], 404);
         }
 
         $answerDetails = $request->only(['option_id', 'question_id', 'exam_id', 'studentAnswer']);
@@ -41,9 +48,37 @@ class AnswerController extends Controller
         $answerDetails['attempt'] = $examSession->attempt;
         $answer = Answer::where(['exam_id' => $request->exam_id, 'student_id' => $studentId, 'question_id' => $request->question_id, 'attempt' => $examSession->attempt])->get()->first();
         $question = Question::where(['id' => $request->question_id])->get()->first();
+        $examQuestions = ExamQuestion::where(['exam_id' => $request->exam_id])->get();
+        $found = false;
+        foreach ($examQuestions as $examQ) {
+            $q = Question::where(['id' => $examQ->question_id])->get()->first();
+            if($q->type == 'group') {
+                $groupQs = $q->questions;
+                // dd($groupQs);
+                foreach($groupQs as $gQ) {
+                    if($gQ->id == $question->id) {
+                        $found = true;
+                        break;
+                    }
+                }
+
+            } else {
+                if($q->id == $question->id) {
+                    $found = true;
+                    break;
+                }
+            }
+        }
+        if(!$found) {
+            return response()->json(['message' => 'Question not related to exam!'], 422);
+        }
         if (!$request->option_id) {
-            $option = Option::where('question_id', $question->id)->get()->first();
-            $answerDetails['option_id'] = $option->id;
+            if($question->type != 'formula') {
+                $option = Option::where('question_id', $question->id)->get()->first();
+                $answerDetails['option_id'] = $option->id;
+            } else {
+                $answerDetails['option_id'] = null;
+            }
         } else {
             $option = Option::where(['question_id' => $question->id, 'id' => $request->option_id])->get()->first();
             if (!$option) {

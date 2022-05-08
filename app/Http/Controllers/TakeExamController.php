@@ -10,9 +10,11 @@ use App\Models\ExamStudent;
 use App\Models\CheatingAction;
 use App\Models\FormulaQuestion;
 use App\Models\FormulaStudent;
+use App\Models\GroupQuestion;
 use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use stdClass;
 
 class TakeExamController extends Controller
 {
@@ -92,7 +94,7 @@ class TakeExamController extends Controller
                 $question->questions->each(function ($question) {
                     $question->options;
                     $question->tags;
-                }); 
+                });
             } else if ($question->type == 'formula') {
                 $formulaQ = FormulaQuestion::where([
                     'question_id' => $question->id,
@@ -103,7 +105,7 @@ class TakeExamController extends Controller
                 $studentFormulaQ = FormulaStudent::where([
                     'student_id' => auth()->user()->id,
                     'exam_id' => $exam->id,
-                    'question_id' => $question->id,
+                    'question_id' => $question->id
                 ])->get()->first();
                 if (!$studentFormulaQ) {
                     $studentFormulaQ = FormulaStudent::create([
@@ -119,7 +121,7 @@ class TakeExamController extends Controller
                     FormulaStudent::where([
                         'student_id' => auth()->user()->id,
                         'exam_id' => $exam->id,
-                        'question_id' => $question->id,
+                        'question_id' => $question->id
                     ])->update([
                         'formula_question_id' => $formulaQ->id
                     ]);
@@ -215,6 +217,15 @@ class TakeExamController extends Controller
 
         if (!$answers) {
             return response()->json(['message' => 'No answers found!'], 400);
+        }
+
+        foreach($answers as $answer) {
+            $groupQ = GroupQuestion::where(['question_id' => $answer->question_id])->get()->first();
+            if(!$groupQ) {
+                $answer->group_id = null;
+            } else {
+                $answer->group_id = $groupQ->group_id;
+            }
         }
 
         return response()->json(['message' => 'Success!', 'answers' => $answers, 'endTime' => $startTime->format('Y-m-d H:i:s')]);

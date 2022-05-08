@@ -249,7 +249,7 @@ class ExamController extends Controller
                     $studentFormulaQ = FormulaStudent::where([
                         'student_id' => auth()->user()->id,
                         'exam_id' => $exam->id,
-                        'question_id' => $question->id,
+                        'question_id' => $question->id
                     ])->get()->first();
                     if (!$studentFormulaQ) {
                         return response()->json(['message' => 'Student has no formula question!'], 400);
