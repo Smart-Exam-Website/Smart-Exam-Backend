@@ -223,28 +223,33 @@ class MarkExamController extends Controller
         $formulas = [];
         $groups = [];
 
-        foreach ($examQuestions as $q) {
-            $ans = Answer::where(['exam_id' => $exam->id, 'student_id' => $student->id, 'question_id' => $q->question->id, 'attempt' => $examSession->attempt])->get()->first();
-            if (($ans->question->type == "mcq") && ($ans->isMarked == false)) {
+        foreach ($examQuestions as $qq) {
+            $ans = Answer::where(['exam_id' => $exam->id, 'student_id' => $student->id, 'question_id' => $qq->question->id, 'attempt' => $examSession->attempt])->get()->first();
+            $isnull = ($ans == null) ? 1 : 0;
+            $isMarked = !$isnull ? (($ans->isMarked == true) ? 1 : 0) : 0;
+
+            if (($qq->question->type == "mcq") && ($isMarked == false) && !$isnull) {
                 array_push($mcqs, $ans);
-            } else if (($ans->question->type == "essay") && ($ans->isMarked == false)) {
+            } else if (($qq->question->type == "essay") && ($isMarked == false) && !$isnull) {
                 array_push($essays, $ans);
-            } else if (($ans->question->type == "formula") && ($ans->isMarked == false)) {
-                $formula_ques = FormulaStudent::where(['student_id' => $student->id, 'exam_id' => $exam->id, 'question_id' => $ans->question->id])->get()->first()->formula_question_id;
+            } else if (($qq->question->type == "formula") && ($isMarked == false) && !$isnull) {
+                $formula_ques = FormulaStudent::where(['student_id' => $student->id, 'exam_id' => $exam->id, 'question_id' => $qq->question->id])->get()->first()->formula_question_id;
                 $ans->question->formula_questions = FormulaQuestion::where(['id' => $formula_ques])->get()->first();
                 array_push($formulas, $ans);
-            } else if (($ans->question->type == "group") && ($ans->isMarked == false)) {
-                array_push($groups, [$ans->question->id => $ans->question->questions]);
-                foreach ($ans->question->questions as $q) {
+            } else if ($qq->question->type == "group" && ($isMarked == false)) {
+                array_push($groups, [$qq->question->id => $qq->question->questions]);
+                foreach ($qq->question->questions as $q) {
                     $ans = Answer::where(['exam_id' => $exam->id, 'student_id' => $student->id, 'question_id' => $q->id, 'attempt' => $examSession->attempt])->get()->first();
                     $ans->group = true;
                     $ans->group_id = $q->pivot->group_id;
                     $ans->question;
-                    if ($q->type == "mcq") {
+                    $isnull = ($ans == null) ? 1 : 0;
+                    $isMarked = !$isnull ? (($ans->isMarked == true) ? 1 : 0) : 0;
+                    if ($q->type == "mcq" && ($isMarked == false) && !$isnull) {
                         array_push($mcqs, $ans);
-                    } else if ($q->type == "essay") {
+                    } else if ($q->type == "essay" && ($isMarked == false) && !$isnull) {
                         array_push($essays, $ans);
-                    } else if ($q->type == "formula") {
+                    } else if ($q->type == "formula" && ($isMarked == false) && !$isnull) {
                         $formula_ques = FormulaStudent::where(['student_id' => $student->id, 'exam_id' => $exam->id, 'question_id' => $q->id])->get()->first()->formula_question_id;
                         $ans->question->formula_questions = FormulaQuestion::where(['id' => $formula_ques])->get()->first();
                         array_push($formulas, $ans);
@@ -417,28 +422,33 @@ class MarkExamController extends Controller
             $formulas = [];
             $groups = [];
 
-            foreach ($examQuestions as $q) {
-                $ans = Answer::where(['exam_id' => $exam->id, 'student_id' => $s->id, 'question_id' => $q->question->id, 'attempt' => $examSession->attempt])->get()->first();
-                if (($ans->question->type == "mcq") && ($ans->isMarked == false)) {
+            foreach ($examQuestions as $qq) {
+                $ans = Answer::where(['exam_id' => $exam->id, 'student_id' => $s->id, 'question_id' => $qq->question->id, 'attempt' => $examSession->attempt])->get()->first();
+                $isnull = ($ans == null) ? 1 : 0;
+                $isMarked = !$isnull ? (($ans->isMarked == true) ? 1 : 0) : 0;
+
+                if (($qq->question->type == "mcq") && ($isMarked == false) && !$isnull) {
                     array_push($mcqs, $ans);
-                } else if (($ans->question->type == "essay") && ($ans->isMarked == false)) {
+                } else if (($qq->question->type == "essay") && ($isMarked == false) && !$isnull) {
                     array_push($essays, $ans);
-                } else if (($ans->question->type == "formula") && ($ans->isMarked == false)) {
-                    $formula_ques = FormulaStudent::where(['student_id' => $s->id, 'exam_id' => $exam->id, 'question_id' => $ans->question->id])->get()->first()->formula_question_id;
+                } else if (($qq->question->type == "formula") && ($isMarked == false) && !$isnull) {
+                    $formula_ques = FormulaStudent::where(['student_id' => $s->id, 'exam_id' => $exam->id, 'question_id' => $qq->question->id])->get()->first()->formula_question_id;
                     $ans->question->formula_questions = FormulaQuestion::where(['id' => $formula_ques])->get()->first();
                     array_push($formulas, $ans);
-                } else if (($ans->question->type == "group") && ($ans->isMarked == false)) {
-                    array_push($groups, [$ans->question->id => $ans->question->questions]);
-                    foreach ($ans->question->questions as $q) {
+                } else if ($qq->question->type == "group" && ($isMarked == false)) {
+                    array_push($groups, [$qq->question->id => $qq->question->questions]);
+                    foreach ($qq->question->questions as $q) {
                         $ans = Answer::where(['exam_id' => $exam->id, 'student_id' => $s->id, 'question_id' => $q->id, 'attempt' => $examSession->attempt])->get()->first();
                         $ans->group = true;
                         $ans->group_id = $q->pivot->group_id;
                         $ans->question;
-                        if ($q->type == "mcq") {
+                        $isnull = ($ans == null) ? 1 : 0;
+                        $isMarked = !$isnull ? (($ans->isMarked == true) ? 1 : 0) : 0;
+                        if ($q->type == "mcq" && ($isMarked == false) && !$isnull) {
                             array_push($mcqs, $ans);
-                        } else if ($q->type == "essay") {
+                        } else if ($q->type == "essay" && ($isMarked == false) && !$isnull) {
                             array_push($essays, $ans);
-                        } else if ($q->type == "formula") {
+                        } else if ($q->type == "formula" && ($isMarked == false) && !$isnull) {
                             $formula_ques = FormulaStudent::where(['student_id' => $s->id, 'exam_id' => $exam->id, 'question_id' => $q->id])->get()->first()->formula_question_id;
                             $ans->question->formula_questions = FormulaQuestion::where(['id' => $formula_ques])->get()->first();
                             array_push($formulas, $ans);
