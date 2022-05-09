@@ -240,11 +240,13 @@ class MarkExamController extends Controller
                 array_push($groups, [$qq->question->id => $qq->question->questions]);
                 foreach ($qq->question->questions as $q) {
                     $ans = Answer::where(['exam_id' => $exam->id, 'student_id' => $student->id, 'question_id' => $q->id, 'attempt' => $examSession->attempt])->get()->first();
-                    $ans->group = true;
-                    $ans->group_id = $q->pivot->group_id;
-                    $ans->question;
                     $isnull = ($ans == null) ? 1 : 0;
                     $isMarked = !$isnull ? (($ans->isMarked == true) ? 1 : 0) : 0;
+                    if (!$isnull) {
+                        $ans->group = true;
+                        $ans->group_id = $q->pivot->group_id;
+                        $ans->question;
+                    }
                     if ($q->type == "mcq" && ($isMarked == false) && !$isnull) {
                         array_push($mcqs, $ans);
                     } else if ($q->type == "essay" && ($isMarked == false) && !$isnull) {
@@ -257,7 +259,6 @@ class MarkExamController extends Controller
                 }
             }
         }
-
 
         $exst = ExamStudent::where(['student_id' => $student->id, 'exam_id' => $exam->id])->first();
         $totalMark = $exst ? $exst->totalMark : 0;
@@ -285,6 +286,7 @@ class MarkExamController extends Controller
                 Answer::where(['exam_id' => $exam->id, 'student_id' => $student->id, 'question_id' => $a->question_id, 'attempt' => $examSession->attempt])->update(['questionMark' => 0, 'isMarked' => true]);
             }
         }
+
 
         //for essay Automatic Marking
         $list = [];
@@ -356,10 +358,11 @@ class MarkExamController extends Controller
             $all_questions = 0;
             foreach ($g as $q) {
                 foreach ($q as $e) {
-                    $all_questions += Answer::where(['exam_id' => $exam->id, 'student_id' => $student->id, 'question_id' => $e->id, 'attempt' => $examSession->attempt])->get()->first()->questionMark;
+                    $ans = Answer::where(['exam_id' => $exam->id, 'student_id' => $student->id, 'question_id' => $e->id, 'attempt' => $examSession->attempt])->get()->first();
+                    $isnull = ($ans == null) ? 1 : 0;
+                    $all_questions += !$isnull ? $ans->questionMark : 0;
                 };
             }
-            Answer::where(['exam_id' => $exam->id, 'student_id' => $student->id, 'question_id' => array_keys($g)[0], 'attempt' => $examSession->attempt])->update(['questionMark' => $all_questions, 'isMarked' => true]);
         }
 
         //Final Saving for the total Mark of the student
@@ -439,11 +442,13 @@ class MarkExamController extends Controller
                     array_push($groups, [$qq->question->id => $qq->question->questions]);
                     foreach ($qq->question->questions as $q) {
                         $ans = Answer::where(['exam_id' => $exam->id, 'student_id' => $s->id, 'question_id' => $q->id, 'attempt' => $examSession->attempt])->get()->first();
-                        $ans->group = true;
-                        $ans->group_id = $q->pivot->group_id;
-                        $ans->question;
                         $isnull = ($ans == null) ? 1 : 0;
                         $isMarked = !$isnull ? (($ans->isMarked == true) ? 1 : 0) : 0;
+                        if (!$isnull) {
+                            $ans->group = true;
+                            $ans->group_id = $q->pivot->group_id;
+                            $ans->question;
+                        }
                         if ($q->type == "mcq" && ($isMarked == false) && !$isnull) {
                             array_push($mcqs, $ans);
                         } else if ($q->type == "essay" && ($isMarked == false) && !$isnull) {
@@ -456,7 +461,6 @@ class MarkExamController extends Controller
                     }
                 }
             }
-
 
             $exst = ExamStudent::where(['student_id' => $s->id, 'exam_id' => $exam->id])->first();
             $totalMark = $exst ? $exst->totalMark : 0;
@@ -555,10 +559,11 @@ class MarkExamController extends Controller
                 $all_questions = 0;
                 foreach ($g as $q) {
                     foreach ($q as $e) {
-                        $all_questions += Answer::where(['exam_id' => $exam->id, 'student_id' => $s->id, 'question_id' => $e->id, 'attempt' => $examSession->attempt])->get()->first()->questionMark;
+                        $ans = Answer::where(['exam_id' => $exam->id, 'student_id' => $s->id, 'question_id' => $e->id, 'attempt' => $examSession->attempt])->get()->first();
+                        $isnull = ($ans == null) ? 1 : 0;
+                        $all_questions += !$isnull ? $ans->questionMark : 0;
                     };
                 }
-                Answer::where(['exam_id' => $exam->id, 'student_id' => $s->id, 'question_id' => array_keys($g)[0], 'attempt' => $examSession->attempt])->update(['questionMark' => $all_questions, 'isMarked' => true]);
             }
 
             //Final Saving for the total Mark of the student
