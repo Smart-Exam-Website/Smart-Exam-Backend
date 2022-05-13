@@ -363,6 +363,19 @@ class MarkExamController extends Controller
                     $all_questions += !$isnull ? $ans->questionMark : 0;
                 };
             }
+            $aa = Answer::where(['exam_id' => $exam->id, 'student_id' => $student->id, 'question_id' => array_keys($g)[0], 'attempt' => $examSession->attempt])->get()->first();
+            if ($aa != null) {
+                Answer::where(['exam_id' => $exam->id, 'student_id' => $student->id, 'question_id' => array_keys($g)[0], 'attempt' => $examSession->attempt])->update(['questionMark' => $all_questions, 'isMarked' => true]);
+            } else {
+                Answer::create([
+                    'exam_id' => $exam->id,
+                    'student_id' => $student->id,
+                    'question_id' => array_keys($g)[0],
+                    'attempt' => $examSession->attempt,
+                    'questionMark' => $all_questions,
+                    'isMarked' => true
+                ]);
+            }
         }
 
         //Final Saving for the total Mark of the student
@@ -564,6 +577,19 @@ class MarkExamController extends Controller
                         $all_questions += !$isnull ? $ans->questionMark : 0;
                     };
                 }
+                $aa = Answer::where(['exam_id' => $exam->id, 'student_id' => $s->id, 'question_id' => array_keys($g)[0], 'attempt' => $examSession->attempt])->get()->first();
+                if ($aa != null) {
+                    Answer::where(['exam_id' => $exam->id, 'student_id' => $s->id, 'question_id' => array_keys($g)[0], 'attempt' => $examSession->attempt])->update(['questionMark' => $all_questions, 'isMarked' => true]);
+                } else {
+                    Answer::create([
+                        'exam_id' => $exam->id,
+                        'student_id' => $s->id,
+                        'question_id' => array_keys($g)[0],
+                        'attempt' => $examSession->attempt,
+                        'questionMark' => $all_questions,
+                        'isMarked' => true
+                    ]);
+                }
             }
 
             //Final Saving for the total Mark of the student
@@ -603,14 +629,20 @@ class MarkExamController extends Controller
             if (!$session) {
                 return response()->json(['message' => 'There is no exam session for this student'], 404);
             }
+            $q_array = [];
+            $exam_qs = ExamQuestion::where(['exam_id' => $exam->id])->get();
+            foreach ($exam_qs as $e) {
+                array_push($q_array, $e->question_id);
+            }
 
-            $solutions = Answer::where(['exam_id' => $exam->id, 'student_id' => $user->id, 'attempt' => $session->attempt])->get();
+            $solutions = Answer::where(['exam_id' => $exam->id, 'student_id' => $user->id, 'attempt' => $session->attempt])->whereIn('question_id', $q_array)->get();
+
             if (!$solutions) {
                 return response()->json(['message' => 'Failed to fetch your solutions!'], 422);
             }
 
             foreach ($solutions as $s) {
-                $s->question = Question::where(['id' => $s->question_id])->get()->first();
+                $s->question;
                 $s->totalQuestionMark = DB::table('exam_question')->where(['exam_id' => $exam->id, 'question_id' => $s->question_id])->get()->first()->mark;
                 $answers = Option::where(['question_id' => $s->question->id])->get();
                 $s->question->answers = $answers;
