@@ -630,12 +630,17 @@ class MarkExamController extends Controller
                 return response()->json(['message' => 'There is no exam session for this student'], 404);
             }
             $q_array = [];
+            $groupq_array = [];
             $exam_qs = ExamQuestion::where(['exam_id' => $exam->id])->get();
             foreach ($exam_qs as $e) {
                 array_push($q_array, $e->question_id);
             }
 
             $solutions = Answer::where(['exam_id' => $exam->id, 'student_id' => $user->id, 'attempt' => $session->attempt])->whereIn('question_id', $q_array)->get();
+            $group_q = Answer::where(['exam_id' => $exam->id, 'student_id' => $user->id, 'attempt' => $session->attempt])->whereNotIn('question_id', $q_array)->get();
+            foreach ($group_q as $e) {
+                array_push($groupq_array, $e->question_id);
+            }
 
             if (!$solutions) {
                 return response()->json(['message' => 'Failed to fetch your solutions!'], 422);
@@ -648,6 +653,7 @@ class MarkExamController extends Controller
                 $s->question->answers = $answers;
                 if ($s->question->type == "group") {
                     foreach ($s->question->questions as $e) {
+                        $e->studentAnswer = Answer::where(['exam_id' => $exam->id, 'student_id' => $user->id, 'attempt' => $session->attempt])->whereIn('question_id', $groupq_array)->get()->first();
                         $answers = Option::where(['question_id' => $e->id])->get();
                         $e->answers = $answers;
                         if ($e->type == "formula") {
