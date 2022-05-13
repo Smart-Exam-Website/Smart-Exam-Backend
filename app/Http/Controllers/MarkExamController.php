@@ -647,10 +647,16 @@ class MarkExamController extends Controller
                 $answers = Option::where(['question_id' => $s->question->id])->get();
                 $s->question->answers = $answers;
                 if ($s->question->type == "group") {
-                    $s->question->questions->each(function ($e) {
+                    foreach ($s->question->questions as $e) {
                         $answers = Option::where(['question_id' => $e->id])->get();
                         $e->answers = $answers;
-                    });
+                        if ($e->type == "formula") {
+                            $formula_ques = FormulaStudent::where(['student_id' => $user->id, 'exam_id' => $exam->id, 'question_id' => $e->id])->get()->first()->formula_question_id;
+                            $e->formula_questions = FormulaQuestion::where(['id' => $formula_ques])->get()->first();
+                            $e->formula;
+                            $e->variables;
+                        }
+                    };
                 } else if ($s->question->type == "formula") {
                     $formula_ques = FormulaStudent::where(['student_id' => $user->id, 'exam_id' => $exam->id, 'question_id' => $s->question_id])->get()->first()->formula_question_id;
                     $s->question->formula_questions = FormulaQuestion::where(['id' => $formula_ques])->get()->first();
