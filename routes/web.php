@@ -1,8 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\StudentController;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\PieChartController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -21,3 +21,5 @@ Route::get('/', function () {
 Route::get('/api/documentation', function () {
     return view('swagger.index');
 });
+
+Route::get('/statistics/{exam}', 'App\Http\Controllers\StatisticsController@index');
