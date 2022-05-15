@@ -10,7 +10,7 @@
 
     <?php for ($i = 0; $i < count($questionsData); $i++) {
         $chartId = "piechart " . $i;
-        $questionData = $questionsData[i];
+        $questionData = $questionsData[$i];
 
         if ($i % 2 == 0) {
             if ($i == 0) {
