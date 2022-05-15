@@ -14,6 +14,7 @@ class StatisticsController extends Controller
 {
     public function index(Exam $exam)
     {
+        $instructor = User::where(['id' => $exam->instructor_id])->get()->first();
         $error = "";
         if (!$exam) {
             $error = "No exam found with this id!";
@@ -43,13 +44,13 @@ class StatisticsController extends Controller
 
         $marks = [];
 
-        $ExamStudents = ExamStudent::where(['exam_id' => $exam->id])->get();
+        $st_num = ExamStudent::where(['exam_id' => $exam->id])->count();
         $examMark = $exam->totalMark;
-        $mark100 = ExamStudent::where('totalMark', '>', 80)->where('totalMark', '<=', 100)->count();
-        $mark80 = ExamStudent::where('totalMark', '>', 60)->where('totalMark', '<=', 80)->count();
-        $mark60 = ExamStudent::where('totalMark', '>', 40)->where('totalMark', '<=', 60)->count();
-        $mark40 = ExamStudent::where('totalMark', '>', 20)->where('totalMark', '<=', 40)->count();
-        $mark20 = ExamStudent::where('totalMark', '>', 0)->where('totalMark', '<=', 20)->count();
+        $mark100 = ExamStudent::where('totalMark', '>', 0.8 * $examMark)->where('totalMark', '<=', $examMark)->count();
+        $mark80 = ExamStudent::where('totalMark', '>', 0.6 * $examMark)->where('totalMark', '<=', 0.8 * $examMark)->count();
+        $mark60 = ExamStudent::where('totalMark', '>', 0.4 * $examMark)->where('totalMark', '<=', 0.6 * $examMark)->count();
+        $mark40 = ExamStudent::where('totalMark', '>', 0.2 * $examMark)->where('totalMark', '<=', 0.4 * $examMark)->count();
+        $mark20 = ExamStudent::where('totalMark', '>', 0 * $examMark)->where('totalMark', '<=', 0.2 * $examMark)->count();
         $mark0 = ExamStudent::where('totalMark', 0)->count();
 
         // $students = User::where('type','student')->get();
@@ -63,6 +64,6 @@ class StatisticsController extends Controller
         // $data['instructors'] = $instructor_count;
         // $data['admins'] = $admin_count;
 
-        return view('charts', compact('mark0', 'mark20', 'mark40', 'mark60', 'mark80', 'mark100', 'questionsData', 'error'));
+        return view('charts', compact('exam', 'instructor', 'st_num', 'mark0', 'mark20', 'mark40', 'mark60', 'mark80', 'mark100', 'questionsData', 'error'));
     }
 }
