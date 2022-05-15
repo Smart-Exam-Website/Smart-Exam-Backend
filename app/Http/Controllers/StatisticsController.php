@@ -24,43 +24,42 @@ class StatisticsController extends Controller
         $questionsData = [];
 
 
-		foreach ($questions as $question) {
-			$questionData = ['Good' => 0, 'Fair' => 0, 'Bad' => 0];
-			if ($question->type != 'group') {
-				$answers = Answer::where(['exam_id' => $exam->id, 'question_id' => $question->id])->get();
-				foreach ($answers as $answer) {
-					if ($answer->isMarked == true) {
-						if ($answer->questionMark == 0) {
-							$questionData['Bad']++;
-						} else if ($answer->questionMark < $question->pivot->mark) {
-							$questionData['Fair']++;
-						} else {
-							$questionData['Good']++;
-						}
-					}
-				}
-				array_push($questionsData, $questionData);
-			} else {
-				$groupQs = $question->questions;
-				foreach ($groupQs as $groupQ) {
-					$questionData = ['Good' => 0, 'Fair' => 0, 'Bad' => 0];
-					$answers = Answer::where(['exam_id' => $exam->id, 'question_id' => $groupQ->id])->get();
-					foreach ($answers as $answer) {
-						if ($answer->isMarked == true) {
-							if ($answer->questionMark == 0) {
-								$questionData['Bad']++;
-							} else if ($answer->questionMark < $question->pivot->mark) {
-								$questionData['Fair']++;
-							} else {
-								$questionData['Good']++;
-							}
-						}
-					}
-					array_push($questionsData, $questionData);
-				}
-			}
-			
-		}
+        foreach ($questions as $question) {
+            $questionData = ['Good' => 0, 'Fair' => 0, 'Bad' => 0];
+            if ($question->type != 'group') {
+                $answers = Answer::where(['exam_id' => $exam->id, 'question_id' => $question->id])->get();
+                foreach ($answers as $answer) {
+                    if ($answer->isMarked == true) {
+                        if ($answer->questionMark == 0) {
+                            $questionData['Bad']++;
+                        } else if ($answer->questionMark < $question->pivot->mark) {
+                            $questionData['Fair']++;
+                        } else {
+                            $questionData['Good']++;
+                        }
+                    }
+                }
+                array_push($questionsData, $questionData);
+            } else {
+                $groupQs = $question->questions;
+                foreach ($groupQs as $groupQ) {
+                    $questionData = ['Good' => 0, 'Fair' => 0, 'Bad' => 0];
+                    $answers = Answer::where(['exam_id' => $exam->id, 'question_id' => $groupQ->id])->get();
+                    foreach ($answers as $answer) {
+                        if ($answer->isMarked == true) {
+                            if ($answer->questionMark == 0) {
+                                $questionData['Bad']++;
+                            } else if ($answer->questionMark < $question->pivot->mark) {
+                                $questionData['Fair']++;
+                            } else {
+                                $questionData['Good']++;
+                            }
+                        }
+                    }
+                    array_push($questionsData, $questionData);
+                }
+            }
+        }
 
 
         //bar Chart

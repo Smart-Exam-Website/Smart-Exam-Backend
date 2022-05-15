@@ -19,69 +19,76 @@
     </div>
 
     <div class="bar">
+        <h2 class="title">Students Score</h2>
         <div id="barchart"></div>
     </div>
     <div class="pie">
+        <h2 class="title">Exam Questions</h2>
         @for ($i = 0; $i < count($questionsData); $i++)
-        @php
-        $chartId = "piechart " . $i;
-        $questionData = $questionsData[$i]; 
-        @endphp
+            @php
+                $chartId = 'piechart ' . $i;
+                $questionData = $questionsData[$i];
+            @endphp
 
-        @if ($i % 2 == 0) 
-            @if ($i == 0) 
-                <table class="columns">
-                    <tr>
-            @else
-                    </tr>
-                </table>
-                <table class="columns">
-                    <tr>
+            @if ($i % 2 == 0)
+                @if ($i == 0)
+                    <table class="columns">
+                        <tr>
+                        @else
+                        </tr>
+                    </table>
+                    <table class="columns">
+                        <tr>
+                @endif
             @endif
-        @endif
 
-                <td>
-                    <div id="<?php echo $chartId; ?>" style="width: 220px; height: 220px; margin-left: 235px">
-                    </div>
-                </td>
-                <script type="text/javascript">
+            <td>
+                <div id="<?php echo $chartId; ?>" class="pie_circle">
+                </div>
+            </td>
+            <script type="text/javascript">
+                google.charts.load('current', {
+                    'packages': ['corechart']
+                });
+
+                google.charts.setOnLoadCallback(drawChart);
+
+                function drawChart() {
                     var good_count = <?php echo $questionData['Good']; ?>;
                     var bad_count = <?php echo $questionData['Bad']; ?>;
                     var fair_count = <?php echo $questionData['Fair']; ?>;
-                    google.charts.load('current', {
-                        'packages': ['corechart']
-                    });
-                    google.charts.setOnLoadCallback(drawChart);
+                    var chartId = "<?php echo $chartId; ?>";
+                    console.log(good_count, bad_count, fair_count, chartId);
+                    var data = google.visualization.arrayToDataTable([
+                        ['Type', 'Count'],
+                        ['Good', good_count],
+                        ['Bad', bad_count],
+                        ['Fair', fair_count]
+                    ]);
 
 
-                    function drawChart() {
-                        var data = google.visualization.arrayToDataTable([
-                            ['Type', 'Count'],
-                            ['Good', good_count],
-                            ['Bad', bad_count],
-                            ['Fair', fair_count]
-                        ]);
-                        console.log(good_count, bad_count, fair_count);
-                        var options = {
-                            curveType: 'function',
-                            legend: {
-                                position: 'bottom'
-                            }
-                        };
-                        var chart = new google.visualization.PieChart(document.getElementById("<?php echo $chartId ?>"));
-                        chart.draw(data, options);
-                    }
-                </script>
-            @endfor
-        <script type="text/javascript">
-
+                    var options = {
+                        curveType: 'function',
+                        legend: {
+                            position: 'bottom'
+                        },
+                        colors: ['#2f4f4f', '#f90', '#54aa7a'],
+                    };
+                    var chart = new google.visualization.PieChart(document.getElementById(chartId));
+                    chart
+                        .draw(data, options);
+                }
+            </script>
+        @endfor
+    </div>
+    <script type="text/javascript">
         google.charts.load('current', {
             'packages': ['bar']
         });
+
         google.charts.setOnLoadCallback(drawChart);
 
         function drawChart() {
-
             var data = google.visualization.arrayToDataTable([
                 ['Mark Percent', 'Student Count'],
                 ['0%', <?php echo $mark0; ?>],
@@ -90,13 +97,11 @@
                 ['60%', <?php echo $mark60; ?>],
                 ['80%', <?php echo $mark80; ?>],
                 ['100%', <?php echo $mark100; ?>]
-
             ]);
-
             var options = {
                 chart: {
                     title: 'Bar Graph | Histogram for Exam Marks',
-                    subtitle: '<?php echo date('Y-m-d H:i:s') ?>',
+                    subtitle: '<?php echo date('Y-m-d H:i:s'); ?>',
                 },
                 colors: ['#2f4f4f'],
                 bars: 'vertical'
@@ -105,9 +110,6 @@
             chart.draw(data, google.charts.Bar.convertOptions(options));
         }
     </script>
-    </tr>
-    </table>
-
 
 </body>
 
