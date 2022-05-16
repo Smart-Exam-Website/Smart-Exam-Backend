@@ -58,12 +58,17 @@
                     var bad_count = <?php echo $questionData['Bad']; ?>;
                     var fair_count = <?php echo $questionData['Fair']; ?>;
                     var chartId = "<?php echo $chartId; ?>";
+                    var none_count = 0;
+                    if((good_count == 0 && bad_count == 0 && fair_count == 0)) {
+                        none_count = 1;
+                    }
                     console.log(good_count, bad_count, fair_count, chartId);
                     var data = google.visualization.arrayToDataTable([
                         ['Type', 'Count'],
                         ['Good', good_count],
                         ['Bad', bad_count],
-                        ['Fair', fair_count]
+                        ['Fair', fair_count],
+                        ['No Results', none_count]
                     ]);
 
 
@@ -72,7 +77,7 @@
                         legend: {
                             position: 'bottom'
                         },
-                        colors: ['#2f4f4f', '#f90', '#54aa7a'],
+                        colors: ['#2f4f4f', '#f90', '#54aa7a', '#4f2f42'],
                     };
                     var chart = new google.visualization.PieChart(document.getElementById(chartId));
                     chart
