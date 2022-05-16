@@ -39,7 +39,7 @@ paths:
                   items:
                     type: array
                     items: []
-                    example: ['x', 30, 60]
+                    example: ["x", 30, 60]
                 formula:
                   type: string
                   example: "x+y"
@@ -48,13 +48,13 @@ paths:
                   items:
                     type: array
                     items: []
-                    example: [['x', 30, 60], ['y', 0, 5]]
+                    example: [["x", 30, 60], ["y", 0, 5]]
                 formulas:
                   type: array
                   items:
                     type: array
                     items: []
-                    example: [['What is 5 + 6?', 7], ['What is 4 + 5', 6]]                 
+                    example: [["What is 5 + 6?", 7], ["What is 4 + 5", 6]]
               type: object
       responses:
         "201":
@@ -107,7 +107,7 @@ paths:
                   items:
                     type: array
                     items: []
-                    example: ['x', 30, 60]
+                    example: ["x", 30, 60]
                 formula:
                   type: string
                   example: "x+y"
@@ -116,13 +116,13 @@ paths:
                   items:
                     type: array
                     items: []
-                    example: [['x', 30, 60], ['y', 0, 5]]
+                    example: [["x", 30, 60], ["y", 0, 5]]
                 formulas:
                   type: array
                   items:
                     type: array
                     items: []
-                    example: [['What is 5 + 6?', 7], ['What is 4 + 5', 6]]                 
+                    example: [["What is 5 + 6?", 7], ["What is 4 + 5", 6]]
               type: object
       responses:
         "200":
@@ -143,7 +143,7 @@ paths:
           description: Forbidden
       security:
         - bearer: []
-      
+
   "/tags":
     description: Get all tags
     get:
@@ -2203,7 +2203,29 @@ paths:
           description: Forbidden
       security:
         - bearer: []
+  "/statistics/{exam}":
+    description: Dashboard "statistics"
+    get:
+      tags:
+        - "Dashboard"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                properties:
+                  type: object
+                  message:
+                    type: String
+                    example: "Dashboard view!"
 
+        "401":
+          description: Unauthenticated
+        "403":
+          description: Forbidden
+      security:
+        - bearer: []
 components:
   schemas:
     StoreManualRequest:
