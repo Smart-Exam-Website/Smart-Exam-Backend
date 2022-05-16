@@ -24,6 +24,7 @@
     </div>
     <div class="pie">
         <h2 class="title">Exam Questions</h2>
+
         @for ($i = 0; $i < count($questionsData); $i++)
             @php
                 $chartId = 'piechart ' . $i;
@@ -33,9 +34,10 @@
             @if ($i % 2 == 0)
                 @if ($i == 0)
                     <table class="columns">
-                        <tr>
-                        @else
-                        </tr>
+                        <div class="charts">
+                            <tr>
+                            @else
+                            </tr>
                     </table>
                     <table class="columns">
                         <tr>
@@ -43,13 +45,17 @@
             @endif
 
             <td>
-                <div id="<?php echo $chartId; ?>" class="pie_circle">
+                <div class="question">
+                    <h3 class="box">Question <?php echo $i + 1; ?></h3>
+                    <div id="<?php echo $chartId; ?>" class="pie_circle">
+                    </div>
                 </div>
             </td>
             <script type="text/javascript">
                 google.charts.load('current', {
                     'packages': ['corechart']
                 });
+
 
                 google.charts.setOnLoadCallback(drawChart);
 
@@ -59,7 +65,7 @@
                     var fair_count = <?php echo $questionData['Fair']; ?>;
                     var chartId = "<?php echo $chartId; ?>";
                     var none_count = 0;
-                    if((good_count == 0 && bad_count == 0 && fair_count == 0)) {
+                    if ((good_count == 0 && bad_count == 0 && fair_count == 0)) {
                         none_count = 1;
                     }
                     console.log(good_count, bad_count, fair_count, chartId);
@@ -80,18 +86,21 @@
                         colors: ['#2f4f4f', '#f90', '#54aa7a', '#4f2f42'],
                     };
                     var chart = new google.visualization.PieChart(document.getElementById(chartId));
-                    chart
-                        .draw(data, options);
+                    chart.draw(data, options);
+                    window.addEventListener('resize', drawChart, false);
                 }
             </script>
         @endfor
+    </div>
     </div>
     <script type="text/javascript">
         google.charts.load('current', {
             'packages': ['bar']
         });
 
+
         google.charts.setOnLoadCallback(drawChart);
+
 
         function drawChart() {
             var data = google.visualization.arrayToDataTable([
@@ -113,6 +122,7 @@
             };
             var chart = new google.charts.Bar(document.getElementById('barchart'));
             chart.draw(data, google.charts.Bar.convertOptions(options));
+            window.addEventListener('resize', drawChart, false);
         }
     </script>
 
