@@ -84,3 +84,12 @@ td {
     text-align: center;
     width:70%;
 }
+.error{
+    border: 3px solid var(--primary-color);
+    margin: auto;
+    margin-top: 200px;
+    padding: 25px;
+    text-align: center;
+    font-size: 22px;
+    width: 60%;
+}

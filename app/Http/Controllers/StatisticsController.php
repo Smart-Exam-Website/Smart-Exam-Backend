@@ -18,10 +18,10 @@ class StatisticsController extends Controller
         }
         $questions = $exam->questions;
 
-		$markedExams = ExamStudent::where(['exam_id' => $exam->id])->get();
-		if(!$markedExams) {
-			$error = "No marked exams yet! Check back later.";
-		}
+        $markedExams = ExamStudent::where(['exam_id' => $exam->id])->get();
+        if (!$markedExams->count()) {
+            $error = "No marked exams yet! Check back later.";
+        }
 
         $questionsData = [];
 
