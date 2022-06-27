@@ -91,8 +91,41 @@ class TakeExamController extends Controller
 
         foreach ($questions as $question) {
             if ($question->type == 'group') {
-                $question->questions->each(function ($question) {
-                    $question->options;
+                $question->questions->each(function ($question) use ($exam) {
+                    if ($question->type == 'formula') {
+                        $formulaQ = FormulaQuestion::where([
+                            'question_id' => $question->id,
+                        ])->inRandomOrder()->get()->first();
+
+                        $question->questionText = $formulaQ->formulaText;
+
+                        $studentFormulaQ = FormulaStudent::where([
+                            'student_id' => auth()->user()->id,
+                            'exam_id' => $exam->id,
+                            'question_id' => $question->id
+                        ])->get()->first();
+                        if (!$studentFormulaQ) {
+                            $studentFormulaQ = FormulaStudent::create([
+                                'student_id' => auth()->user()->id,
+                                'formula_question_id' => $formulaQ->id,
+                                'exam_id' => $exam->id,
+                                'question_id' => $question->id
+                            ]);
+                            if (!$studentFormulaQ) {
+                                return response()->json(['message' => 'Failed.'], 400);
+                            }
+                        } else {
+                            FormulaStudent::where([
+                                'student_id' => auth()->user()->id,
+                                'exam_id' => $exam->id,
+                                'question_id' => $question->id
+                            ])->update([
+                                'formula_question_id' => $formulaQ->id
+                            ]);
+                        }
+                    } else {
+                        $question->options;
+                    }
                     $question->tags;
                 });
             } else if ($question->type == 'formula') {
@@ -219,9 +252,9 @@ class TakeExamController extends Controller
             return response()->json(['message' => 'No answers found!'], 400);
         }
 
-        foreach($answers as $answer) {
+        foreach ($answers as $answer) {
             $groupQ = GroupQuestion::where(['question_id' => $answer->question_id])->get()->first();
-            if(!$groupQ) {
+            if (!$groupQ) {
                 $answer->group_id = null;
             } else {
                 $answer->group_id = $groupQ->group_id;
