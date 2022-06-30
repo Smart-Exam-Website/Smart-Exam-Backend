@@ -293,23 +293,23 @@ class MarkExamController extends Controller
 
         foreach ($essays as $essay) {
 
-            // $correctAnswer = $essay->question->options[0]->value;
-            // $studentAnswer = $essay->studentAnswer;
+            $correctAnswer = $essay->question->options[0]->value;
+            $studentAnswer = $essay->studentAnswer;
 
-            // $list[0] = $correctAnswer;
-            // $list[intval($essay->student_id)] = $studentAnswer;
+            $list[0] = $correctAnswer;
+            $list[intval($essay->student_id)] = $studentAnswer;
 
-            // $response = Http::post('http://ec2-3-239-150-58.compute-1.amazonaws.com/grading/predict', [
-            //     'students_dict' => $list,
-            // ]);
+            $response = Http::post('https://nlp.api.smart-exam.ml/grading/predict', [
+                'students_dict' => $list,
+            ]);
 
 
-            // if ($response->ok()) {
-            //     if ($response->status() != 200) {
-            //         return response()->json(['message' => 'Failed to send Answers!'], 400);
-            //     } else {
-            //$percent = $response->object()->grades->$student_id;
-            $percent = "0.7";
+            if ($response->ok()) {
+                if ($response->status() != 200) {
+                    return response()->json(['message' => 'Failed to send Answers!'], 400);
+                } else {
+            $percent = $response->object()->grades->$student_id;
+            // $percent = "0.7";
             $table = 0;
 
             if ($essay->group) {
@@ -325,10 +325,10 @@ class MarkExamController extends Controller
             $student_Mark = (float)$percent  * $totalquestionMark;
             DB::table('answers')->where(['student_id' => $student->id, 'exam_id' => $exam->id, 'question_id' => $essay->question_id])->update(['questionMark' => $student_Mark, 'isMarked' => true]);
             $totalMark += $student_Mark;
-            //     }
-            // } else {
-            //     return response()->json(['message' => 'An error occurred!'], 400);
-            // }
+                }
+            } else {
+                return response()->json(['message' => 'An error occurred!'], 400);
+            }
         }
 
         // For formula marking
@@ -507,23 +507,23 @@ class MarkExamController extends Controller
 
             foreach ($essays as $essay) {
 
-                // $correctAnswer = $essay->question->options[0]->value;
-                // $studentAnswer = $essay->studentAnswer;
+                $correctAnswer = $essay->question->options[0]->value;
+                $studentAnswer = $essay->studentAnswer;
 
-                // $list[0] = $correctAnswer;
-                // $list[intval($essay->student_id)] = $studentAnswer;
+                $list[0] = $correctAnswer;
+                $list[intval($essay->student_id)] = $studentAnswer;
 
-                // $response = Http::post('http://ec2-3-239-150-58.compute-1.amazonaws.com/grading/predict', [
-                //     'students_dict' => $list,
-                // ]);
+                $response = Http::post('https://nlp.api.smart-exam.ml/grading/predict', [
+                    'students_dict' => $list,
+                ]);
 
 
-                // if ($response->ok()) {
-                //     if ($response->status() != 200) {
-                //         return response()->json(['message' => 'Failed to send Answers!'], 400);
-                //     } else {
-                //$percent = $response->object()->grades->$student_id;
-                $percent = "0.7";
+                if ($response->ok()) {
+                    if ($response->status() != 200) {
+                        return response()->json(['message' => 'Failed to send Answers!'], 400);
+                    } else {
+                $percent = $response->object()->grades->$student_id;
+                // $percent = "0.7";
                 $table = 0;
 
                 if ($essay->group) {
@@ -539,10 +539,10 @@ class MarkExamController extends Controller
                 $student_Mark = (float)$percent  * $totalquestionMark;
                 DB::table('answers')->where(['student_id' => $s->id, 'exam_id' => $exam->id, 'question_id' => $essay->question_id])->update(['questionMark' => $student_Mark, 'isMarked' => true]);
                 $totalMark += $student_Mark;
-                //     }
-                // } else {
-                //     return response()->json(['message' => 'An error occurred!'], 400);
-                // }
+                    }
+                } else {
+                    return response()->json(['message' => 'An error occurred!'], 400);
+                }
             }
 
             // For formula marking

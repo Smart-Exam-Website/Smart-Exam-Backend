@@ -65,7 +65,7 @@ class PlagiarismController extends Controller
             foreach ($allanswers as $a) {
                 $list[intval($a->student_id)] = $a->studentAnswer;
             }
-            $response = Http::post('http://ec2-44-202-185-228.compute-1.amazonaws.com/plagiarism/predict', [
+            $response = Http::post('http://nlp.api.smart-exam.ml/plagiarism/predict', [
                 'students_dict' => $list,
             ]);
 
