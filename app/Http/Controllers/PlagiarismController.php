@@ -6,6 +6,7 @@ use App\Models\Question;
 use App\Models\Exam;
 use App\Models\Answer;
 use App\Models\ExamQuestion;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
@@ -65,7 +66,7 @@ class PlagiarismController extends Controller
             foreach ($allanswers as $a) {
                 $list[intval($a->student_id)] = $a->studentAnswer;
             }
-            $response = Http::post('http://nlp.api.smart-exam.ml/plagiarism/predict', [
+            $response = Http::post('https://nlp.api.smart-exam.ml/plagiarism/predict', [
                 'students_dict' => $list,
             ]);
 
@@ -73,8 +74,33 @@ class PlagiarismController extends Controller
                 if ($response->status() != 200) {
                     return response()->json(['message' => 'Failed to send list!'], 400);
                 } else {
-                    $res = $response->object();
-                    return response()->json(['message' => 'Plagiarism check done successfully!', 'res' => $res]);
+                    $finalResponse = [];
+                    $plagiarismResult = $response->object()->plagiarism_results;
+                    foreach ($plagiarismResult as $result) {
+                        $keys = array_keys((array) $result);
+                        if (in_array(0, $keys)) {
+                            continue;
+                        }
+                        $resultArray = json_decode(json_encode($result), true);
+                        $studentId = $keys[0];
+                        $student = User::where(['id' => $studentId])->first();
+                        $studentName = $student->firstName . ' ' . $student->lastName;
+                        $studentCode = $student->student->studentCode;
+                        $currentStudent = ["id" => $studentId, "name" => $studentName,"studentCode" => $studentCode, "similarStudents" => []];
+                        $similarStudents = $resultArray[$studentId];
+                        $studentsIds = array_keys((array) $similarStudents);
+                        foreach($studentsIds as $id) {
+                            if ($id == 0) {
+                                continue;
+                            }
+                            $similarStudent = User::where(['id' => $id])->first();
+                            $similarStudentName = $similarStudent->firstName . ' ' . $similarStudent->lastName;
+                            $similarStudentCode = $similarStudent->student->studentCode;
+                            array_push($currentStudent["similarStudents"], ["id" => $id, "name" => $similarStudentName, "studentCode" => $similarStudentCode, "similarity" => $similarStudents[$id]]);
+                        }
+                        array_push($finalResponse, $currentStudent);
+                    }
+                    return response()->json(['message' => 'Plagiarism check done successfully!', "result" => $finalResponse]);
                 }
             } else {
                 return response()->json(['message' => 'An error occurred!'], 400);
