@@ -10,6 +10,7 @@ use App\Models\Question;
 use App\Models\Exam;
 use App\Models\QuestionTag;
 use App\Models\Tag;
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Builder;
 
 class QuestionController extends Controller
@@ -398,7 +399,6 @@ class QuestionController extends Controller
                     }
                 }
             }
-            return $answers;
             $imageName = array_key_exists("image", $fields) ? Str::random(30) . '.jpg' : null;
             if (array_key_exists("image", $fields)) {
                 if ($questionn->image) {
