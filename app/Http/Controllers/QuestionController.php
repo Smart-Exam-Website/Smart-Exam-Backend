@@ -248,7 +248,7 @@ class QuestionController extends Controller
                 'correctAnswer' => 'string'
             ]);
 
-            $imageName = $fields['image'] ? Str::random(30) . '.jpg' : null;
+            $imageName = array_key_exists("image", $fields) ? Str::random(30) . '.jpg' : null;
             if (array_key_exists("image", $fields)) {
                 $path = Storage::disk('s3')->putFileAs('questionImages/', $fields['image'], $imageName);
                 $path = Storage::disk('s3')->url($path);
