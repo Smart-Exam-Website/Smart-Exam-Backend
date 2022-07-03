@@ -75,7 +75,7 @@
                         if ((good_count == 0 && bad_count == 0 && fair_count == 0)) {
                             none_count = 1;
                         }
-                        console.log(good_count, bad_count, fair_count, chartId);
+
                         var data = google.visualization.arrayToDataTable([
                             ['Type', 'Count'],
                             ['Good', good_count],

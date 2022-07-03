@@ -67,15 +67,27 @@ class StatisticsController extends Controller
         //bar Chart
 
         $marks = [];
-
+        $examst = ExamStudent::where(['exam_id' => $exam->id])->get();
         $st_num = ExamStudent::where(['exam_id' => $exam->id])->count();
         $examMark = $exam->totalMark;
-        $mark100 = ExamStudent::where('totalMark', '>', 0.8 * $examMark)->where('totalMark', '<=', $examMark)->count();
-        $mark80 = ExamStudent::where('totalMark', '>', 0.6 * $examMark)->where('totalMark', '<=', 0.8 * $examMark)->count();
-        $mark60 = ExamStudent::where('totalMark', '>', 0.4 * $examMark)->where('totalMark', '<=', 0.6 * $examMark)->count();
-        $mark40 = ExamStudent::where('totalMark', '>', 0.2 * $examMark)->where('totalMark', '<=', 0.4 * $examMark)->count();
-        $mark20 = ExamStudent::where('totalMark', '>', 0 * $examMark)->where('totalMark', '<=', 0.2 * $examMark)->count();
-        $mark0 = ExamStudent::where('totalMark', 0)->count();
+        $mark100 = $mark80 = $mark60 = $mark40 = $mark20 = $mark0 = 0;
+        foreach ($examst as $st) {
+            $totalMark = $st->totalMark;
+            if ($totalMark > 0.8 * $examMark && $totalMark <= $examMark) {
+                $mark100++;
+            } elseif ($totalMark > 0.6 * $examMark && $totalMark <= 0.8 * $examMark) {
+                $mark80++;
+            } elseif ($totalMark > 0.4 * $examMark && $totalMark <= 0.6 * $examMark) {
+                $mark60++;
+            } elseif ($totalMark > 0.2 * $examMark && $totalMark <= 0.4 * $examMark) {
+                $mark40++;
+            } elseif ($totalMark > 0 * $examMark && $totalMark <= 0.2 * $examMark) {
+                $mark20++;
+            } elseif ($totalMark == 0) {
+                $mark0++;
+            }
+        }
+
 
         return view('charts', compact('exam', 'instructor', 'st_num', 'mark0', 'mark20', 'mark40', 'mark60', 'mark80', 'mark100', 'questionsData', 'error'));
     }
