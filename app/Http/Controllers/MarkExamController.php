@@ -18,6 +18,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use phpDocumentor\Reflection\PseudoTypes\True_;
 
 class MarkExamController extends Controller
 {
@@ -308,23 +309,23 @@ class MarkExamController extends Controller
                 if ($response->status() != 200) {
                     return response()->json(['message' => 'Failed to send Answers!'], 400);
                 } else {
-            $percent = $response->object()->grades->$student_id;
-            // $percent = "0.7";
-            $table = 0;
+                    $percent = $response->object()->grades->$student_id;
+                    // $percent = "0.7";
+                    $table = 0;
 
-            if ($essay->group) {
-                $table = ExamQuestion::where(['question_id' => $essay->group_id, 'exam_id' => $exam->id])->get()->first();
-                $group_q = Question::find($essay->group_id);
-                $q_number = count($group_q->questions);
-                $totalquestionMark = $table->mark / $q_number;
-            } else {
-                $table = ExamQuestion::where(['question_id' => $essay->question_id, 'exam_id' => $exam->id])->get()->first();
-                $totalquestionMark = $table->mark;
-            }
+                    if ($essay->group) {
+                        $table = ExamQuestion::where(['question_id' => $essay->group_id, 'exam_id' => $exam->id])->get()->first();
+                        $group_q = Question::find($essay->group_id);
+                        $q_number = count($group_q->questions);
+                        $totalquestionMark = $table->mark / $q_number;
+                    } else {
+                        $table = ExamQuestion::where(['question_id' => $essay->question_id, 'exam_id' => $exam->id])->get()->first();
+                        $totalquestionMark = $table->mark;
+                    }
 
-            $student_Mark = (float)$percent  * $totalquestionMark;
-            DB::table('answers')->where(['student_id' => $student->id, 'exam_id' => $exam->id, 'question_id' => $essay->question_id])->update(['questionMark' => $student_Mark, 'isMarked' => true]);
-            $totalMark += $student_Mark;
+                    $student_Mark = (float)$percent  * $totalquestionMark;
+                    DB::table('answers')->where(['student_id' => $student->id, 'exam_id' => $exam->id, 'question_id' => $essay->question_id])->update(['questionMark' => $student_Mark, 'isMarked' => true]);
+                    $totalMark += $student_Mark;
                 }
             } else {
                 return response()->json(['message' => 'An error occurred!'], 400);
@@ -522,23 +523,23 @@ class MarkExamController extends Controller
                     if ($response->status() != 200) {
                         return response()->json(['message' => 'Failed to send Answers!'], 400);
                     } else {
-                $percent = $response->object()->grades->$student_id;
-                // $percent = "0.7";
-                $table = 0;
+                        $percent = $response->object()->grades->$student_id;
+                        // $percent = "0.7";
+                        $table = 0;
 
-                if ($essay->group) {
-                    $table = ExamQuestion::where(['question_id' => $essay->group_id, 'exam_id' => $exam->id])->get()->first();
-                    $group_q = Question::find($essay->group_id);
-                    $q_number = count($group_q->questions);
-                    $totalquestionMark = $table->mark / $q_number;
-                } else {
-                    $table = ExamQuestion::where(['question_id' => $essay->question_id, 'exam_id' => $exam->id])->get()->first();
-                    $totalquestionMark = $table->mark;
-                }
+                        if ($essay->group) {
+                            $table = ExamQuestion::where(['question_id' => $essay->group_id, 'exam_id' => $exam->id])->get()->first();
+                            $group_q = Question::find($essay->group_id);
+                            $q_number = count($group_q->questions);
+                            $totalquestionMark = $table->mark / $q_number;
+                        } else {
+                            $table = ExamQuestion::where(['question_id' => $essay->question_id, 'exam_id' => $exam->id])->get()->first();
+                            $totalquestionMark = $table->mark;
+                        }
 
-                $student_Mark = (float)$percent  * $totalquestionMark;
-                DB::table('answers')->where(['student_id' => $s->id, 'exam_id' => $exam->id, 'question_id' => $essay->question_id])->update(['questionMark' => $student_Mark, 'isMarked' => true]);
-                $totalMark += $student_Mark;
+                        $student_Mark = (float)$percent  * $totalquestionMark;
+                        DB::table('answers')->where(['student_id' => $s->id, 'exam_id' => $exam->id, 'question_id' => $essay->question_id])->update(['questionMark' => $student_Mark, 'isMarked' => true]);
+                        $totalMark += $student_Mark;
                     }
                 } else {
                     return response()->json(['message' => 'An error occurred!'], 400);
@@ -624,6 +625,20 @@ class MarkExamController extends Controller
     public function ExamReportForStudent(Exam $exam)
     {
         $user = auth()->user();
+        $num = 0;
+        $correctnum = $exam->questions->count();
+        foreach ($exam->questions as $q) {
+            $answer = Answer::where(['exam_id' => $exam->id, 'student_id' => $user->id, 'question_id' => $q->id])->get()->first();
+
+            if ($answer && $answer->isMarked == True) {
+                $num++;
+            }
+        }
+
+        if ($correctnum != $num) {
+            return response()->json(['message' => 'Exam Has Not Been Marked Yet'], 404);
+        }
+
         if ($user->type == 'student') {
             $session = examSession::where(['exam_id' => $exam->id, 'student_id' => $user->id, 'isSubmitted' => true])->get()->first();
             if (!$session) {
