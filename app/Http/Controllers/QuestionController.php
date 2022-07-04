@@ -10,6 +10,7 @@ use App\Models\Question;
 use App\Models\Exam;
 use App\Models\QuestionTag;
 use App\Models\Tag;
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Builder;
 
 class QuestionController extends Controller
@@ -247,7 +248,7 @@ class QuestionController extends Controller
                 'correctAnswer' => 'string'
             ]);
 
-            $imageName = $fields['image'] ? Str::random(30) . '.jpg' : null;
+            $imageName = array_key_exists("image", $fields) ? Str::random(30) . '.jpg' : null;
             if (array_key_exists("image", $fields)) {
                 $path = Storage::disk('s3')->putFileAs('questionImages/', $fields['image'], $imageName);
                 $path = Storage::disk('s3')->url($path);
@@ -398,7 +399,6 @@ class QuestionController extends Controller
                     }
                 }
             }
-            return $answers;
             $imageName = array_key_exists("image", $fields) ? Str::random(30) . '.jpg' : null;
             if (array_key_exists("image", $fields)) {
                 if ($questionn->image) {
