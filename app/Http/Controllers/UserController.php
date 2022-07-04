@@ -107,19 +107,18 @@ class UserController extends Controller
     public function resetPassword(Request $request)
     {
         $credentials = $request->validate([
-            'email' => 'required|email',
             'token' => 'required|string',
             'password' => 'required|string'
         ]);
-        $user = User::where(['email' => $credentials['email']])->get()->first();
+        $password = $credentials['password'];
+        
+        
+        $tokenMatch = DB::table('password_resets')->where(['token' => $credentials['token']])->first();
+        
+        $user = User::where(['email' => $tokenMatch->email])->get()->first();
         if (!$user) {
             return response()->json(["msg" => "No user with that email"], 400);
         }
-        $password = $credentials['password'];
-
-
-        $tokenMatch = DB::table('password_resets')->where(['token' => $credentials['token']]);
-
 
         if (!$tokenMatch) {
             return response()->json(["msg" => "Invalid token provided"], 400);
