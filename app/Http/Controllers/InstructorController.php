@@ -112,7 +112,7 @@ class InstructorController extends Controller
 
 
         $verificationCode = Str::random(6);
-        Mail::send('email.verifyemail', ['url' => 'http://localhost:8080/', 'verificationCode' => $verificationCode], function ($message) use ($request) {
+        Mail::send('email.verifyemail', ['url' => 'http://api.smart-exam.ml', 'verificationCode' => $verificationCode], function ($message) use ($request) {
             $message->to($request->email);
             $message->subject('Verify your email!');
         });

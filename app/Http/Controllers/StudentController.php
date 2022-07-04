@@ -39,7 +39,7 @@ class StudentController extends Controller
     public function store(Request $request)
     {
 
-        $fields = $request->validate([
+        $rules = [
             'firstName' => 'required|string|max:255',
             'lastName' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users',
@@ -49,27 +49,34 @@ class StudentController extends Controller
             'phone' => 'required|unique:users|digits:11',
             'departments.*.department_id' => ['required', 'numeric', 'exists:departments,id'],
             'studentCode' => 'required|string|unique:students'
-        ]);
+        ];
+        $validator = Validator::make($request->all(), $rules);
 
-        $deps = $fields['departments'];
+        if ($validator->fails()) {
+            $groupedErrors = implode("<br>", $validator->messages()->all());
+            return response()->json(["message" => "The data is invalid. \r\n" . $groupedErrors], 400);
+        }
+
+
+        $deps = $request->departments;
         $dep_id = $deps[0]['department_id'];
 
         $user = User::create([
-            'firstName' => $fields['firstName'],
-            'lastName' => $fields['lastName'],
-            'email' => $fields['email'],
+            'firstName' => $request->firstName,
+            'lastName' => $request->lastName,
+            'email' => $request->email,
             'email_verified_at' => date('Y-m-d H:i:s'),
-            'password' => Hash::make($fields['password']),
-            'gender' => $fields['gender'],
-            'image' => $fields['image'],
+            'password' => Hash::make($request->password),
+            'gender' => $request->gender,
+            'image' => $request->image,
             'type' => 'student',
-            'phone' => $fields['phone']
+            'phone' => $request->phone
         ]);
 
         //create student
         $student = Student::create([
             'id' => $user->id,
-            'studentCode' => $fields['studentCode'],
+            'studentCode' => $request->studentCode,
             'department_id' => $dep_id
         ]);
 
@@ -87,7 +94,7 @@ class StudentController extends Controller
         ];
 
         $verificationCode = Str::random(6);
-        Mail::send('email.verifyemail', ['url' => 'http://13.58.190.211', 'verificationCode' => $verificationCode], function ($message) use ($request) {
+        Mail::send('email.verifyemail', ['url' => 'http://api.smart-exam.ml', 'verificationCode' => $verificationCode], function ($message) use ($request) {
             $message->to($request->email);
             $message->subject('Verify your email!');
         });
