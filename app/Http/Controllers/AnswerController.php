@@ -33,7 +33,7 @@ class AnswerController extends Controller
 
         $exam = Exam::where(['id' => $request->exam_id])->first();
         if(!$exam) {
-            return message()->json(['message' => 'No exam found with this id!'], 404);
+            return response()->json(['message' => 'No exam found with this id!'], 404);
         }
 
         $answerDetails = $request->only(['option_id', 'question_id', 'exam_id', 'studentAnswer']);

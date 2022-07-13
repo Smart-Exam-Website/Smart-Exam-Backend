@@ -193,7 +193,7 @@ class CheatingDetailsController extends Controller
             return response()->json(['message' => 'Action already taken!'], 400);
         } else {
             $exam = Exam::where(['id' => $cheatingDetails->exam_id])->get()->first();
-            $action = CheatingAction::where(['name' => $request->action])->get()->first();
+            $action = CheatingAction::where(['name' => strtolower($request->action)])->get()->first();
             if (!$action) {
                 return response()->json(['message' => 'Wrong action name specified!'], 400);
             }
@@ -216,7 +216,7 @@ class CheatingDetailsController extends Controller
                     'minusMarks' => $action->id == 1 ? $exam->totalMark : ($action->id == 2 ? $request->minusMarks : 0),
                 ]);
             }
-            if ($request->action != 'dismiss') {
+            if (strtolower($request->action) != 'dismiss') {
                 if (!$examSession->isCheater) {
                     examSession::where([
                         'exam_id' => $examSession->exam_id,
@@ -227,7 +227,7 @@ class CheatingDetailsController extends Controller
                     ]);
                 }
                 $studentMark = ExamStudent::where(['exam_id' => $examSession->exam_id, 'student_id' => $examSession->student_id])->get()->first();
-                if ($request->action == 'zero') {
+                if (strtolower($request->action) == 'zero') {
                     // mark exam and set all marks = zero.
                     if ($studentMark) {
                         ExamStudent::where([
@@ -262,7 +262,7 @@ class CheatingDetailsController extends Controller
                     ])->where('action_id', '!=', 1)
                         ->orWhereNull('action_id')
                         ->delete();
-                } else if ($request->action == 'minus') {
+                } else if (strtolower($request->action) == 'minus') {
                     if ($studentMark) {
                         ExamStudent::where([
                             'exam_id' => $examSession->exam_id,
