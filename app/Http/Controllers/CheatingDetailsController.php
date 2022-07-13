@@ -197,7 +197,7 @@ class CheatingDetailsController extends Controller
             if (!$action) {
                 return response()->json(['message' => 'Wrong action name specified!'], 400);
             }
-            if($cheatingDetails->type != 'SWITCH_BROWSER') {
+            if ($cheatingDetails->type != 'SWITCH_BROWSER') {
                 CheatingDetails::where([
                     'id' => $request->cheatingDetailId,
                     'type' => $request->type,
@@ -205,7 +205,6 @@ class CheatingDetailsController extends Controller
                     'action_id' => $action->id,
                     'minusMarks' => $action->id == 1 ? $exam->totalMark : ($action->id == 2 ? $request->minusMarks : 0),
                 ]);
-
             } else {
                 CheatingDetails::where([
                     'student_id' => $cheatingDetails->student_id,
@@ -259,8 +258,11 @@ class CheatingDetailsController extends Controller
                     CheatingDetails::where([
                         'student_id' => $cheatingDetails->student_id,
                         'exam_id' => $cheatingDetails->exam_id
-                    ])->where('action_id', '!=', 1)
-                        ->orWhereNull('action_id')
+                    ])->where('action_id', '!=', 1)->delete();
+                    CheatingDetails::where([
+                        'student_id' => $cheatingDetails->student_id,
+                        'exam_id' => $cheatingDetails->exam_id
+                    ])->whereNull('action_id')
                         ->delete();
                 } else if (strtolower($request->action) == 'minus') {
                     if ($studentMark) {
