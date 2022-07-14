@@ -85,6 +85,9 @@ class AnswerController extends Controller
                 return response()->json(['message' => 'Wrong option id!'], 400);
             }
         }
+        if(!$request->studentAnswer) {
+            $answerDetails['studentAnswer'] = "";
+        }
         if ($answer) {
             if ($answer->option_id != $answerDetails['option_id'] || $answer->studentAnswer != $answerDetails['studentAnswer']) {
                 Answer::where(['exam_id' => $request->exam_id, 'student_id' => $studentId, 'question_id' => $request->question_id, 'attempt' => $examSession->attempt])->update($answerDetails);

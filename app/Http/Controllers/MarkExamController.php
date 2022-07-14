@@ -92,6 +92,24 @@ class MarkExamController extends Controller
                     $e->tags;
                     $e->options;
                     $answer = Answer::where(['student_id' => $user->id, 'question_id' => $e->id, 'exam_id' => $exam->id, 'attempt' => $session->attempt])->get()->first();
+                    if(!$answer) {
+                        $answer = [
+                            'student_id' => $studentId,
+                            'exam_id' => $exam->id,
+                            'question_id' => $e->id,
+                            'attempt' => $session->attempt,
+                            'isMarked' => 1,
+                            'questionMark' => 0,
+                            'studentAnswer' => '',
+                        ];
+                        Answer::create($answer);
+                    }
+                    if ($e->type == "formula") {
+                        $formula_ques = FormulaStudent::where(['student_id' => $user->id, 'exam_id' => $exam->id, 'question_id' => $e->id])->get()->first()->formula_question_id;
+                        $e->formula_questions = FormulaQuestion::where(['id' => $formula_ques])->get()->first();
+                        $e->formula;
+                        $e->variables;
+                    }
                     $e['answers'] = $answer;
                 };
             } else if ($q->type == "formula") {
@@ -102,6 +120,18 @@ class MarkExamController extends Controller
             }
             if (!($q->type == "group")) {
                 $answer = Answer::where(['student_id' => $studentId, 'question_id' => $q->id, 'exam_id' => $exam->id, 'attempt' => $session->attempt])->get()->first();
+                if(!$answer) {
+                    $answer = [
+                        'student_id' => $studentId,
+                        'exam_id' => $exam->id,
+                        'question_id' => $q->id,
+                        'attempt' => $session->attempt,
+                        'isMarked' => 1,
+                        'questionMark' => 0,
+                        'studentAnswer' => '',
+                    ];
+                    Answer::create($answer);
+                }
                 $q['answer'] = $answer;
             }
         }
@@ -297,8 +327,10 @@ class MarkExamController extends Controller
 
             $correctAnswer = $essay->question->options[0]->value;
             $studentAnswer = $essay->studentAnswer;
-
-            $list[0] = $correctAnswer;
+            if(is_null($studentAnswer)) {
+                $studentAnswer = "";
+            }
+            $list['correctAnswer'] = $correctAnswer;
             $list[intval($essay->student_id)] = $studentAnswer;
 
             $response = Http::post('https://nlp.api.smart-exam.ml/grading/predict', [
@@ -511,8 +543,11 @@ class MarkExamController extends Controller
 
                 $correctAnswer = $essay->question->options[0]->value;
                 $studentAnswer = $essay->studentAnswer;
+                if(is_null($studentAnswer)) {
+                    $studentAnswer = "";
+                }
 
-                $list[0] = $correctAnswer;
+                $list['correctAnswer'] = $correctAnswer;
                 $list[intval($essay->student_id)] = $studentAnswer;
 
                 $response = Http::post('https://nlp.api.smart-exam.ml/grading/predict', [
