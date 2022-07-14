@@ -75,11 +75,12 @@ class MarkExamController extends Controller
         $studentName = $user->firstName . ' ' . $user->lastName;
         $studentImage = $user->image;
         // $studentCode = $user->student->studentCode;
-
+        
         $session = examSession::where(['exam_id' => $exam->id, 'student_id' => $studentId, 'isSubmitted' => true])->orderBy('attempt', 'DESC')->get()->first();
         if (!$session) {
             return response()->json(['message' => 'No session found for this student!'], 400);
         }
+        $isCheater = $session->isCheater; 
 
         $questions = $exam->questions;
 
@@ -142,7 +143,7 @@ class MarkExamController extends Controller
         $numberOfFaces = ($examConfig->faceDetection) ? $session->numberOfFaces : null;
         $isVerified = ($examConfig->faceDetection) ? $session->isVerified : null;
 
-        return response()->json(['message' => 'Fetched solution successfully', 'studentName' => $studentName, 'image' => $studentImage, 'solution' => $questions, 'numberOfFaces' => $numberOfFaces, 'isVerified' => $isVerified]);
+        return response()->json(['message' => 'Fetched solution successfully', 'studentName' => $studentName, 'image' => $studentImage, 'solution' => $questions, 'numberOfFaces' => $numberOfFaces, 'isVerified' => $isVerified, 'isCheater' => $isCheater]);
     }
 
 
