@@ -65,11 +65,11 @@ class TakeExamController extends Controller
                         'isVerified' => $request->isVerified,
                         'numberOfFaces' => $request->numberOfFaces
                     ]);
-                    Answer::where([
-                        'exam_id' => $exam->id, 
-                        'student_id' => auth()->user()->id,
-                        'attempt' => $attempt - 1,
-                    ])->delete();
+                    // Answer::where([
+                    //     'exam_id' => $exam->id, 
+                    //     'student_id' => auth()->user()->id,
+                    //     'attempt' => $attempt - 1,
+                    // ])->delete();
                 } else {
                     return response()->json(['message' => 'Exceeded number of attempts!'], 400);
                 }

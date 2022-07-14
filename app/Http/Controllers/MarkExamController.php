@@ -160,14 +160,15 @@ class MarkExamController extends Controller
                     'exam_id' => $fields['examId'],
                     'question_id' => $fields['questionId'],
                     'questionMark' => $fields['questionMark'],
-                    'isMarked' => true
+                    'isMarked' => true,
+                    'attempt' => $examSession->attempt,
                 ]);
             } else {
                 $ans = $answer->first();
                 $qMark = $ans->questionMark;
                 $totalMark = $totalMark - $qMark;
-                Answer::where(['student_id' => $fields['studentId'], 'exam_id' => $fields['examId'], 'question_id' => $fields['questionId']])->update(['questionMark' => $fields['questionMark'], 'isMarked' => true]);
-                $a = Answer::where(['student_id' => $fields['studentId'], 'exam_id' => $fields['examId'], 'question_id' => $fields['questionId']])->first();
+                Answer::where(['student_id' => $fields['studentId'], 'exam_id' => $fields['examId'], 'question_id' => $fields['questionId'], 'attempt' => $examSession->attempt])->update(['questionMark' => $fields['questionMark'], 'isMarked' => true]);
+                $a = Answer::where(['student_id' => $fields['studentId'], 'exam_id' => $fields['examId'], 'question_id' => $fields['questionId'], 'attempt' => $examSession->attempt])->first();
             }
         } else {
             return response()->json(['message' => 'Unauthorized'], 403);
