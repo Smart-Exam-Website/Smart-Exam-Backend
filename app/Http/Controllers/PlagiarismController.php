@@ -50,7 +50,7 @@ class PlagiarismController extends Controller
         }
 
         // loop over all essay questions on the exam
-
+        $finalResponse = [];
         foreach ($essayqs as $qid) {
 
             $q = Question::where(['id' => $qid])->get()->first();
@@ -74,8 +74,11 @@ class PlagiarismController extends Controller
                 if ($response->status() != 200) {
                     return response()->json(['message' => 'Failed to send list!'], 400);
                 } else {
-                    $finalResponse = [];
+
                     $plagiarismResult = $response->object()->plagiarism_results;
+                    $studentIds = array_map(function ($o) {
+                        return $o['id'];
+                    }, $finalResponse);
                     foreach ($plagiarismResult as $result) {
                         $keys = array_keys((array) $result);
                         if (in_array(0, $keys)) {
@@ -83,28 +86,61 @@ class PlagiarismController extends Controller
                         }
                         $resultArray = json_decode(json_encode($result), true);
                         $studentId = $keys[0];
-                        $student = User::where(['id' => $studentId])->first();
-                        $studentName = $student->firstName . ' ' . $student->lastName;
-                        $studentCode = $student->student->studentCode;
-                        $currentStudent = ["id" => $studentId, "name" => $studentName,"studentCode" => $studentCode, "similarStudents" => []];
-                        $similarStudents = $resultArray[$studentId];
-                        $studentsIds = array_keys((array) $similarStudents);
-                        foreach($studentsIds as $id) {
-                            if ($id == 0) {
-                                continue;
+                        if (in_array($studentId, $studentIds)) {
+                            $similarStudents = $resultArray[$studentId];
+                            $studentsIds = array_keys((array) $similarStudents);
+                            $currentStudentIndex = array_search($studentId, array_column($finalResponse, 'id'));
+                            $currentStudent = $finalResponse[$currentStudentIndex];
+                            // return $currentStudent;
+                            $existingSimilarStudents = $currentStudent['similarStudents'];
+                            $existingSimilarStudentsIds = array_map(function ($o) {
+                                return $o['id'];
+                            }, $existingSimilarStudents);
+                            foreach ($studentsIds as $id) {
+                                if ($id == 0) {
+                                    continue;
+                                }
+                                if (in_array($id, $existingSimilarStudentsIds)) {
+                                    $index = array_search($id, $existingSimilarStudentsIds);
+                                    if ($similarStudents[$id] > $existingSimilarStudents[$index]['similarity']) {
+                                        $finalResponse[$currentStudentIndex]['similarStudents'][$index]['similarity'] = $similarStudents[$id];
+                                        $finalResponse[$currentStudentIndex]['similarStudents'][$index]['question'] = $q->questionText;
+                                        $finalResponse[$currentStudentIndex]['similarStudents'][$index]['questionId'] = $q->id;
+                                    }
+                                } else {
+                                    $similarStudent = User::where(['id' => $id])->first();
+                                    $similarStudentName = $similarStudent->firstName . ' ' . $similarStudent->lastName;
+                                    $similarStudentCode = $similarStudent->student->studentCode;
+                                    array_push($finalResponse[$currentStudentIndex]["similarStudents"], ["id" => $id, "name" => $similarStudentName, "studentCode" => $similarStudentCode, "similarity" => $similarStudents[$id], "question" => $q->questionText, "questionId" => $q->id]);
+                                }
                             }
-                            $similarStudent = User::where(['id' => $id])->first();
-                            $similarStudentName = $similarStudent->firstName . ' ' . $similarStudent->lastName;
-                            $similarStudentCode = $similarStudent->student->studentCode;
-                            array_push($currentStudent["similarStudents"], ["id" => $id, "name" => $similarStudentName, "studentCode" => $similarStudentCode, "similarity" => $similarStudents[$id]]);
+                        } else {
+                            $student = User::where(['id' => $studentId])->first();
+                            $studentName = $student->firstName . ' ' . $student->lastName;
+                            $studentCode = $student->student->studentCode;
+                            $currentStudent = ["id" => $studentId, "name" => $studentName, "studentCode" => $studentCode, "similarStudents" => []];
+                            $similarStudents = $resultArray[$studentId];
+                            $studentsIds = array_keys((array) $similarStudents);
+                            foreach ($studentsIds as $id) {
+                                if ($id == 0) {
+                                    continue;
+                                }
+                                $similarStudent = User::where(['id' => $id])->first();
+                                $similarStudentName = $similarStudent->firstName . ' ' . $similarStudent->lastName;
+                                $similarStudentCode = $similarStudent->student->studentCode;
+                                array_push($currentStudent["similarStudents"], ["id" => $id, "name" => $similarStudentName, "studentCode" => $similarStudentCode, "similarity" => $similarStudents[$id], "question" => $q->questionText, "questionId" => $q->id]);
+                            }
+                            if (count($currentStudent["similarStudents"]) != 0) {
+                                array_push($finalResponse, $currentStudent);
+                            }
                         }
-                        array_push($finalResponse, $currentStudent);
                     }
-                    return response()->json(['message' => 'Plagiarism check done successfully!', "result" => $finalResponse]);
+
                 }
             } else {
                 return response()->json(['message' => 'An error occurred!'], 400);
             }
         }
+        return response()->json(['message' => 'Plagiarism check done successfully!', "result" => $finalResponse]);
     }
 }
